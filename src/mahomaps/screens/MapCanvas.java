@@ -58,12 +58,20 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	private void drawMap(Graphics g, int w, int h) {
-		int y = yOffset;
-		int yi = tileY;
-		while (y < h) {
-			int x = xOffset;
-			int xi = tileX;
-			while (x < w) {
+		g.translate(w >> 1, h >> 1);
+		int trX = 1;
+		while (trX * 256 < (w >> 1))
+			trX++;
+		int trY = 1;
+		while (trY * 256 < (w >> 1))
+			trY++;
+
+		int y = yOffset - trY * 256;
+		int yi = tileY - trY;
+		while (y < h / 2) {
+			int x = xOffset - trX * 256;
+			int xi = tileX - trX;
+			while (x < w / 2) {
 				g.drawImage(tiles.getTile(new TileId(xi, yi, zoom)), x, y, 0);
 				x += 256;
 				xi++;
@@ -71,6 +79,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			y += 256;
 			yi++;
 		}
+		g.translate(-(w >> 1), -(h >> 1));
 	}
 
 	private void drawOverlay(Graphics g, int w, int h) {
@@ -122,10 +131,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (zoom <= 0)
 			return;
 		zoom--;
-		tileX /=2;
-		tileY /=2;
-		xOffset/=2;
-		yOffset/=2;
+		tileX /= 2;
+		tileY /= 2;
+		xOffset /= 2;
+		yOffset /= 2;
 	}
 
 	// INPUT
