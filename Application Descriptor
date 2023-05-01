@@ -1,7 +1,10 @@
-MIDlet-1: MahoMapsApp,,mahomaps.MahoMapsApp
+MIDlet-1: MahoMapsApp,/icon.png,mahomaps.MahoMapsApp
 MIDlet-Jar-URL: mm-v1.jar
 MIDlet-Name: MahoMaps v1
 MIDlet-Vendor: nnproject
 MIDlet-Version: 1.0.0
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.0
+MIDlet-Icon: /icon.png
+Nokia-Scalable-Icon: /icon.svg
+Nokia-MIDlet-Scalable-Icon-1: /icon.svg
