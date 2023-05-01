@@ -2,6 +2,7 @@ package mahomaps.map;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Image;
 
 import java.io.ByteArrayOutputStream;
@@ -45,10 +46,12 @@ public class TilesProvider extends Thread {
 
 				TileId id = next;
 				next = null;
-				if (id != null)
-					download(id);
+				if (id != null) {
+					if (!loadFromCache(id))
+						download(id);
+				}
 
-			}
+			}s
 		} catch (InterruptedException e) {
 		}
 	}
@@ -82,6 +85,34 @@ public class TilesProvider extends Thread {
 					hc.close();
 				} catch (IOException e) {
 				}
+		}
+	}
+
+	private boolean loadFromCache(TileId id) {
+		FileConnection fc = null;
+		try {
+			fc = (FileConnection) Connector.open(getFileName(id), Connector.READ);
+			if (!fc.exists()) {
+				fc.close();
+				return false;
+			}
+			InputStream s = fc.openInputStream();
+			Image img = Image.createImage(s);
+			s.close();
+			fc.close();
+			fc = null;
+			TileCache tile = new TileCache(id, img);
+			cache.addElement(tile);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			if (fc != null) {
+				try {
+					fc.close();
+				} catch (IOException ex) {
+				}
+			}
+			return false;
 		}
 	}
 
