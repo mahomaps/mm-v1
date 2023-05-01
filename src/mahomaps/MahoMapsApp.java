@@ -28,6 +28,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	}
 
 	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
+		thread.interrupt();
 	}
 
 	protected void pauseApp() {
@@ -38,6 +39,14 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		tiles = new TilesProvider("ru_RU", "file:///root1/ym");
 		canvas = new MapCanvas(tiles);
 		BringMap();
+		while (true) {
+			canvas.update();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				return;
+			}
+		}
 	}
 
 	public static void BringSubScreen(Displayable screen) {
