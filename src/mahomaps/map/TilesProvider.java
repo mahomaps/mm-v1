@@ -37,8 +37,11 @@ public class TilesProvider extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				if (next == null)
-					downloadLock.wait(1000);
+				if (next == null) {
+					synchronized (downloadLock) {
+						downloadLock.wait(1000);
+					}
+				}
 
 				TileId id = next;
 				next = null;
@@ -101,7 +104,9 @@ public class TilesProvider extends Thread {
 			return cached;
 
 		next = tileId;
-		downloadLock.notifyAll();
+		synchronized (downloadLock) {
+			downloadLock.notifyAll();
+		}
 
 		return transPixel;
 	}
