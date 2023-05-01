@@ -1,0 +1,6 @@
+/bin/
+/.mtj.tmp/
+/deployed/
+build.properties
+.mtj
+.settings
