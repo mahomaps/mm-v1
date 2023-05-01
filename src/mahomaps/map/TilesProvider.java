@@ -8,6 +8,7 @@ import javax.microedition.lcdui.Image;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 
 public class TilesProvider extends Thread {
@@ -27,12 +28,16 @@ public class TilesProvider extends Thread {
 
 	private TileId next;
 
-	public TilesProvider(String lang, String localPath) {
+	public TilesProvider(String lang, String localPath) throws IOException {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
 		this.lang = lang;
 		this.localPath = localPath;
 		transPixel = Image.createRGBImage(new int[] { 0 }, 1, 1, true);
+		FileConnection fc = (FileConnection) Connector.open(localPath);
+		if (!fc.exists())
+			fc.mkdir();
+		fc.close();
 	}
 
 	public void run() {
@@ -50,14 +55,14 @@ public class TilesProvider extends Thread {
 					if (!loadFromCache(id))
 						download(id);
 				}
-
-			}s
+			}
 		} catch (InterruptedException e) {
 		}
 	}
 
 	private void download(TileId id) {
 		HttpConnection hc = null;
+		FileConnection fc = null;
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id));
 			ByteArrayOutputStream blob = new ByteArrayOutputStream((int) hc.getLength());
@@ -74,17 +79,31 @@ public class TilesProvider extends Thread {
 			hc.close();
 			hc = null;
 			byte[] blobc = blob.toByteArray();
+			blob = null;
+			fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
+			fc.create();
+			OutputStream os = fc.openOutputStream();
+			os.write(blobc);
+			os.flush();
+			os.close();
+			fc.close();
 			Image img = Image.createImage(blobc, 0, blobc.length);
 			TileCache tile = new TileCache(id, img);
 			cache.addElement(tile);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			if (hc != null)
+			if (hc != null) {
 				try {
 					hc.close();
-				} catch (IOException e) {
+				} catch (IOException ex) {
 				}
+			}
+			if (fc != null) {
+				try {
+					fc.close();
+				} catch (IOException ex) {
+				}
+			}
 		}
 	}
 

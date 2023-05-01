@@ -1,5 +1,7 @@
 package mahomaps;
 
+import java.io.IOException;
+
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
@@ -38,7 +40,12 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public void run() {
 		BringSubScreen(new Splash());
-		tiles = new TilesProvider("ru_RU", "file:///root1/ym");
+		try {
+			tiles = new TilesProvider("ru_RU", "file:///root/ym/");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 		canvas = new MapCanvas(tiles);
 		tiles.start();
 		BringMap();
