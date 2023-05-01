@@ -5,12 +5,16 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
+import mahomaps.map.TilesProvider;
+import mahomaps.screens.MapCanvas;
 import mahomaps.screens.Splash;
 
 public class MahoMapsApp extends MIDlet implements Runnable {
 
 	private static Display display;
 	private static Thread thread;
+	private static TilesProvider tiles;
+	private static MapCanvas canvas;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
@@ -31,9 +35,16 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public void run() {
 		BringSubScreen(new Splash());
+		tiles = new TilesProvider("ru_RU", "file:///root1/ym");
+		canvas = new MapCanvas(tiles);
+		BringMap();
 	}
 
-	public void BringSubScreen(Displayable screen) {
+	public static void BringSubScreen(Displayable screen) {
 		display.setCurrent(screen);
+	}
+
+	public static void BringMap() {
+		display.setCurrent(canvas);
 	}
 }
