@@ -1,6 +1,12 @@
 package mahomaps.map;
 
+import javax.microedition.io.Connector;
+import javax.microedition.io.HttpConnection;
 import javax.microedition.lcdui.Image;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class TilesProvider extends Thread {
@@ -29,6 +35,51 @@ public class TilesProvider extends Thread {
 	}
 
 	public void run() {
+		try {
+			while (true) {
+				if (next == null)
+					downloadLock.wait(1000);
+
+				TileId id = next;
+				next = null;
+				if (id != null)
+					download(id);
+
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	private void download(TileId id) {
+		HttpConnection hc = null;
+		try {
+			hc = (HttpConnection) Connector.open(getUrl(id));
+			ByteArrayOutputStream blob = new ByteArrayOutputStream((int) hc.getLength());
+			byte[] buf = new byte[8192];
+			InputStream s = hc.openInputStream();
+			while (true) {
+				int read = s.read(buf);
+				if (read == -1)
+					break;
+				blob.write(buf, 0, read);
+			}
+			buf = null;
+			s.close();
+			hc.close();
+			hc = null;
+			byte[] blobc = blob.toByteArray();
+			Image img = Image.createImage(blobc, 0, blobc.length);
+			TileCache tile = new TileCache(id, img);
+			cache.addElement(tile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (hc != null)
+				try {
+					hc.close();
+				} catch (IOException e) {
+				}
+		}
 	}
 
 	public Image getTile(TileId tileId) {
@@ -68,6 +119,10 @@ public class TilesProvider extends Thread {
 	private String getUrl(TileId tileId) {
 		return "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
 				+ tileId.y + "&z=" + tileId.zoom;
+	}
+
+	private String getFileName(TileId id) {
+		return localPath + "tile_" + id.x + "_" + id.y + "_" + id.zoom;
 	}
 
 }
