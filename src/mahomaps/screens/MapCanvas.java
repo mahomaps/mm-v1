@@ -26,11 +26,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	String[] buttons = new String[] { "geo", "-", "+" };
 
 	// STATE
-	int zoom = 0;
-	int tileX = 0;
-	int tileY = 0;
-	int xOffset = 0;
-	int yOffset = 0;
+	public int zoom = 0;
+	public int tileX = 0;
+	public int tileY = 0;
+	public int xOffset = 0;
+	public int yOffset = 0;
 	int startPx, startPy;
 	int lastPx, lastPy;
 
