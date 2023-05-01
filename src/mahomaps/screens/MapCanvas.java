@@ -3,9 +3,11 @@ package mahomaps.screens;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.GameCanvas;
 
+import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
 
 public class MapCanvas extends GameCanvas implements CommandListener {
@@ -17,6 +19,8 @@ public class MapCanvas extends GameCanvas implements CommandListener {
 	private Command settings = new Command("Настройки", Command.ITEM, 3);
 	private Command about = new Command("О программе", Command.ITEM, 4);
 	private Command moreapps = new Command("Другие программы", Command.ITEM, 5);
+
+	String[] buttons = new String[] { "geo", "-", "+" };
 
 	public MapCanvas(TilesProvider tiles) {
 		super(false);
@@ -41,7 +45,19 @@ public class MapCanvas extends GameCanvas implements CommandListener {
 	}
 
 	private void drawMap(Graphics g, int w, int h) {
-
+		int y = 0;
+		int yi=0;
+		while(y<h) {
+			int x = 0;
+			int xi=0;
+			while(x<w) {
+				g.drawImage(tiles.getTile(new TileId(xi, yi, 0)), x, y, 0);
+				x+=256;
+				xi++;
+			}
+			y+=256;
+			yi++;
+		}
 	}
 
 	private void drawOverlay(Graphics g, int w, int h) {
@@ -49,8 +65,19 @@ public class MapCanvas extends GameCanvas implements CommandListener {
 	}
 
 	private void drawUi(Graphics g, int w, int h) {
-		g.setColor(0);
-		g.drawString("ябаи-десуне", 0, 0, 0);
+		int size = 50;
+		int margin = 10;
+		int y = h;
+		for (int i = 0; i < 3; i++) {
+			y -= size;
+			y -= margin;
+			g.setGrayScale(220);
+			g.fillArc(w - size - margin, y, size, size, 0, 360);
+			g.setColor(0);
+			g.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
+			g.drawString(buttons[i], w - margin - size / 2, y + size / 2 - g.getFont().getHeight() / 2,
+					Graphics.HCENTER | Graphics.TOP);
+		}
 	}
 
 	public void update() {
