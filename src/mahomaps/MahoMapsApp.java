@@ -66,4 +66,30 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	public static void BringMap() {
 		display.setCurrent(canvas);
 	}
+
+	private final static double E = 2.71828182845904523536028d;
+
+	public static double ln(double n) {
+		int a = 0, b;
+		double c, d, e, f;
+		if (n < 0)
+			c = Double.NaN;
+		else if (n != 0) {
+			for (; (d = n / E) > 1; ++a, n = d)
+				;
+			for (; (d = n * E) < 1; --a, n = d)
+				;
+			d = 1d / (n - 1);
+			d = d + d + 1;
+			e = d * d;
+			c = 0;
+			f = 1;
+			for (b = 1; c + 0.00000001d < (c += 1d / (b * f)); b += 2) {
+				f *= e;
+			}
+			c *= 2 / d;
+		} else
+			c = Double.NEGATIVE_INFINITY;
+		return a + c;
+	}
 }
