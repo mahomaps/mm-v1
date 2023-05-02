@@ -6,9 +6,9 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
-import mahomaps.map.Rect;
-import mahomaps.map.TileId;
-import mahomaps.map.TilesProvider;
+import mahomaps.map.*;
+
+import java.util.Vector;
 
 public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
@@ -33,6 +33,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public int yOffset = 0;
 	int startPx, startPy;
 	int lastPx, lastPy;
+	public final Vector points = new Vector();
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -79,6 +80,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			y += 256;
 			yi++;
 		}
+
+		for (int i = 0; i < points.size(); i++) {
+			g.setColor(255, 0, 0);
+			Geopoint p = (Geopoint) points.elementAt(i);
+			g.fillRect(p.GetScreenX(this) - 5, p.GetScreenY(this) - 5, 10, 10);
+		}
 		g.translate(-(w >> 1), -(h >> 1));
 	}
 
@@ -86,6 +93,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		g.setColor(0);
 		g.setFont(Font.getFont(0, 0, 8));
 		g.drawString("x " + tileX + " y " + tileY + " z " + zoom, 5, 5, 0);
+
+		int y = 20;
+		for (int i = 0; i < points.size(); i++) {
+			Geopoint p = (Geopoint) points.elementAt(i);
+			g.drawString(p.GetScreenX(this) + " " + p.GetScreenY(this), 5, y, 0);
+			y += 15;
+		}
 	}
 
 	private void drawUi(Graphics g, int w, int h) {

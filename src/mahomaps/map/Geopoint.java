@@ -25,7 +25,7 @@ public class Geopoint {
 		return (int) tile;
 	}
 
-	public double GetScreenY(MapCanvas map) {
+	public int GetScreenY(MapCanvas map) {
 		double latR = Math.toRadians(lat);
 		double tg = Math.tan(latR / 2 + Math.PI / 4);
 		double linear = MahoMapsApp.ln(tg);
@@ -37,7 +37,7 @@ public class Geopoint {
 		tile -= map.tileY;
 		tile *= 256;
 		tile += map.yOffset;
-		return tile;
+		return (int) tile;
 	}
 
 	public static final int LOCATION = 0;
