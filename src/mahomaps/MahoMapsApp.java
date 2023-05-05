@@ -2,6 +2,7 @@ package mahomaps;
 
 import java.io.IOException;
 
+import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
@@ -17,6 +18,9 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	private static Thread thread;
 	private static TilesProvider tiles;
 	private static MapCanvas canvas;
+	private static MIDlet midlet;
+
+	public static String version;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
@@ -24,6 +28,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	protected void startApp() throws MIDletStateChangeException {
 		if (thread == null) {
+			midlet = this;
 			thread = new Thread(this);
 			thread.start();
 		}
@@ -40,6 +45,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public void run() {
 		BringSubScreen(new Splash());
+		version = getAppProperty("MIDlet-Version");
 		try {
 			tiles = new TilesProvider("ru_RU", "file:///root/ym/");
 		} catch (IOException e) {
@@ -65,6 +71,13 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public static void BringMap() {
 		display.setCurrent(canvas);
+	}
+
+	public static void open(String link) {
+		try {
+			midlet.platformRequest(link);
+		} catch (ConnectionNotFoundException e) {
+		}
 	}
 
 	private final static double E = 2.71828182845904523536028d;
