@@ -6,6 +6,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.map.*;
 
 import java.util.Vector;
@@ -215,7 +216,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-
+		if (c == about) {
+			MahoMapsApp.BringSubScreen(new AboutScreen());
+		}
 	}
 
 }
