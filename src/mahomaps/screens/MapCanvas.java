@@ -90,7 +90,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		for (int i = 0; i < points.size(); i++) {
 			g.setColor(255, 0, 0);
 			Geopoint p = (Geopoint) points.elementAt(i);
-			g.fillRect(p.GetScreenX(this) - 5, p.GetScreenY(this) - 5, 10, 10);
+			int px = p.GetScreenX(this);
+			int py = p.GetScreenY(this);
+			g.drawLine(px - 5, py, px - 1, py);
+			g.drawLine(px, py - 5, px, py - 1);
+			g.drawLine(px + 1, py, px + 5, py);
+			g.drawLine(px, py + 1, px, py + 5);
+			g.drawRect(px - 6, py - 6, 12, 12);
 		}
 		g.translate(-(w >> 1), -(h >> 1));
 	}
