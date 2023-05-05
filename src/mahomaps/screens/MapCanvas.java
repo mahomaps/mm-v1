@@ -218,6 +218,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		if (c == about) {
 			MahoMapsApp.BringSubScreen(new AboutScreen());
+		} else if (c == moreapps) {
+			MahoMapsApp.BringSubScreen(new OtherAppsScreen());
 		}
 	}
 
