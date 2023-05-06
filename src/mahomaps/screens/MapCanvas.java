@@ -109,6 +109,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		g.setFont(Font.getFont(0, 0, 8));
 		if (Settings.drawTileInfo)
 			g.drawString("x " + tileX + " y " + tileY + " zoom=" + zoom, 5, 5, 0);
+
+		if (geo != null) {
+			g.drawString(GeoUpdateThread.states[geo.state], 5, 25, 0);
+			if (geo.state == GeoUpdateThread.STATE_OK) {
+				g.drawString(geolocation.lat + " " + geolocation.lon, 5, 45, 0);
+			}
+		}
 	}
 
 	private void drawUi(Graphics g, int w, int h) {
@@ -126,11 +133,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					g.setColor(0);
 				} else {
 					if (geo.state == GeoUpdateThread.STATE_OK) {
-						g.setColor(0, 127, 0);
-					} else if (geo.state == GeoUpdateThread.STATE_ERROR) {
-						g.setColor(127, 0, 0);
+						g.setColor(0, 200, 0);
+					} else if (geo.state == GeoUpdateThread.STATE_PENDING) {
+						g.setColor(0, 0, 200);
 					} else {
-						g.setColor(0, 0, 255);
+						g.setColor(255, 0, 0);
 					}
 				}
 			}

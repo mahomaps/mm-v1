@@ -89,15 +89,15 @@ public class GeoUpdateThread extends Thread {
 	/**
 	 * Гео не поддерживается устройством.
 	 */
-	public final static int STATE_UNSUPPORTED = -3;
+	public final static int STATE_UNSUPPORTED = 4;
 	/**
 	 * К гео запрещён доступ, либо оно отключено.
 	 */
-	public final static int STATE_UNAVAILABLE = -2;
+	public final static int STATE_UNAVAILABLE = 3;
 	/**
 	 * Геопозиция доступна, однако получить её не удалось.
 	 */
-	public final static int STATE_ERROR = -1;
+	public final static int STATE_ERROR = 2;
 	/**
 	 * Геопозиция определяется, но ещё не известна.
 	 */
@@ -106,6 +106,9 @@ public class GeoUpdateThread extends Thread {
 	 * Геопозиция известна.
 	 */
 	public final static int STATE_OK = 1;
+
+	public final static String[] states = new String[] { "Ожидание сигнала", "Готово", "Ошибка", "Недоступно",
+			"Не поддерживается" };
 
 	// для безопасных вызовов
 	class LocationAPI {
