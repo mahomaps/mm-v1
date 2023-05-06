@@ -6,18 +6,16 @@ import javax.microedition.lcdui.Image;
 
 public class TileCache extends TileId {
 
-	public final Image img;
-	public volatile int state;
+	public Image img;
+	public volatile int state = STATE_PENDING;
 	public int unuseCount;
 
-	public TileCache(int x, int y, int zoom, Image img) {
+	public TileCache(int x, int y, int zoom) {
 		super(x, y, zoom);
-		this.img = img;
 	}
 
-	public TileCache(TileId id, Image img) {
+	public TileCache(TileId id) {
 		super(id.x, id.y, id.zoom);
-		this.img = img;
 	}
 
 	public boolean is(TileId id) {
@@ -34,7 +32,7 @@ public class TileCache extends TileId {
 		} else if (state == STATE_LOADING) {
 			g.setColor(0, 127, 0);
 			g.drawString("Загружаем...", tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
-		} else if(state == STATE_ERROR) {
+		} else if (state == STATE_ERROR) {
 			g.setColor(255, 0, 0);
 			g.drawString("Ошибка загрузки", tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
 		} else {
@@ -47,8 +45,9 @@ public class TileCache extends TileId {
 		g.drawString("tile " + this.x + " " + this.y, tx + 1, ty + 1, 0);
 	}
 
-	public final int STATE_PENDING = 0;
-	public final int STATE_LOADING = 1;
-	public final int STATE_READY = 0;
-	public final int STATE_ERROR = 3;
+	public static final int STATE_PENDING = 0;
+	public static final int STATE_LOADING = 1;
+	public static final int STATE_READY = 2;
+	public static final int STATE_ERROR = 3;
+	public static final int STATE_UNLOADED = 4;
 }

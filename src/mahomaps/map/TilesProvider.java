@@ -27,6 +27,10 @@ public class TilesProvider extends Thread {
 	 * Кэш всех загруженых плиток. Данный список должен изменяться ТОЛЬКО из потока
 	 * цикла отрисовки. Содержимое объектов списка должно изменяться ТОЛЬКО из
 	 * потока скачивания тайлов.
+	 * <hr>
+	 * Блокировки: <br>
+	 * Вектор - перебор объектов для удаления или для выбора для скачивание <br>
+	 * Объект вектора - изменения {@link TileCache#state} или удаление из вектора.
 	 */
 	private Vector cache = new Vector();
 
@@ -35,8 +39,6 @@ public class TilesProvider extends Thread {
 	private final Object downloadLock = new Object();
 
 	private boolean paintState = false;
-
-	private TileId next;
 
 	public TilesProvider(String lang, String localPath) throws IOException {
 		if (lang == null)
@@ -53,24 +55,53 @@ public class TilesProvider extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				if (next == null) {
-					synchronized (downloadLock) {
-						downloadLock.wait(1000);
+				int idleCount = 0;
+				int errCount = 0;
+				int i = -1;
+				while (true) {
+					TileCache tc = null;
+					synchronized (cache) {
+						i++;
+						int s = cache.size();
+						if (i >= s)
+							break;
+						tc = (TileCache) cache.elementAt(i);
 					}
+					synchronized (tc) {
+						if (tc.state == TileCache.STATE_READY || tc.state == TileCache.STATE_UNLOADED) {
+							idleCount++;
+							continue;
+						}
+						tc.state = TileCache.STATE_LOADING;
+					}
+
+					Image img = download(tc);
+					synchronized (tc) {
+						if (img == null) {
+							tc.state = TileCache.STATE_ERROR;
+							errCount++;
+						} else {
+							tc.img = img;
+							tc.state = TileCache.STATE_READY;
+						}
+					}
+
 				}
 
-				TileId id = next;
-				next = null;
-				if (id != null) {
-					if (!loadFromCache(id))
-						download(id);
+				if (errCount != 0)
+					continue;
+				if (idleCount != cache.size())
+					continue;
+				synchronized (downloadLock) {
+					downloadLock.wait(4000);
 				}
+
 			}
 		} catch (InterruptedException e) {
 		}
 	}
 
-	private void download(TileId id) {
+	private Image download(TileId id) {
 		HttpConnection hc = null;
 		FileConnection fc = null;
 		try {
@@ -98,8 +129,7 @@ public class TilesProvider extends Thread {
 			os.close();
 			fc.close();
 			Image img = Image.createImage(blobc, 0, blobc.length);
-			TileCache tile = new TileCache(id, img);
-			cache.addElement(tile);
+			return img;
 		} catch (IOException e) {
 			e.printStackTrace();
 			if (hc != null) {
@@ -115,24 +145,29 @@ public class TilesProvider extends Thread {
 				}
 			}
 		}
+		return null;
 	}
 
-	private boolean loadFromCache(TileId id) {
+	/**
+	 * Пытается прочесть изображение тайла из ФС.
+	 * 
+	 * @param id Тайл для поиска.
+	 * @return Изображение, если тайл сохранён, иначе null.
+	 */
+	private Image tryLoadFromFS(TileId id) {
 		FileConnection fc = null;
 		try {
 			fc = (FileConnection) Connector.open(getFileName(id), Connector.READ);
 			if (!fc.exists()) {
 				fc.close();
-				return false;
+				return null;
 			}
 			InputStream s = fc.openInputStream();
 			Image img = Image.createImage(s);
 			s.close();
 			fc.close();
 			fc = null;
-			TileCache tile = new TileCache(id, img);
-			cache.addElement(tile);
-			return true;
+			return img;
 		} catch (IOException e) {
 			e.printStackTrace();
 			if (fc != null) {
@@ -141,7 +176,7 @@ public class TilesProvider extends Thread {
 				} catch (IOException ex) {
 				}
 			}
-			return false;
+			return null;
 		}
 	}
 
@@ -170,9 +205,18 @@ public class TilesProvider extends Thread {
 			throw new IllegalStateException("Paint was not performed.");
 		paintState = false;
 
-		for (int i = cache.size() - 1; i > -1; i--) {
-			if (((TileCache) cache.elementAt(i)).unuseCount > 100)
-				cache.removeElementAt(i);
+		synchronized (cache) {
+			for (int i = cache.size() - 1; i > -1; i--) {
+				TileCache t = (TileCache) cache.elementAt(i);
+				if (t.unuseCount > 100) {
+					synchronized (t) {
+						if (t.state != TileCache.STATE_LOADING) {
+							t.state = TileCache.STATE_UNLOADED;
+							cache.removeElementAt(i);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -198,21 +242,39 @@ public class TilesProvider extends Thread {
 
 		tileId = new TileId(x, tileId.y, tileId.zoom);
 
-		TileCache cached = tryGetFromCache(tileId);
+		TileCache cached = tryGetExistingFromCache(tileId);
 		if (cached != null) {
 			cached.unuseCount = 0;
 			return cached;
 		}
 
-		next = tileId;
+		if (Thread.currentThread() != MahoMapsApp.thread)
+			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
+		if (!paintState)
+			throw new IllegalStateException("Paint isn't performing now.");
+
+		cached = new TileCache(tileId);
+		Image img = tryLoadFromFS(tileId);
+		if (img != null) {
+			cached.img = img;
+			cached.state = TileCache.STATE_READY;
+		}
+		cache.addElement(cached);
+
 		synchronized (downloadLock) {
 			downloadLock.notifyAll();
 		}
 
-		return null;
+		return cached;
 	}
 
-	private TileCache tryGetFromCache(TileId id) {
+	/**
+	 * Возвращает объект кэша плитки из {@link #cache}.
+	 * 
+	 * @param id Идентификатор требуемой плитки.
+	 * @return Объект, если существует, иначе null.
+	 */
+	private TileCache tryGetExistingFromCache(TileId id) {
 		for (int i = 0; i < cache.size(); i++) {
 			TileCache tile = (TileCache) cache.elementAt(i);
 			if (tile.is(id))
