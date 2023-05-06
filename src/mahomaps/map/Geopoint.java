@@ -26,18 +26,17 @@ public class Geopoint {
 	}
 
 	public int GetScreenY(MapCanvas map) {
-		double latR = Math.toRadians(lat);
+		double latR = lat * Math.PI / 180d;
 		double tg = Math.tan(latR / 2 + Math.PI / 4);
 		double linear = MahoMapsApp.ln(tg);
-
-		double absLinear = (flipPoint * 2) - linear;
+		double linearLocal = linear * coef; // [-128; 128]
+		double linearAbs = 128 - linearLocal; // [0; 256]
 
 		int tilesCount = 1 << map.zoom;
-		double tile = (tilesCount * absLinear * coef) / 256d;
-		tile -= map.tileY;
-		tile *= 256;
-		tile += map.yOffset;
-		return (int) tile;
+
+		double py = (tilesCount * linearAbs) - (map.tileY * 256) + map.yOffset;
+
+		return (int) py;
 	}
 
 	public static final int LOCATION = 0;
@@ -47,7 +46,5 @@ public class Geopoint {
 	public static final int POI_ATTENTION = 4;
 
 	public static final double PI = 3.14159265358979323846;
-	public static final double LOG2 = 0.6931471805599453;
-	public static final double flipPoint = 1.48404722d;
-	public static final double coef = 40.8d;
+	public static final double coef = 40.584111828639d;
 }
