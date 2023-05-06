@@ -191,11 +191,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			geo.request();
 		}
 	}
-	
-	public void updateGeo() {
-		// TODO
-		update();
-	}
 
 	// INPUT
 
