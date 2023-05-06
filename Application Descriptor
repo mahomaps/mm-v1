@@ -6,5 +6,6 @@ MIDlet-Version: 1.0.0
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.0
 MIDlet-Icon: /icon.png
+Nokia-MIDlet-Background-Event: pause
 Nokia-Scalable-Icon: /icon.svg
 Nokia-MIDlet-Scalable-Icon-1: /icon.svg
