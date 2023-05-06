@@ -6,6 +6,7 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -102,6 +103,9 @@ public class TilesProvider extends Thread {
 	}
 
 	private Image download(TileId id) {
+		if (!Settings.allowDownload)
+			return null;
+
 		HttpConnection hc = null;
 		FileConnection fc = null;
 		try {

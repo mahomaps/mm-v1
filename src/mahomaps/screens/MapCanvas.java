@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 import mahomaps.map.*;
 
 import java.util.Vector;
@@ -103,7 +104,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private void drawOverlay(Graphics g, int w, int h) {
 		g.setColor(0);
 		g.setFont(Font.getFont(0, 0, 8));
-		g.drawString("x " + tileX + " y " + tileY + " z " + zoom, 5, 5, 0);
+		if (Settings.drawTileInfo)
+			g.drawString("x " + tileX + " y " + tileY + " z " + zoom, 5, 5, 0);
+
+		if (!Settings.drawPointsInfo)
+			return;
 
 		int y = 20;
 		for (int i = 0; i < points.size(); i++) {

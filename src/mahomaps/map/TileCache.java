@@ -4,6 +4,8 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import mahomaps.Settings;
+
 public class TileCache extends TileId {
 
 	public Image img;
@@ -39,10 +41,12 @@ public class TileCache extends TileId {
 			g.setGrayScale(0);
 			g.drawString("В очереди", tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
 		}
-		g.drawRect(tx, ty, 255, 255);
-		g.fillRect(tx + 125, ty + 127, 6, 2);
-		g.fillRect(tx + 127, ty + 125, 2, 6);
-		g.drawString("tile " + this.x + " " + this.y, tx + 1, ty + 1, 0);
+		if (Settings.drawTileInfo) {
+			g.drawRect(tx, ty, 255, 255);
+			g.fillRect(tx + 125, ty + 127, 6, 2);
+			g.fillRect(tx + 127, ty + 125, 2, 6);
+			g.drawString("tile " + this.x + " " + this.y, tx + 1, ty + 1, 0);
+		}
 	}
 
 	public static final int STATE_PENDING = 0;
