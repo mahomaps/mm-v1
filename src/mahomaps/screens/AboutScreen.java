@@ -26,9 +26,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		setCommandListener(this);
 		addCommand(back);
 
-		append("MahoMaps");
-		append("Версия 1." + MahoMapsApp.version);
-		append("J2ME клиент растровых Яндекс.Карт");
+		append(new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version));
 		try {
 			append(Image.createImage("/icon.png"));
 		} catch (IOException e) {
