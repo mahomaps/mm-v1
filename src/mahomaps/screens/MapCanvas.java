@@ -188,8 +188,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
 		} else {
-			// TODO bring position to center of screen
+			geo.request();
 		}
+	}
+	
+	public void updateGeo() {
+		// TODO
+		update();
 	}
 
 	// INPUT
