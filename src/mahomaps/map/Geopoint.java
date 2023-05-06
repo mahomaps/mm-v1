@@ -1,5 +1,7 @@
 package mahomaps.map;
 
+import javax.microedition.lcdui.Graphics;
+
 import mahomaps.MahoMapsApp;
 import mahomaps.screens.MapCanvas;
 
@@ -39,11 +41,34 @@ public class Geopoint {
 		return (int) py;
 	}
 
-	public static final int LOCATION = 0;
-	public static final int ROUTE_A = 1;
-	public static final int ROUTE_B = 2;
-	public static final int POI_SEARCH = 3;
-	public static final int POI_ATTENTION = 4;
+	public void paint(Graphics g, MapCanvas map) {
+		int px = GetScreenX(map);
+		int py = GetScreenY(map);
+		if (type == POI_SELECT || type == POI_SEARCH) {
+			g.setColor(255, 0, 0);
+			g.drawLine(px - 5, py, px - 1, py);
+			g.drawLine(px, py - 5, px, py - 1);
+			g.drawLine(px + 1, py, px + 5, py);
+			g.drawLine(px, py + 1, px, py + 5);
+			g.drawRect(px - 6, py - 6, 12, 12);
+		} else if (type == LOCATION) {
+			g.setColor(255, 0, 0);
+			g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
+			g.setColor(-1);
+			g.drawChar('Я', px, py - g.getFont().getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
+		} else if (type == ROUTE_A || type == ROUTE_B) {
+			g.setColor(0, 0, 255);
+			g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
+			g.setColor(-1);
+			g.drawChar('x', px, py - g.getFont().getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
+		}
+	}
+
+	public static final int POI_SELECT = 0;
+	public static final int POI_SEARCH = 1;
+	public static final int LOCATION = 2;
+	public static final int ROUTE_A = 3;
+	public static final int ROUTE_B = 4;
 
 	public static final double PI = 3.14159265358979323846;
 	public static final double coef = 40.584111828639d;
