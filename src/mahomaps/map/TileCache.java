@@ -43,9 +43,13 @@ public class TileCache extends TileId {
 		}
 		if (Settings.drawTileInfo) {
 			g.drawRect(tx, ty, 255, 255);
+			g.fillRect(tx + 125, ty + 63, 6, 2);
+			g.fillRect(tx + 127, ty + 61, 2, 6);
 			g.fillRect(tx + 125, ty + 127, 6, 2);
 			g.fillRect(tx + 127, ty + 125, 2, 6);
-			g.drawString("tile " + this.x + " " + this.y, tx + 1, ty + 1, 0);
+			g.fillRect(tx + 125, ty + 191, 6, 2);
+			g.fillRect(tx + 127, ty + 189, 2, 6);
+			g.drawString("x=" + this.x + " y=" + this.y, tx + 1, ty + 1, 0);
 		}
 	}
 
