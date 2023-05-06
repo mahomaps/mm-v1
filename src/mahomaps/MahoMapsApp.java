@@ -38,6 +38,8 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		thread.interrupt();
 		if (tiles != null)
 			tiles.interrupt();
+		if (canvas != null)
+			canvas.dispose();
 	}
 
 	protected void pauseApp() {

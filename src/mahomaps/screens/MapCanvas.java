@@ -27,6 +27,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	String[] buttons = new String[] { "geo", "-", "+" };
 
+	private GeoUpdateThread geo = null;
+	private final Geopoint geolocation;
+
 	// STATE
 	public int zoom = 0;
 	public int tileX = 0;
@@ -46,6 +49,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		addCommand(about);
 		addCommand(moreapps);
 		setCommandListener(this);
+		geolocation = new Geopoint(0, 0);
+		geolocation.type = Geopoint.LOCATION;
 	}
 
 	// DRAW SECTION
@@ -87,15 +92,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 
 		for (int i = 0; i < points.size(); i++) {
-			g.setColor(255, 0, 0);
 			Geopoint p = (Geopoint) points.elementAt(i);
-			int px = p.GetScreenX(this);
-			int py = p.GetScreenY(this);
-			g.drawLine(px - 5, py, px - 1, py);
-			g.drawLine(px, py - 5, px, py - 1);
-			g.drawLine(px + 1, py, px + 5, py);
-			g.drawLine(px, py + 1, px, py + 5);
-			g.drawRect(px - 6, py - 6, 12, 12);
+			p.paint(g, this);
+		}
+		if (geo != null && geo.state == GeoUpdateThread.STATE_OK) {
+			geolocation.paint(g, this);
 		}
 		g.translate(-(w >> 1), -(h >> 1));
 		tiles.EndMapPaint();
@@ -167,16 +168,21 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		yOffset /= 2;
 	}
 
+	public void geo() {
+		if (geo == null) {
+			geo = new GeoUpdateThread(geolocation, this);
+			geo.start();
+		} else {
+			// TODO bring position to center of screen
+		}
+	}
+
 	// INPUT
 
 	protected void keyPressed(int keyCode) {
-		// TODO Auto-generated method stub
-		super.keyPressed(keyCode);
 	}
 
 	protected void keyReleased(int keyCode) {
-		// TODO Auto-generated method stub
-		super.keyReleased(keyCode);
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
@@ -219,14 +225,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			return;
 		int w = getWidth();
 		int h = getHeight();
+		// TODO cache tap areas
 		Rect plus = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 3, buttonSize,
 				buttonSize);
 		Rect minus = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 2, buttonSize,
 				buttonSize);
+		Rect geo = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin), buttonSize, buttonSize);
 		if (plus.containsBoth(x, y, startPx, startPy)) {
 			zoomIn();
 		} else if (minus.containsBoth(x, y, startPx, startPy)) {
 			zoomOut();
+		} else if (geo.containsBoth(x, y, startPx, startPy)) {
+			geo();
 		}
 	}
 
@@ -236,6 +246,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		} else if (c == moreapps) {
 			MahoMapsApp.BringSubScreen(new OtherAppsScreen());
 		}
+	}
+
+	public void dispose() {
+		if (geo != null)
+			geo.interrupt();
 	}
 
 }
