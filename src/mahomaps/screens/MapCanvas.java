@@ -126,7 +126,22 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			y -= buttonMargin;
 			g.setGrayScale(220);
 			g.fillArc(w - buttonSize - buttonMargin, y, buttonSize, buttonSize, 0, 360);
-			g.setColor(0);
+			if (i != 0) {
+				g.setColor(0);
+			} else {
+				// geo
+				if (geo == null) {
+					g.setColor(0);
+				} else {
+					if (geo.state == GeoUpdateThread.STATE_OK) {
+						g.setColor(0, 127, 0);
+					} else if (geo.state == GeoUpdateThread.STATE_ERROR) {
+						g.setColor(127, 0, 0);
+					} else {
+						g.setColor(0, 0, 255);
+					}
+				}
+			}
 			g.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
 			g.drawString(buttons[i], w - buttonMargin - buttonSize / 2,
 					y + buttonSize / 2 - g.getFont().getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
