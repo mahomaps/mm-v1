@@ -46,11 +46,13 @@ public class GeoUpdateThread extends Thread {
 			positionPoint.lon = coordinates[1];
 			state = STATE_OK;
 		}
+		
 		try {
 			while (true) {
 				waiting = false;
 				try {
-					coordinates = locationAPI.getNewCoordinates(20);
+					// state = STATE_PENDING;
+					coordinates = locationAPI.getNewCoordinates(-1);
 					if(coordinates[0] != 0 && coordinates[1] != 0) {
 						positionPoint.lat = coordinates[0];
 						positionPoint.lon = coordinates[1];
@@ -66,7 +68,7 @@ public class GeoUpdateThread extends Thread {
 				}
 				waiting = true;
 				synchronized(requestLock) {
-					requestLock.wait();
+					requestLock.wait(30000);
 				}
 			}
 		} catch(InterruptedException e) {
