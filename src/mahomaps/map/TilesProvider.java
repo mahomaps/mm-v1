@@ -135,12 +135,20 @@ public class TilesProvider extends Thread {
 		}
 	}
 
-	public Image getTile(TileId tileId) {
+	/**
+	 * Возвращает объект кэша плитки для отрисовки.
+	 *
+	 * @param tileId Идентификатор требуемой плитки.
+	 * @return Объект кэша плитки в любом из возможных состояний. <b>Может вернуть
+	 *         null</b> если координаты плитки не находятся в пределах карты
+	 *         (например, Y отрицательный).
+	 */
+	public TileCache getTile(TileId tileId) {
 		int max = 0x1 << tileId.zoom;
 		if (tileId.y < 0)
-			return transPixel;
+			return null;
 		if (tileId.y >= max)
-			return transPixel;
+			return null;
 		int x = tileId.x;
 		while (x < 0)
 			x += max;
@@ -149,7 +157,7 @@ public class TilesProvider extends Thread {
 
 		tileId = new TileId(x, tileId.y, tileId.zoom);
 
-		Image cached = tryGetFromCache(tileId);
+		TileCache cached = tryGetFromCache(tileId);
 		if (cached != null)
 			return cached;
 
@@ -158,14 +166,14 @@ public class TilesProvider extends Thread {
 			downloadLock.notifyAll();
 		}
 
-		return transPixel;
+		return null;
 	}
 
-	private Image tryGetFromCache(TileId id) {
+	private TileCache tryGetFromCache(TileId id) {
 		for (int i = 0; i < cache.size(); i++) {
 			TileCache tile = (TileCache) cache.elementAt(i);
 			if (tile.is(id))
-				return tile.img;
+				return tile;
 		}
 
 		return null;

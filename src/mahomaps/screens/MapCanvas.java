@@ -74,12 +74,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			int x = xOffset - trX * 256;
 			int xi = tileX - trX;
 			while (x < w / 2) {
-				g.drawImage(tiles.getTile(new TileId(xi, yi, zoom)), x, y, 0);
-				g.setColor(0, 0, 255);
-				g.drawRect(x, y, 255, 255);
-				g.fillRect(x + 125, y + 127, 6, 2);
-				g.fillRect(x + 127, y + 125, 2, 6);
-				g.drawString("tile " + xi + " " + yi, x + 1, y + 1, 0);
+				TileCache tile = tiles.getTile(new TileId(xi, yi, zoom));
+				if (tile != null)
+					tile.paint(g, x, y);
 				x += 256;
 				xi++;
 			}
