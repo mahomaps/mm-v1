@@ -15,7 +15,7 @@ import mahomaps.screens.Splash;
 public class MahoMapsApp extends MIDlet implements Runnable {
 
 	private static Display display;
-	private static Thread thread;
+	public static Thread thread;
 	private static TilesProvider tiles;
 	private static MapCanvas canvas;
 	private static MIDlet midlet;

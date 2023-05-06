@@ -5,6 +5,8 @@ import javax.microedition.io.HttpConnection;
 import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Image;
 
+import mahomaps.MahoMapsApp;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +15,7 @@ import java.util.*;
 
 public class TilesProvider extends Thread {
 
+	private static final String INVALID_THREAD_ERR = "Map paint can be performed only from update thread.";
 	public final String lang;
 	/**
 	 * Path to the local folder with tiles. Must be with trailing slash and with
@@ -20,11 +23,18 @@ public class TilesProvider extends Thread {
 	 */
 	public final String localPath;
 
+	/**
+	 * Кэш всех загруженых плиток. Данный список должен изменяться ТОЛЬКО из потока
+	 * цикла отрисовки. Содержимое объектов списка должно изменяться ТОЛЬКО из
+	 * потока скачивания тайлов.
+	 */
 	private Vector cache = new Vector();
 
 	private final Image transPixel;
 
 	private final Object downloadLock = new Object();
+
+	private boolean paintState = false;
 
 	private TileId next;
 
@@ -136,6 +146,37 @@ public class TilesProvider extends Thread {
 	}
 
 	/**
+	 * Выполняет операции, необходимые перед очередной отрисовкой.
+	 */
+	public void BeginMapPaint() {
+		if (Thread.currentThread() != MahoMapsApp.thread)
+			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
+		if (paintState)
+			throw new IllegalStateException("Paint is already in progress.");
+		paintState = true;
+
+		for (int i = 0; i < cache.size(); i++) {
+			((TileCache) cache.elementAt(i)).unuseCount++;
+		}
+	}
+
+	/**
+	 * Выполняет операции, необходимые после очередной отрисовки.
+	 */
+	public void EndMapPaint() {
+		if (Thread.currentThread() != MahoMapsApp.thread)
+			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
+		if (!paintState)
+			throw new IllegalStateException("Paint was not performed.");
+		paintState = false;
+
+		for (int i = cache.size() - 1; i > -1; i--) {
+			if (((TileCache) cache.elementAt(i)).unuseCount > 100)
+				cache.removeElementAt(i);
+		}
+	}
+
+	/**
 	 * Возвращает объект кэша плитки для отрисовки.
 	 *
 	 * @param tileId Идентификатор требуемой плитки.
@@ -158,8 +199,10 @@ public class TilesProvider extends Thread {
 		tileId = new TileId(x, tileId.y, tileId.zoom);
 
 		TileCache cached = tryGetFromCache(tileId);
-		if (cached != null)
+		if (cached != null) {
+			cached.unuseCount = 0;
 			return cached;
+		}
 
 		next = tileId;
 		synchronized (downloadLock) {

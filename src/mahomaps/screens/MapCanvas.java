@@ -60,6 +60,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	private void drawMap(Graphics g, int w, int h) {
+		tiles.BeginMapPaint();
 		g.translate(w >> 1, h >> 1);
 		int trX = 1;
 		while (trX * 256 < (w >> 1))
@@ -96,6 +97,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			g.drawRect(px - 6, py - 6, 12, 12);
 		}
 		g.translate(-(w >> 1), -(h >> 1));
+		tiles.EndMapPaint();
 	}
 
 	private void drawOverlay(Graphics g, int w, int h) {
