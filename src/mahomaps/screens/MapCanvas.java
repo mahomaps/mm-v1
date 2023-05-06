@@ -68,6 +68,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private void drawMap(Graphics g, int w, int h) {
 		tiles.BeginMapPaint();
 		g.translate(w >> 1, h >> 1);
+
 		int trX = 1;
 		while (trX * 256 < (w >> 1))
 			trX++;
@@ -98,6 +99,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (geo != null && geo.state == GeoUpdateThread.STATE_OK) {
 			geolocation.paint(g, this);
 		}
+
 		g.translate(-(w >> 1), -(h >> 1));
 		tiles.EndMapPaint();
 	}
@@ -106,17 +108,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		g.setColor(0);
 		g.setFont(Font.getFont(0, 0, 8));
 		if (Settings.drawTileInfo)
-			g.drawString("x " + tileX + " y " + tileY + " z " + zoom, 5, 5, 0);
-
-		if (!Settings.drawPointsInfo)
-			return;
-
-		int y = 20;
-		for (int i = 0; i < points.size(); i++) {
-			Geopoint p = (Geopoint) points.elementAt(i);
-			g.drawString(p.GetScreenX(this) + " " + p.GetScreenY(this), 5, y, 0);
-			y += 15;
-		}
+			g.drawString("x " + tileX + " y " + tileY + " zoom=" + zoom, 5, 5, 0);
 	}
 
 	private void drawUi(Graphics g, int w, int h) {
