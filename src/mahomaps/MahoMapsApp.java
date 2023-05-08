@@ -11,6 +11,7 @@ import javax.microedition.midlet.MIDletStateChangeException;
 import mahomaps.map.Geopoint;
 import mahomaps.map.TilesProvider;
 import mahomaps.screens.MapCanvas;
+import mahomaps.screens.MenuScreen;
 import mahomaps.screens.Splash;
 
 public class MahoMapsApp extends MIDlet implements Runnable {
@@ -19,6 +20,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	public static Thread thread;
 	private static TilesProvider tiles;
 	private static MapCanvas canvas;
+	private static MenuScreen menu;
 	private static MIDlet midlet;
 
 	public static String version;
@@ -56,6 +58,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 			e.printStackTrace();
 			return;
 		}
+		menu = new MenuScreen();
 		canvas = new MapCanvas(tiles);
 		tiles.start();
 		canvas.points.addElement(new Geopoint(85, 15d));
@@ -80,6 +83,10 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public static void BringMap() {
 		display.setCurrent(canvas);
+	}
+
+	public static void BringMenu() {
+		display.setCurrent(menu);
 	}
 
 	public static void open(String link) {

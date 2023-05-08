@@ -46,7 +46,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
-			MahoMapsApp.BringMap();
+			MahoMapsApp.BringMenu();
 		}
 	}
 

@@ -43,7 +43,7 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
-			MahoMapsApp.BringMap();
+			MahoMapsApp.BringMenu();
 		}
 	}
 
