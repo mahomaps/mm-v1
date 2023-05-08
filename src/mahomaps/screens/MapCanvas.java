@@ -1,31 +1,27 @@
 package mahomaps.screens;
 
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
+import java.util.Vector;
+
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
-import mahomaps.map.*;
+import mahomaps.map.GeoUpdateThread;
+import mahomaps.map.Geopoint;
+import mahomaps.map.Rect;
+import mahomaps.map.TileCache;
+import mahomaps.map.TileId;
+import mahomaps.map.TilesProvider;
 
-import java.util.Vector;
-
-public class MapCanvas extends MultitouchCanvas implements CommandListener {
+public class MapCanvas extends MultitouchCanvas {
 
 	public final int buttonSize = 50;
 	public final int buttonMargin = 10;
 
 	private TilesProvider tiles;
-	private Command back = new Command("Назад", Command.BACK, 0);
-	private Command routes = new Command("Маршрут", Command.ITEM, 1);
-	private Command search = new Command("Поиск", Command.ITEM, 2);
-	private Command settings = new Command("Настройки", Command.ITEM, 3);
-	private Command about = new Command("О программе", Command.ITEM, 4);
-	private Command moreapps = new Command("Другие программы", Command.ITEM, 5);
 
-	String[] buttons = new String[] { "geo", "-", "+" };
+	String[] buttons = new String[] { "geo", "-", "+", "menu" };
 
 	private GeoUpdateThread geo = null;
 	private final Geopoint geolocation;
@@ -39,16 +35,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	int startPx, startPy;
 	int lastPx, lastPy;
 	public final Vector points = new Vector();
+	private boolean touch = hasPointerEvents();
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
-		addCommand(back);
-		addCommand(routes);
-		addCommand(search);
-		addCommand(settings);
-		addCommand(about);
-		addCommand(moreapps);
-		setCommandListener(this);
+		setFullScreenMode(true);
 		geolocation = new Geopoint(0, 0);
 		geolocation.type = Geopoint.LOCATION;
 	}
@@ -120,30 +111,43 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	private void drawUi(Graphics g, int w, int h) {
 		int y = h;
-		for (int i = 0; i < 3; i++) {
-			y -= buttonSize;
-			y -= buttonMargin;
-			g.setGrayScale(220);
-			g.fillArc(w - buttonSize - buttonMargin, y, buttonSize, buttonSize, 0, 360);
-			if (i != 0) {
-				g.setColor(0);
-			} else {
-				// geo
-				if (geo == null) {
+		if (touch) {
+			for (int i = 0; i < 4; i++) {
+				y -= buttonSize;
+				y -= buttonMargin;
+				g.setGrayScale(220);
+				g.fillArc(w - buttonSize - buttonMargin, y, buttonSize, buttonSize, 0, 360);
+				if (i != 0) {
 					g.setColor(0);
 				} else {
-					if (geo.state == GeoUpdateThread.STATE_OK) {
-						g.setColor(0, 200, 0);
-					} else if (geo.state == GeoUpdateThread.STATE_PENDING) {
-						g.setColor(0, 0, 200);
+					// geo
+					if (geo == null) {
+						g.setColor(0);
 					} else {
-						g.setColor(255, 0, 0);
+						if (geo.state == GeoUpdateThread.STATE_OK) {
+							g.setColor(0, 200, 0);
+						} else if (geo.state == GeoUpdateThread.STATE_PENDING) {
+							g.setColor(0, 0, 200);
+						} else {
+							g.setColor(255, 0, 0);
+						}
 					}
 				}
+				g.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
+				g.drawString(buttons[i], w - buttonMargin - buttonSize / 2,
+						y + buttonSize / 2 - g.getFont().getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
 			}
-			g.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
-			g.drawString(buttons[i], w - buttonMargin - buttonSize / 2,
-					y + buttonSize / 2 - g.getFont().getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
+		} else {
+			Font f = Font.getFont(0, 0, 8);
+			int fh = f.getHeight();
+			g.setFont(f);
+			g.setColor(0);
+			g.fillRect(0, h - fh, w, fh);
+			g.setColor(-1);
+			String geos = geo == null ? "Геопозиция" : GeoUpdateThread.states[geo.state];
+			g.drawString("Меню", 0, h - fh, 0);
+			g.drawString("Выбор", w / 2, h - fh, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(geos, w, h - fh, Graphics.TOP | Graphics.RIGHT);
 		}
 	}
 
@@ -193,13 +197,20 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// INPUT
 
-	protected void keyPressed(int keyCode) {
+	protected void keyPressed(int k) {
+		touch = false;
+		if (k == -6)
+			MahoMapsApp.BringMenu();
+		if (k == -7)
+			geo();
 	}
 
-	protected void keyReleased(int keyCode) {
+	protected void keyReleased(int k) {
+
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
+		touch = true;
 		if (n == 0) {
 			startPx = x;
 			startPy = y;
@@ -240,6 +251,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		int w = getWidth();
 		int h = getHeight();
 		// TODO cache tap areas
+		Rect menu = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 4, buttonSize,
+				buttonSize);
 		Rect plus = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 3, buttonSize,
 				buttonSize);
 		Rect minus = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 2, buttonSize,
@@ -251,14 +264,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			zoomOut();
 		} else if (geo.containsBoth(x, y, startPx, startPy)) {
 			geo();
-		}
-	}
-
-	public void commandAction(Command c, Displayable d) {
-		if (c == about) {
-			MahoMapsApp.BringSubScreen(new AboutScreen());
-		} else if (c == moreapps) {
-			MahoMapsApp.BringSubScreen(new OtherAppsScreen());
+		} else if (menu.containsBoth(x, y, startPx, startPy)) {
+			MahoMapsApp.BringMenu();
 		}
 	}
 
