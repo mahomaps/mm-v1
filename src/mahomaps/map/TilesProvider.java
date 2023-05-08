@@ -35,8 +35,6 @@ public class TilesProvider extends Thread {
 	 */
 	private Vector cache = new Vector();
 
-	private final Image transPixel;
-
 	private final Object downloadLock = new Object();
 
 	private boolean paintState = false;
@@ -46,7 +44,6 @@ public class TilesProvider extends Thread {
 			throw new NullPointerException("Language must be non-null!");
 		this.lang = lang;
 		this.localPath = localPath;
-		transPixel = Image.createRGBImage(new int[] { 0 }, 1, 1, true);
 		FileConnection fc = (FileConnection) Connector.open(localPath);
 		if (!fc.exists())
 			fc.mkdir();
