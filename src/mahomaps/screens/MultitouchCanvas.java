@@ -2,20 +2,15 @@ package mahomaps.screens;
 
 import javax.microedition.lcdui.game.GameCanvas;
 
+import mahomaps.MahoMapsApp;
+
 public abstract class MultitouchCanvas extends GameCanvas {
 
 	private final boolean isKemulator;
 
 	protected MultitouchCanvas() {
 		super(false);
-		boolean ik;
-		try {
-			Class.forName("emulator.Emulator");
-			ik = true;
-		} catch (Exception e) {
-			ik = false;
-		}
-		isKemulator = ik;
+		isKemulator = MahoMapsApp.IsKemulator();
 	}
 
 	protected final void pointerDragged(int x, int y) {

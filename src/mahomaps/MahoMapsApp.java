@@ -50,12 +50,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		BringSubScreen(new Splash());
 		version = getAppProperty("MIDlet-Version");
 		try {
-			boolean kem = false;
-			try {
-				Class.forName("emulator.Emulator");
-				kem = true;
-			} catch (Exception e) {
-			}
+			boolean kem = IsKemulator();
 			tiles = new TilesProvider("ru_RU", kem ? "file:///root/ym/" : System.getProperty("fileconn.dir.private"));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -118,5 +113,14 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		} else
 			c = Double.NEGATIVE_INFINITY;
 		return a + c;
+	}
+
+	public static boolean IsKemulator() {
+		try {
+			Class.forName("emulator.Emulator");
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }
