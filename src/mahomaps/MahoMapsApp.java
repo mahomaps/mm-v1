@@ -8,6 +8,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
+import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
 import mahomaps.map.TilesProvider;
 import mahomaps.screens.MapCanvas;
@@ -22,6 +23,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	private static MapCanvas canvas;
 	private static MenuScreen menu;
 	private static MIDlet midlet;
+	public static final YmapsApi api = new YmapsApi();
 
 	public static String version;
 
@@ -58,6 +60,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 			e.printStackTrace();
 			return;
 		}
+		api.RefreshToken();
 		menu = new MenuScreen();
 		canvas = new MapCanvas(tiles);
 		tiles.start();
