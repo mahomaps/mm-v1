@@ -1,6 +1,9 @@
 package mahomaps.map;
 
+import java.io.IOException;
+
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.screens.MapCanvas;
@@ -12,6 +15,16 @@ public class Geopoint {
 	public double lon;
 
 	public int type;
+
+	public static Image locationIcons;
+
+	static {
+		try {
+			locationIcons = Image.createImage("/geo40.png");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public Geopoint(double lat, double lon) {
 		this.lat = lat;
@@ -52,10 +65,15 @@ public class Geopoint {
 			g.drawLine(px, py + 1, px, py + 5);
 			g.drawRect(px - 6, py - 6, 12, 12);
 		} else if (type == LOCATION) {
-			g.setColor(255, 0, 0);
-			g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
-			g.setColor(-1);
-			g.drawChar('Я', px, py - g.getFont().getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
+			if (locationIcons != null) {
+				int s = locationIcons.getWidth() / 4;
+				g.drawRegion(locationIcons, 0, s * 2, s, s, 0, px, py, Graphics.VCENTER | Graphics.HCENTER);
+			} else {
+				g.setColor(255, 0, 0);
+				g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
+				g.setColor(-1);
+				g.drawChar('Я', px, py - g.getFont().getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
+			}
 		} else if (type == ROUTE_A || type == ROUTE_B) {
 			g.setColor(0, 0, 255);
 			g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
