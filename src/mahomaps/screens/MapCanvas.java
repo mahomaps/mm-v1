@@ -24,7 +24,7 @@ public class MapCanvas extends MultitouchCanvas {
 	String[] buttons = new String[] { "geo", "-", "+", "menu" };
 
 	private GeoUpdateThread geo = null;
-	private final Geopoint geolocation;
+	public final Geopoint geolocation;
 
 	// STATE
 	public int zoom = 0;
@@ -34,7 +34,8 @@ public class MapCanvas extends MultitouchCanvas {
 	public int yOffset = 0;
 	int startPx, startPy;
 	int lastPx, lastPy;
-	public final Vector points = new Vector();
+	public final Vector searchPoints = new Vector();
+	public final Vector routePoints = new Vector();
 	private boolean touch = hasPointerEvents();
 
 	public MapCanvas(TilesProvider tiles) {
@@ -83,8 +84,12 @@ public class MapCanvas extends MultitouchCanvas {
 			yi++;
 		}
 
-		for (int i = 0; i < points.size(); i++) {
-			Geopoint p = (Geopoint) points.elementAt(i);
+		for (int i = 0; i < searchPoints.size(); i++) {
+			Geopoint p = (Geopoint) searchPoints.elementAt(i);
+			p.paint(g, this);
+		}
+		for (int i = 0; i < routePoints.size(); i++) {
+			Geopoint p = (Geopoint) routePoints.elementAt(i);
 			p.paint(g, this);
 		}
 		if (geo != null && geo.state == GeoUpdateThread.STATE_OK) {
@@ -100,6 +105,7 @@ public class MapCanvas extends MultitouchCanvas {
 		g.setFont(Font.getFont(0, 0, 8));
 		if (Settings.drawTileInfo)
 			g.drawString("x " + tileX + " y " + tileY + " zoom=" + zoom, 5, 5, 0);
+		g.drawString(MahoMapsApp.api.token == null ? "no token" : "token OK", 5, 65, 0);
 
 		if (geo != null) {
 			g.drawString(GeoUpdateThread.states[geo.state], 5, 25, 0);

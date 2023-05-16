@@ -17,10 +17,12 @@ public class Geopoint {
 	public int type;
 
 	public static Image locationIcons;
+	public static Image search;
 
 	static {
 		try {
 			locationIcons = Image.createImage("/geo40.png");
+			search = Image.createImage("/search40.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -57,23 +59,18 @@ public class Geopoint {
 	public void paint(Graphics g, MapCanvas map) {
 		int px = GetScreenX(map);
 		int py = GetScreenY(map);
-		if (type == POI_SELECT || type == POI_SEARCH) {
+		if (type == POI_SELECT) {
 			g.setColor(255, 0, 0);
 			g.drawLine(px - 5, py, px - 1, py);
 			g.drawLine(px, py - 5, px, py - 1);
 			g.drawLine(px + 1, py, px + 5, py);
 			g.drawLine(px, py + 1, px, py + 5);
 			g.drawRect(px - 6, py - 6, 12, 12);
+		} else if (type == POI_SEARCH) {
+			g.drawImage(search, px, py, Graphics.HCENTER | Graphics.BOTTOM);
 		} else if (type == LOCATION) {
-			if (locationIcons != null) {
-				int s = locationIcons.getWidth() / 4;
-				g.drawRegion(locationIcons, 0, s * 2, s, s, 0, px, py, Graphics.VCENTER | Graphics.HCENTER);
-			} else {
-				g.setColor(255, 0, 0);
-				g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
-				g.setColor(-1);
-				g.drawChar('Я', px, py - g.getFont().getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
-			}
+			int s = locationIcons.getWidth() / 4;
+			g.drawRegion(locationIcons, 0, s * 2, s, s, 0, px, py, Graphics.VCENTER | Graphics.HCENTER);
 		} else if (type == ROUTE_A || type == ROUTE_B) {
 			g.setColor(0, 0, 255);
 			g.fillArc(px - 10, py - 10, 20, 20, 0, 360);

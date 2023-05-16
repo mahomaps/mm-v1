@@ -13,6 +13,7 @@ import mahomaps.map.Geopoint;
 import mahomaps.map.TilesProvider;
 import mahomaps.screens.MapCanvas;
 import mahomaps.screens.MenuScreen;
+import mahomaps.screens.SearchScreen;
 import mahomaps.screens.Splash;
 
 public class MahoMapsApp extends MIDlet implements Runnable {
@@ -23,6 +24,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	private static MapCanvas canvas;
 	private static MenuScreen menu;
 	private static MIDlet midlet;
+	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
 
 	public static String version;
@@ -90,6 +92,10 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public static void BringMenu() {
 		display.setCurrent(menu);
+	}
+
+	public static MapCanvas GetCanvas() {
+		return canvas;
 	}
 
 	public static void open(String link) {
