@@ -45,8 +45,8 @@ public class Geopoint {
 	public int GetScreenY(MapCanvas map) {
 		double latR = lat * Math.PI / 180d;
 		double tg = Math.tan(latR / 2 + Math.PI / 4);
-		double linear = MahoMapsApp.ln(tg);
-		double linearLocal = linear * coef; // [-128; 128]
+		double linear = MahoMapsApp.ln(tg * CalcLatCorr(latR));
+		double linearLocal = linear * LAT_COEF; // [-128; 128]
 		double linearAbs = 128 - linearLocal; // [0; 256]
 
 		int tilesCount = 1 << map.zoom;
@@ -54,6 +54,11 @@ public class Geopoint {
 		double py = (tilesCount * linearAbs) - (map.tileY * 256) + map.yOffset;
 
 		return (int) py;
+	}
+
+	private static double CalcLatCorr(double latR) {
+		double base = (1 - EL_CORR * Math.sin(latR)) / (1 + EL_CORR * Math.sin(latR));
+		return MahoMapsApp.pow(base, (EL_CORR / 2));
 	}
 
 	public void paint(Graphics g, MapCanvas map) {
@@ -86,5 +91,6 @@ public class Geopoint {
 	public static final int ROUTE_B = 4;
 
 	public static final double PI = 3.14159265358979323846;
-	public static final double coef = 40.584111828639d;
+	public static final double LAT_COEF = 40.74366567247929d;
+	public static final double EL_CORR = 0.0818191909289069d;
 }
