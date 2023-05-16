@@ -57,7 +57,18 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		version = getAppProperty("MIDlet-Version");
 		try {
 			boolean kem = IsKemulator();
-			tiles = new TilesProvider("ru_RU", kem ? "file:///root/ym/" : System.getProperty("fileconn.dir.private"));
+			String loc;
+			if (kem) {
+				loc = "file:///root/ym/";
+			} else {
+				loc = System.getProperty("fileconn.dir.private");
+				if (loc == null)
+					loc = System.getProperty("fileconn.dir.images");
+				if (loc.charAt(loc.length() - 1) != '/')
+					loc = loc + "/";
+				loc = loc + "ym/";
+			}
+			tiles = new TilesProvider("ru_RU", loc);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
