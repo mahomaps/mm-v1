@@ -65,6 +65,7 @@ abstract class YmapsApiBase {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (RuntimeException e) {
 		} finally {
 			try {
 				if (stream != null)
@@ -81,6 +82,7 @@ abstract class YmapsApiBase {
 		}
 
 		return null;
+
 	}
 
 	protected String GetUtf(String url) throws IOException {
