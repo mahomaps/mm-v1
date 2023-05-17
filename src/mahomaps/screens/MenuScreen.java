@@ -41,9 +41,9 @@ public class MenuScreen extends List implements CommandListener {
 				} else if (sel == 1) {
 					MahoMapsApp.BringSubScreen(new APIReconnectForm());
 				} else if (sel == 2) {
-					// help
+					MahoMapsApp.BringSubScreen(new KeyboardHelpScreen());
 				} else if (sel == 3) {
-					// sets
+					MahoMapsApp.BringSubScreen(new SettingsScreen());
 				} else if (sel == 4) {
 					MahoMapsApp.BringSubScreen(new AboutScreen());
 				} else if (sel == 5) {
