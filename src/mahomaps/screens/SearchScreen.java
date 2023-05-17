@@ -2,6 +2,7 @@ package mahomaps.screens;
 
 import java.util.Vector;
 
+import javax.microedition.lcdui.Choice;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -30,7 +31,7 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 	private Command toMap = new Command("К карте", Command.SCREEN, 0);
 
 	public SearchScreen(String query, Geopoint point) {
-		super("Результаты поиска", List.IMPLICIT);
+		super("Результаты поиска", Choice.IMPLICIT);
 		this.query = query;
 		this.point = point;
 		th = new Thread(this, "search");
@@ -69,8 +70,8 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 		Vector p = MahoMapsApp.GetCanvas().searchPoints;
 		p.removeAllElements();
 		for (int i = 0; i < results.length(); i++) {
-			JSONArray point = results.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
-			Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
+			JSONArray point1 = results.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+			Geopoint gp = new Geopoint(point1.getDouble(1), point1.getDouble(0));
 			gp.type = Geopoint.POI_SEARCH;
 			gp.color = Geopoint.COLOR_GREEN;
 			p.addElement(gp);
@@ -78,15 +79,12 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 	}
 
 	public void SetUI() {
+
+		ColumnsContainer cols = new ColumnsContainer(
+				new UIElement[] { new Button("К списку", 1, this, 5), new Button("Закрыть", 2, this, 5) });
 		FillFlowContainer flow = new FillFlowContainer(new UIElement[] { new SimpleText(query, 0),
-				new SimpleText("Найдено: " + results.length(), 0), new SimpleText("Ничего не выбрано.", 0) });
-		Button b1 = new Button("К списку", 1, this, 5);
-		b1.W = 100;
-		Button b2 = new Button("Закрыть", 2, this, 5);
-		b2.W = 100;
-		ColumnsContainer cols = new ColumnsContainer(new UIElement[] { flow, b1, b2 });
-		cols.stretchableElement = 0;
-		MahoMapsApp.GetCanvas().SetOverlayContent(cols);
+				new SimpleText("Найдено: " + results.length(), 0), new SimpleText("Ничего не выбрано.", 0), cols });
+		MahoMapsApp.GetCanvas().SetOverlayContent(flow);
 	}
 
 	public void commandAction(Command c, Displayable d) {

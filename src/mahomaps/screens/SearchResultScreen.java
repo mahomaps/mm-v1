@@ -82,9 +82,10 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 			{
 				FillFlowContainer flow = new FillFlowContainer(
 						new UIElement[] { new SimpleText(name, 0), new SimpleText(descr, 0),
+								new ColumnsContainer(new UIElement[] { new Button("Точка А", 2, this, 5),
+										new Button("Точка Б", 3, this, 5) }),
 								new ColumnsContainer(new UIElement[] { new Button("Карточка", 1, this, 5),
-										new Button("К списку", 4, this, 5), new Button("Точка А", 2, this, 5),
-										new Button("Точка Б", 3, this, 5), new Button("Закрыть", 5, this, 5) }) });
+										new Button("К списку", 4, this, 5), new Button("Ко всем", 5, this, 5) }) });
 
 				MahoMapsApp.GetCanvas().SetOverlayContent(flow);
 			}
