@@ -107,7 +107,10 @@ public class TilesProvider extends Thread {
 		FileConnection fc = null;
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id));
-			ByteArrayOutputStream blob = new ByteArrayOutputStream((int) hc.getLength());
+			int len = (int) hc.getLength();
+			if (len <= 0)
+				throw new IOException("Empty responce");
+			ByteArrayOutputStream blob = new ByteArrayOutputStream(len);
 			byte[] buf = new byte[8192];
 			InputStream s = hc.openInputStream();
 			while (true) {
