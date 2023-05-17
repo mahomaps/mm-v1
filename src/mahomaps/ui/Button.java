@@ -28,6 +28,16 @@ public class Button extends UIElement implements ITouchAcceptor {
 		g.drawString(text, x + w / 2, y + h / 2 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 	}
 
+	public void OnPress() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void OnRelease() {
+		// TODO Auto-generated method stub
+
+	}
+
 	public void OnTap() {
 		if (handler != null)
 			handler.OnButtonTap(this, id);
