@@ -13,8 +13,13 @@ import mahomaps.map.Rect;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
+import mahomaps.ui.Button;
+import mahomaps.ui.FillFlowContainer;
+import mahomaps.ui.IButtonHandler;
 import mahomaps.ui.MapOverlay;
+import mahomaps.ui.SimpleText;
 import mahomaps.ui.UIComposite;
+import mahomaps.ui.UIElement;
 
 public class MapCanvas extends MultitouchCanvas {
 
@@ -47,6 +52,23 @@ public class MapCanvas extends MultitouchCanvas {
 		setFullScreenMode(true);
 		geolocation = new Geopoint(0, 0);
 		geolocation.type = Geopoint.LOCATION;
+
+		if (MahoMapsApp.api.token == null) {
+			IButtonHandler tokenFailHandler = new IButtonHandler() {
+				public void OnButtonTap(UIElement sender, int uid) {
+					if (uid == -1) {
+						SetOverlayContent(new FillFlowContainer(
+								new UIElement[] { new SimpleText("Пока не умеем, перезапустите прогу.", 0) }));
+					} else {
+						SetOverlayContent(null);
+					}
+				}
+			};
+			SetOverlayContent(new FillFlowContainer(new UIElement[] {
+					new SimpleText("Не удалось получить токен API.", 0),
+					new SimpleText("Функции поиска / маршрута будут недоступны.", 0),
+					new Button("Ещё раз", -1, tokenFailHandler, 5), new Button("Закрыть", -2, tokenFailHandler, 5) }));
+		}
 	}
 
 	public void SetOverlayContent(UIComposite ui) {
@@ -122,7 +144,6 @@ public class MapCanvas extends MultitouchCanvas {
 		g.setFont(Font.getFont(0, 0, 8));
 		if (Settings.drawTileInfo)
 			g.drawString("x " + tileX + " y " + tileY + " zoom=" + zoom, 5, 5, 0);
-		g.drawString(MahoMapsApp.api.token == null ? "no token" : "token OK", 5, 65, 0);
 
 		if (geo != null) {
 			g.drawString(GeoUpdateThread.states[geo.state], 5, 25, 0);
