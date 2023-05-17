@@ -16,10 +16,11 @@ import mahomaps.map.Geopoint;
 import mahomaps.ui.Button;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
+import mahomaps.ui.IButtonHandler;
 import mahomaps.ui.SimpleText;
 import mahomaps.ui.UIElement;
 
-public class SearchResultScreen extends Form implements CommandListener {
+public class SearchResultScreen extends Form implements CommandListener, IButtonHandler {
 
 	private Command back = new Command("К списку", Command.BACK, 0);
 	private Command toMap = new Command("К карте", Command.OK, 0);
@@ -79,19 +80,33 @@ public class SearchResultScreen extends Form implements CommandListener {
 				p.addElement(gp);
 			}
 			{
-				Button b1 = new Button("Карточка", 0, null, 5);
-				b1.H = 50;
-				Button b2 = new Button("Точка А", 0, null, 5);
-				Button b3 = new Button("Точка Б", 0, null, 5);
-				Button b4 = new Button("Линейка", 0, null, 5);
-				Button b5 = new Button("К списку", 0, null, 5);
-				Button b6 = new Button("Закрыть", 0, null, 5);
-				FillFlowContainer flow = new FillFlowContainer(new UIElement[] { new SimpleText(name, 0),
-						new SimpleText(descr, 0), new ColumnsContainer(new UIElement[] { b1, b2, b3, b4, b5, b6 }) });
+				FillFlowContainer flow = new FillFlowContainer(
+						new UIElement[] { new SimpleText(name, 0), new SimpleText(descr, 0),
+								new ColumnsContainer(new UIElement[] { new Button("Карточка", 1, this, 5),
+										new Button("К списку", 4, this, 5), new Button("Точка А", 2, this, 5),
+										new Button("Точка Б", 3, this, 5), new Button("Закрыть", 5, this, 5) }) });
 
 				MahoMapsApp.GetCanvas().SetOverlayContent(flow);
 			}
 			MahoMapsApp.BringMap();
+		}
+	}
+
+	public void OnButtonTap(UIElement sender, int uid) {
+		switch (uid) {
+		case 1:
+			MahoMapsApp.BringSubScreen(this);
+			break;
+		case 2:
+		case 3:
+			break;
+		case 4:
+			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
+			break;
+		case 5:
+			MahoMapsApp.lastSearch.SetPoints();
+			MahoMapsApp.lastSearch.SetUI();
+			break;
 		}
 	}
 }
