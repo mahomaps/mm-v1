@@ -131,7 +131,7 @@ public class MapCanvas extends MultitouchCanvas {
 			Geopoint p = (Geopoint) routePoints.elementAt(i);
 			p.paint(g, this);
 		}
-		if (geo != null && geo.state == GeoUpdateThread.STATE_OK) {
+		if (geo != null && geo.DrawPoint()) {
 			geolocation.paint(g, this);
 		}
 
@@ -147,7 +147,7 @@ public class MapCanvas extends MultitouchCanvas {
 
 		if (geo != null) {
 			g.drawString(GeoUpdateThread.states[geo.state], 5, 25, 0);
-			if (geo.state == GeoUpdateThread.STATE_OK) {
+			if (geo.DrawPoint()) {
 				g.drawString(geolocation.lat + " " + geolocation.lon, 5, 45, 0);
 			}
 		}
@@ -236,8 +236,11 @@ public class MapCanvas extends MultitouchCanvas {
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
-		} else {
-			geo.request();
+		} else if (geo.DrawPoint()) {
+			zoom = 16;
+			xOffset -= geolocation.GetScreenX(this);
+			yOffset -= geolocation.GetScreenY(this);
+			ClampOffset();
 		}
 	}
 
@@ -279,22 +282,26 @@ public class MapCanvas extends MultitouchCanvas {
 			lastPx = x;
 			lastPy = y;
 
-			if (xOffset > 0) {
-				tileX--;
-				xOffset -= 256;
-			}
-			if (yOffset > 0) {
-				tileY--;
-				yOffset -= 256;
-			}
-			if (xOffset < -255) {
-				tileX++;
-				xOffset += 256;
-			}
-			if (yOffset < -255) {
-				tileY++;
-				yOffset += 256;
-			}
+			ClampOffset();
+		}
+	}
+
+	private void ClampOffset() {
+		while (xOffset > 0) {
+			tileX--;
+			xOffset -= 256;
+		}
+		while (yOffset > 0) {
+			tileY--;
+			yOffset -= 256;
+		}
+		while (xOffset < -255) {
+			tileX++;
+			xOffset += 256;
+		}
+		while (yOffset < -255) {
+			tileY++;
+			yOffset += 256;
 		}
 	}
 
@@ -331,7 +338,7 @@ public class MapCanvas extends MultitouchCanvas {
 
 	public void dispose() {
 		if (geo != null)
-			geo.interrupt();
+			geo.Dispose();
 	}
 
 }

@@ -19,8 +19,7 @@ public class GeoUpdateThread extends Thread {
 	 */
 	public int state;
 	private LocationAPI locationAPI;
-	private Object requestLock = new Object();
-	public boolean waiting;
+	public boolean loop = true;
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
@@ -44,71 +43,84 @@ public class GeoUpdateThread extends Thread {
 		if (locationAPI == null) {
 			return;
 		}
+		positionPoint.lat = 0;
+		positionPoint.lon = 0;
 		state = STATE_PENDING;
 		double[] coordinates = locationAPI.getLastKnownCoordinates();
 		if (coordinates != null && coordinates[0] != 0 && coordinates[1] != 0) {
 			positionPoint.lat = coordinates[0];
 			positionPoint.lon = coordinates[1];
-			state = STATE_OK;
+			positionPoint.color = Geopoint.COLOR_GRAY;
+			state = STATE_APPROX;
 		}
 
 		try {
-			while (true) {
-				waiting = false;
+			while (loop) {
 				try {
-					// state = STATE_PENDING;
 					coordinates = locationAPI.getNewCoordinates(-1);
 					if (coordinates[0] != 0 && coordinates[1] != 0) {
 						positionPoint.lat = coordinates[0];
 						positionPoint.lon = coordinates[1];
+						positionPoint.color = Geopoint.COLOR_RED;
 						state = STATE_OK;
 					} else {
 						state = STATE_UNAVAILABLE;
 					}
 				} catch (Exception e) {
-					// надо потом сделать отображение последней известной точки, а не этот костыль
-					if (state != STATE_OK)
-						state = STATE_ERROR;
+					positionPoint.color = Geopoint.COLOR_GRAY;
+					state = STATE_ERROR;
 					e.printStackTrace();
 				}
-				waiting = true;
-				synchronized (requestLock) {
-					requestLock.wait(30000);
-				}
+				Thread.sleep(1000);
 			}
 		} catch (InterruptedException e) {
 		}
+		state = STATE_UNAVAILABLE;
 	}
 
-	public void request() {
-		synchronized (requestLock) {
-			requestLock.notify();
-		}
+	public void Dispose() {
+		loop = false;
+		interrupt();
+	}
+
+	/**
+	 * Рисовать точку?
+	 */
+	public boolean DrawPoint() {
+		if (positionPoint.lat == 0 && positionPoint.lon == 0)
+			return false;
+		if (state == STATE_APPROX || state == STATE_OK || state == STATE_ERROR)
+			return true;
+		return false;
 	}
 
 	/**
 	 * Гео не поддерживается устройством.
 	 */
-	public final static int STATE_UNSUPPORTED = 4;
+	public final static int STATE_UNSUPPORTED = 5;
 	/**
 	 * К гео запрещён доступ, либо оно отключено.
 	 */
-	public final static int STATE_UNAVAILABLE = 3;
+	public final static int STATE_UNAVAILABLE = 4;
 	/**
 	 * Геопозиция доступна, однако получить её не удалось.
 	 */
-	public final static int STATE_ERROR = 2;
+	public final static int STATE_ERROR = 3;
 	/**
 	 * Геопозиция определяется, но ещё не известна.
 	 */
 	public final static int STATE_PENDING = 0;
 	/**
+	 * Геопозиция уже примерно известна, но ещё определяется.
+	 */
+	public final static int STATE_APPROX = 1;
+	/**
 	 * Геопозиция известна.
 	 */
-	public final static int STATE_OK = 1;
+	public final static int STATE_OK = 2;
 
-	public final static String[] states = new String[] { "Ожидание сигнала", "Готово", "Ошибка", "Недоступно",
-			"Не поддерживается" };
+	public final static String[] states = new String[] { "Ожидание сигнала", "Примерная", "Готово", "Ошибка",
+			"Недоступно", "Не поддерживается" };
 
 	// для безопасных вызовов
 	class LocationAPI {
