@@ -9,7 +9,6 @@ import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
 import mahomaps.api.YmapsApi;
-import mahomaps.map.Geopoint;
 import mahomaps.map.TilesProvider;
 import mahomaps.screens.MapCanvas;
 import mahomaps.screens.MenuScreen;
@@ -77,11 +76,6 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		menu = new MenuScreen();
 		canvas = new MapCanvas(tiles);
 		tiles.start();
-		canvas.points.addElement(new Geopoint(85, 15d));
-		canvas.points.addElement(new Geopoint(66.513484, 42.258826));
-		canvas.points.addElement(new Geopoint(0, 55d));
-		canvas.points.addElement(new Geopoint(-66.5622d, 34.45d));
-		canvas.points.addElement(new Geopoint(-85, 15d));
 		BringMap();
 		while (true) {
 			canvas.update();
