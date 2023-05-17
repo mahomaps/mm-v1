@@ -54,9 +54,7 @@ public class MenuScreen extends List implements CommandListener {
 			if (c == back) {
 				MahoMapsApp.BringMenu();
 			} else {
-				Geopoint geo = MahoMapsApp.GetCanvas().geolocation;
-				if (geo.lat == 0)
-					geo = new Geopoint(37, 55);
+				Geopoint geo = MahoMapsApp.GetCanvas().GetSearchAnchor();
 				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), geo));
 			}
 		}

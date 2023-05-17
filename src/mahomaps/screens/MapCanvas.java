@@ -84,6 +84,13 @@ public class MapCanvas extends MultitouchCanvas {
 		overlay = o;
 	}
 
+	public Geopoint GetSearchAnchor() {
+		if (geo != null && geo.DrawPoint()) {
+			return geolocation;
+		}
+		return new Geopoint(37.621202, 55.753544);
+	}
+
 	// DRAW SECTION
 
 	private void repaint(Graphics g) {
