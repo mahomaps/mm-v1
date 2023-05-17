@@ -14,7 +14,7 @@ public class SimpleText extends UIElement {
 	public SimpleText(String s, Font f, int color, int hAnchor, int vAnchor) {
 		this.text = s;
 		if (f == null)
-			f = Font.getDefaultFont();
+			f = Font.getFont(0, 0, 8);
 		this.font = f;
 		this.color = color;
 		this.hAnchor = hAnchor;
@@ -25,7 +25,7 @@ public class SimpleText extends UIElement {
 
 	public SimpleText(String s, int color) {
 		this.text = s;
-		this.font = Font.getDefaultFont();
+		this.font = Font.getFont(0, 0, 8);
 		this.color = color;
 		this.hAnchor = 0;
 		this.vAnchor = 0;
