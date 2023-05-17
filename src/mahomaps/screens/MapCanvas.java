@@ -36,6 +36,7 @@ public class MapCanvas extends MultitouchCanvas {
 	public int yOffset = 0;
 	int startPx, startPy;
 	int lastPx, lastPy;
+	boolean dragActive;
 	public final Vector searchPoints = new Vector();
 	public final Vector routePoints = new Vector();
 	public MapOverlay overlay;
@@ -236,6 +237,7 @@ public class MapCanvas extends MultitouchCanvas {
 	protected void pointerPressed(int x, int y, int n) {
 		touch = true;
 		if (n == 0) {
+			dragActive = false;
 			startPx = x;
 			startPy = y;
 			lastPx = x;
@@ -245,6 +247,12 @@ public class MapCanvas extends MultitouchCanvas {
 
 	protected void pointerDragged(int x, int y, int n) {
 		if (n == 0) {
+			if (!dragActive) {
+				if (Math.abs(x - startPx) > 8 || Math.abs(y - startPy) > 8)
+					dragActive = true;
+				else
+					return;
+			}
 			xOffset += x - lastPx;
 			yOffset += y - lastPy;
 			lastPx = x;
@@ -272,6 +280,13 @@ public class MapCanvas extends MultitouchCanvas {
 	protected void pointerReleased(int x, int y, int n) {
 		if (n != 0)
 			return;
+		if (dragActive)
+			return;
+
+		if (overlay != null) {
+			if (UIElement.InvokeTouchEvent(x, y))
+				return;
+		}
 		int w = getWidth();
 		int h = getHeight();
 		// TODO cache tap areas
