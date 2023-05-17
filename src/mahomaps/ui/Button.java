@@ -9,6 +9,7 @@ public class Button extends UIElement implements ITouchAcceptor {
 	private int id;
 	private IButtonHandler handler;
 	private int margin;
+	private boolean hold = false;
 
 	public Button(String text, int id, IButtonHandler handler, int margin) {
 		this.text = text;
@@ -20,7 +21,7 @@ public class Button extends UIElement implements ITouchAcceptor {
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		RegisterForInput(this, x, y, w, h);
-		g.setColor(0);
+		g.setColor(hold ? 0x440000 : 0);
 		g.setFont(Font.getFont(0, 0, 8));
 		g.fillRoundRect(x + margin, y + margin, w - margin - margin, h - margin - margin, 10, 10);
 		int fh = g.getFont().getHeight();
@@ -29,13 +30,11 @@ public class Button extends UIElement implements ITouchAcceptor {
 	}
 
 	public void OnPress() {
-		// TODO Auto-generated method stub
-
+		hold = true;
 	}
 
 	public void OnRelease() {
-		// TODO Auto-generated method stub
-
+		hold = false;
 	}
 
 	public void OnTap() {
