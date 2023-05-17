@@ -13,6 +13,8 @@ import mahomaps.map.Rect;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
+import mahomaps.ui.MapOverlay;
+import mahomaps.ui.UIComposite;
 
 public class MapCanvas extends MultitouchCanvas {
 
@@ -36,6 +38,7 @@ public class MapCanvas extends MultitouchCanvas {
 	int lastPx, lastPy;
 	public final Vector searchPoints = new Vector();
 	public final Vector routePoints = new Vector();
+	public MapOverlay overlay;
 	private boolean touch = hasPointerEvents();
 
 	public MapCanvas(TilesProvider tiles) {
@@ -43,6 +46,18 @@ public class MapCanvas extends MultitouchCanvas {
 		setFullScreenMode(true);
 		geolocation = new Geopoint(0, 0);
 		geolocation.type = Geopoint.LOCATION;
+	}
+
+	public void SetOverlayContent(UIComposite ui) {
+		if (ui == null) {
+			overlay = null;
+			return;
+		}
+		overlay = new MapOverlay();
+		overlay.X = 5;
+		overlay.Y = 5;
+		overlay.W = getWidth() - 10;
+		overlay.content = ui;
 	}
 
 	// DRAW SECTION
@@ -113,6 +128,8 @@ public class MapCanvas extends MultitouchCanvas {
 				g.drawString(geolocation.lat + " " + geolocation.lon, 5, 45, 0);
 			}
 		}
+		if (overlay != null)
+			overlay.Paint(g, 0, 0, w, h);
 	}
 
 	private void drawUi(Graphics g, int w, int h) {
