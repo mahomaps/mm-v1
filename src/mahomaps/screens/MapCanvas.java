@@ -106,6 +106,7 @@ public class MapCanvas extends MultitouchCanvas {
 		drawMap(g, w, h);
 		drawOverlay(g, w, h);
 		drawUi(g, w, h);
+		UIElement.CommitInputQueue();
 	}
 
 	private void drawMap(Graphics g, int w, int h) {
@@ -273,6 +274,7 @@ public class MapCanvas extends MultitouchCanvas {
 	protected void pointerPressed(int x, int y, int n) {
 		touch = true;
 		if (n == 0) {
+			UIElement.InvokePressEvent(x, y);
 			dragActive = false;
 			startPx = x;
 			startPy = y;
@@ -284,9 +286,10 @@ public class MapCanvas extends MultitouchCanvas {
 	protected void pointerDragged(int x, int y, int n) {
 		if (n == 0) {
 			if (!dragActive) {
-				if (Math.abs(x - startPx) > 8 || Math.abs(y - startPy) > 8)
+				if (Math.abs(x - startPx) > 8 || Math.abs(y - startPy) > 8) {
+					UIElement.InvokeReleaseEvent();
 					dragActive = true;
-				else
+				} else
 					return;
 			}
 			xOffset += x - lastPx;
@@ -323,6 +326,7 @@ public class MapCanvas extends MultitouchCanvas {
 		if (dragActive)
 			return;
 
+		UIElement.InvokeReleaseEvent();
 		if (overlay != null) {
 			if (UIElement.InvokeTouchEvent(x, y))
 				return;

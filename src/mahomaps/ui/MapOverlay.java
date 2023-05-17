@@ -13,7 +13,6 @@ public class MapOverlay extends UIElement implements ITouchAcceptor {
 		g.fillRoundRect(X, Y, W, H + 20, 10, 10);
 		content.Paint(g, X + 10, Y + 10, W - 20, 0);
 		H = content.H;
-		CommitInputQueue();
 	}
 
 	public void OnPress() {
