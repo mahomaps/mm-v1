@@ -63,10 +63,19 @@ public class SearchResultScreen extends Form implements CommandListener {
 			p.removeAllElements();
 			for (int i = 0; i < results.length(); i++) {
 				JSONObject robj = results.getJSONObject(i);
+				if (robj == obj)
+					continue;
 				JSONArray point = robj.getJSONObject("geometry").getJSONArray("coordinates");
 				Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
 				gp.type = Geopoint.POI_SEARCH;
-				gp.color = robj == obj ? Geopoint.COLOR_RED : Geopoint.COLOR_GRAY;
+				gp.color = Geopoint.COLOR_GRAY;
+				p.addElement(gp);
+			}
+			{
+				JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
+				Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
+				gp.type = Geopoint.POI_SEARCH;
+				gp.color = Geopoint.COLOR_RED;
 				p.addElement(gp);
 			}
 			{
