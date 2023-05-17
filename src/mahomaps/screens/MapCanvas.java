@@ -53,11 +53,12 @@ public class MapCanvas extends MultitouchCanvas {
 			overlay = null;
 			return;
 		}
-		overlay = new MapOverlay();
-		overlay.X = 5;
-		overlay.Y = 5;
-		overlay.W = getWidth() - 10;
-		overlay.content = ui;
+		MapOverlay o = new MapOverlay();
+		o.X = 5;
+		o.Y = 5;
+		o.W = getWidth() - 10;
+		o.content = ui;
+		overlay = o;
 	}
 
 	// DRAW SECTION
