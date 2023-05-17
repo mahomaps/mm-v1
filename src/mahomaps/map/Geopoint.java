@@ -15,6 +15,7 @@ public class Geopoint {
 	public double lon;
 
 	public int type;
+	public int color;
 
 	public static Image locationIcons;
 	public static Image search;
@@ -64,31 +65,51 @@ public class Geopoint {
 	public void paint(Graphics g, MapCanvas map) {
 		int px = GetScreenX(map);
 		int py = GetScreenY(map);
-		if (type == POI_SELECT) {
-			g.setColor(255, 0, 0);
-			g.drawLine(px - 5, py, px - 1, py);
-			g.drawLine(px, py - 5, px, py - 1);
-			g.drawLine(px + 1, py, px + 5, py);
-			g.drawLine(px, py + 1, px, py + 5);
-			g.drawRect(px - 6, py - 6, 12, 12);
-		} else if (type == POI_SEARCH) {
-			g.drawImage(search, px, py, Graphics.HCENTER | Graphics.BOTTOM);
-		} else if (type == LOCATION) {
-			int s = locationIcons.getWidth() / 4;
-			g.drawRegion(locationIcons, 0, s * 2, s, s, 0, px, py, Graphics.VCENTER | Graphics.HCENTER);
-		} else if (type == ROUTE_A || type == ROUTE_B) {
-			g.setColor(0, 0, 255);
-			g.fillArc(px - 10, py - 10, 20, 20, 0, 360);
-			g.setColor(-1);
-			g.drawChar('x', px, py - g.getFont().getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
+		int s;
+		switch (type) {
+		case POI_SELECT:
+			break;
+		case POI_MARK:
+			s = search.getWidth() / 8;
+			g.drawRegion(search, s * (color + 4), 0, s, search.getHeight(), 0, px, py,
+					Graphics.BOTTOM | Graphics.HCENTER);
+			break;
+		case POI_SEARCH:
+			s = search.getWidth() / 8;
+			g.drawRegion(search, s * color, 0, s, search.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+			break;
+		case LOCATION:
+			s = locationIcons.getWidth() / 4;
+			g.drawRegion(locationIcons, s * color, s * 2, s, s, 0, px, py, Graphics.VCENTER | Graphics.HCENTER);
+			break;
+		case ROUTE_A:
+		case ROUTE_B:
+		case ROUTE_C:
+			break;
 		}
 	}
 
+	public static final int COLOR_RED = 0;
+	public static final int COLOR_GREEN = 1;
+	public static final int COLOR_GRAY = 2;
+	public static final int COLOR_BLUE = 3;
+
+	/**
+	 * Shevron mark. Usually means manually selected objects.
+	 */
 	public static final int POI_SELECT = 0;
-	public static final int POI_SEARCH = 1;
-	public static final int LOCATION = 2;
-	public static final int ROUTE_A = 3;
-	public static final int ROUTE_B = 4;
+	/**
+	 * Exclamation mark. Usually means additional POIs around object.
+	 */
+	public static final int POI_MARK = 1;
+	/**
+	 * Search mark. Search results.
+	 */
+	public static final int POI_SEARCH = 2;
+	public static final int LOCATION = 3;
+	public static final int ROUTE_A = 4;
+	public static final int ROUTE_B = 5;
+	public static final int ROUTE_C = 6;
 
 	public static final double PI = 3.14159265358979323846;
 	public static final double LAT_COEF = 40.74366567247929d;
