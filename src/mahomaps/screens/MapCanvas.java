@@ -57,16 +57,16 @@ public class MapCanvas extends MultitouchCanvas {
 			IButtonHandler tokenFailHandler = new IButtonHandler() {
 				public void OnButtonTap(UIElement sender, int uid) {
 					if (uid == -1) {
-						SetOverlayContent(new FillFlowContainer(
-								new UIElement[] { new SimpleText("Пока не умеем, перезапустите прогу.", 0) }));
-					} else {
+						MahoMapsApp.BringSubScreen(new APIReconnectForm());
+						SetOverlayContent(null);
+					} else if (uid == -2) {
 						SetOverlayContent(null);
 					}
 				}
 			};
 			SetOverlayContent(new FillFlowContainer(new UIElement[] {
 					new SimpleText("Не удалось получить токен API.", 0),
-					new SimpleText("Функции поиска / маршрута будут недоступны.", 0),
+					new SimpleText("Онлайн-функции будут недоступны.", 0),
 					new Button("Ещё раз", -1, tokenFailHandler, 5), new Button("Закрыть", -2, tokenFailHandler, 5) }));
 		}
 	}

@@ -17,7 +17,7 @@ public class MenuScreen extends List implements CommandListener {
 	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
 
 	public MenuScreen() {
-		super("MahoMaps", Choice.IMPLICIT, new String[] { "Поиск", "Маршрут", "Справка по клавиатуре", "Настройки",
+		super("MahoMaps v1", Choice.IMPLICIT, new String[] { "Поиск", "Подключение к API", "Справка по клавиатуре", "Настройки",
 				"О программе", "Другие программы", }, null);
 		addCommand(back);
 		setCommandListener(this);
@@ -39,7 +39,7 @@ public class MenuScreen extends List implements CommandListener {
 					else
 						MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
 				} else if (sel == 1) {
-					// route
+					MahoMapsApp.BringSubScreen(new APIReconnectForm());
 				} else if (sel == 2) {
 					// help
 				} else if (sel == 3) {
