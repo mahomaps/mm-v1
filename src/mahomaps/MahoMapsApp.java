@@ -1,10 +1,11 @@
 package mahomaps;
 
-import java.io.IOException;
-
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.Item;
+import javax.microedition.lcdui.StringItem;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
@@ -54,9 +55,10 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	public void run() {
 		BringSubScreen(new Splash());
 		version = getAppProperty("MIDlet-Version");
+		String loc = "";
 		try {
 			boolean kem = IsKemulator();
-			String loc;
+
 			if (kem) {
 				loc = "file:///root/ym/";
 			} else {
@@ -68,8 +70,10 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 				loc = loc + "ym/";
 			}
 			tiles = new TilesProvider("ru_RU", loc);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			BringSubScreen(new Form("Ошибка",
+					new Item[] { new StringItem("Не удалось подключить кэш", "Отказано в доступе по пути " + loc) }));
 			return;
 		}
 		api.RefreshToken();
