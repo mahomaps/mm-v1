@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
@@ -46,6 +47,7 @@ public class MapCanvas extends MultitouchCanvas {
 	public final Vector routePoints = new Vector();
 	public MapOverlay overlay;
 	private boolean touch = hasPointerEvents();
+	private final Image dummyBuffer = Image.createImage(1, 1);
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -81,6 +83,9 @@ public class MapCanvas extends MultitouchCanvas {
 		o.Y = 5;
 		o.W = getWidth() - 10;
 		o.content = ui;
+		// Рисуем в никуда для пересчёта макета (для обхода 1-кадрового мигания)
+		// Почему бы не отделить макет от отрисовки? А зачем?
+		o.Paint(dummyBuffer.getGraphics(), 0, 0, getWidth(), getHeight());
 		overlay = o;
 	}
 
