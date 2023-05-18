@@ -18,6 +18,7 @@ import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
 import mahomaps.ui.Button;
+import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -36,7 +37,6 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	String[] buttons = new String[] { "geo", "-", "+", "menu" };
 
 	public GeoUpdateThread geo = null;
-	public final Geopoint geolocation;
 
 	// STATE
 	public int zoom = 0;
@@ -49,6 +49,8 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	boolean dragActive;
 	public final Vector searchPoints = new Vector();
 	public final Vector routePoints = new Vector();
+	public final Geopoint geolocation;
+	public Geopoint selection;
 	public MapOverlay overlay;
 	public ControlButtonsContainer controls;
 	private boolean touch = hasPointerEvents();
@@ -101,7 +103,49 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		if (geo != null && geo.DrawPoint()) {
 			return geolocation;
 		}
-		return new Geopoint(37.621202, 55.753544);
+		return GetAtCoords(0, 0);
+	}
+
+	/**
+	 * Получает точку на экране по координатам экрана.
+	 *
+	 * @param x X относительно центра (центр = 0)
+	 * @param y Y относительно центра (центр = 0)
+	 * @return Точка.
+	 */
+	public Geopoint GetAtCoords(int x, int y) {
+		int tilesCount = 1 << zoom;
+		double dx = x;
+		dx -= xOffset;
+		dx /= 256;
+		dx += tileX;
+		dx *= 360d;
+		dx /= tilesCount;
+		double lon = dx - 180d;
+
+		Geopoint g = new Geopoint(0, lon);
+		double step = 45d;
+		while (step > 0.000001d) {
+			double or = g.lat;
+			g.lat = or + step;
+			int plus = g.GetScreenY(this);
+			g.lat = or - step;
+			int minus = g.GetScreenY(this);
+			plus -= y;
+			minus -= y;
+			if (Math.abs(plus - minus) <= 2) {
+				g.lat = or;
+				break;
+			}
+			if (Math.abs(plus) > Math.abs(minus)) {
+				g.lat = or - step;
+			} else {
+				g.lat = or + step;
+			}
+			step /= 2d;
+		}
+
+		return g;
 	}
 
 	// DRAW SECTION
@@ -147,6 +191,9 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			yi++;
 		}
 
+		if (geo != null && geo.DrawPoint()) {
+			geolocation.paint(g, this);
+		}
 		for (int i = 0; i < searchPoints.size(); i++) {
 			Geopoint p = (Geopoint) searchPoints.elementAt(i);
 			p.paint(g, this);
@@ -155,9 +202,8 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			Geopoint p = (Geopoint) routePoints.elementAt(i);
 			p.paint(g, this);
 		}
-		if (geo != null && geo.DrawPoint()) {
-			geolocation.paint(g, this);
-		}
+		if (selection != null)
+			selection.paint(g, this);
 
 		g.translate(-(w >> 1), -(h >> 1));
 		tiles.EndMapPaint();
@@ -304,7 +350,20 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			return;
 
 		UIElement.InvokeReleaseEvent();
-		UIElement.InvokeTouchEvent(x, y);
+		if (UIElement.InvokeTouchEvent(x, y))
+			return;
+
+		if (MahoMapsApp.lastSearch == null) {
+			selection = GetAtCoords(x - getWidth() / 2, y - getHeight() / 2);
+			selection.color = Geopoint.COLOR_RED;
+			selection.type = Geopoint.POI_SELECT;
+
+			SetOverlayContent(new FillFlowContainer(new UIElement[] { new SimpleText(selection.toString(), 0),
+					new Button("Что здесь?", 6, this, 5),
+					new ColumnsContainer(
+							new UIElement[] { new Button("Точка А", -2, null, 5), new Button("Точка Б", -2, null, 5) }),
+					new Button("Закрыть", 0, this, 5) }));
+		}
 	}
 
 	public void dispose() {
@@ -319,6 +378,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			SetOverlayContent(null);
 			break;
 		case 0:
+			selection = null;
 			SetOverlayContent(null);
 			break;
 		case 1:
@@ -341,6 +401,9 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			break;
 		case 5:
 			geo();
+			break;
+		case 6:
+			MahoMapsApp.BringSubScreen(new SearchScreen(selection.toString(), selection));
 			break;
 		}
 	}
