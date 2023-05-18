@@ -87,7 +87,7 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 	public void commandAction(Command c, Displayable d) {
 		if (c == reset) {
 			ResetSearch();
-			MahoMapsApp.BringMenu();
+			MahoMapsApp.BringMap();
 		} else if (c == toMap) {
 			MahoMapsApp.lastSearch = this;
 			SetPoints();
