@@ -13,7 +13,6 @@ public class GeoUpdateThread extends Thread {
 	 * Точка геопозиции.
 	 */
 	private final Geopoint positionPoint;
-	private final MapCanvas map;
 	/**
 	 * Состояние получения геопозиции. Одно из state-значений.
 	 */
@@ -24,7 +23,6 @@ public class GeoUpdateThread extends Thread {
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
 		this.positionPoint = positionPoint;
-		this.map = map;
 		try {
 			Class.forName("javax.microedition.location.LocationProvider");
 			try {
@@ -51,7 +49,7 @@ public class GeoUpdateThread extends Thread {
 			positionPoint.lat = coordinates[0];
 			positionPoint.lon = coordinates[1];
 			positionPoint.color = Geopoint.COLOR_GRAY;
-			state = STATE_APPROX;
+			state = STATE_OK_PENDING;
 		}
 
 		try {
@@ -89,7 +87,7 @@ public class GeoUpdateThread extends Thread {
 	public boolean DrawPoint() {
 		if (positionPoint.lat == 0 && positionPoint.lon == 0)
 			return false;
-		if (state == STATE_APPROX || state == STATE_OK || state == STATE_ERROR)
+		if (state == STATE_OK_PENDING || state == STATE_OK || state == STATE_ERROR)
 			return true;
 		return false;
 	}
@@ -113,13 +111,13 @@ public class GeoUpdateThread extends Thread {
 	/**
 	 * Геопозиция уже примерно известна, но ещё определяется.
 	 */
-	public final static int STATE_APPROX = 1;
+	public final static int STATE_OK_PENDING = 1;
 	/**
 	 * Геопозиция известна.
 	 */
 	public final static int STATE_OK = 2;
 
-	public final static String[] states = new String[] { "Ожидание сигнала", "Примерная", "Готово", "Ошибка",
+	public final static String[] states = new String[] { "Ожидание сигнала", "Ожидание сигнала", "Готово", "Ошибка",
 			"Недоступно", "Не поддерживается" };
 
 	// для безопасных вызовов

@@ -2,19 +2,23 @@ package mahomaps.screens;
 
 import java.util.Vector;
 
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.TextBox;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
 import mahomaps.map.Geopoint;
-import mahomaps.map.Rect;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
 import mahomaps.ui.Button;
+import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
 import mahomaps.ui.MapOverlay;
@@ -22,7 +26,7 @@ import mahomaps.ui.SimpleText;
 import mahomaps.ui.UIComposite;
 import mahomaps.ui.UIElement;
 
-public class MapCanvas extends MultitouchCanvas {
+public class MapCanvas extends MultitouchCanvas implements IButtonHandler, CommandListener {
 
 	public final int buttonSize = 50;
 	public final int buttonMargin = 10;
@@ -31,7 +35,7 @@ public class MapCanvas extends MultitouchCanvas {
 
 	String[] buttons = new String[] { "geo", "-", "+", "menu" };
 
-	private GeoUpdateThread geo = null;
+	public GeoUpdateThread geo = null;
 	public final Geopoint geolocation;
 
 	// STATE
@@ -46,8 +50,13 @@ public class MapCanvas extends MultitouchCanvas {
 	public final Vector searchPoints = new Vector();
 	public final Vector routePoints = new Vector();
 	public MapOverlay overlay;
+	public ControlButtonsContainer controls;
 	private boolean touch = hasPointerEvents();
 	private final Image dummyBuffer = Image.createImage(1, 1);
+
+	private Command back = new Command("Назад", Command.BACK, 0);
+	private Command search = new Command("Поиск", Command.OK, 1);
+	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -55,22 +64,21 @@ public class MapCanvas extends MultitouchCanvas {
 		geolocation = new Geopoint(0, 0);
 		geolocation.type = Geopoint.LOCATION;
 
+		searchBox.addCommand(back);
+		searchBox.addCommand(search);
+		searchBox.setCommandListener(this);
+
+		controls = new ControlButtonsContainer(this);
+
 		if (MahoMapsApp.api.token == null) {
-			IButtonHandler tokenFailHandler = new IButtonHandler() {
-				public void OnButtonTap(UIElement sender, int uid) {
-					if (uid == -1) {
-						MahoMapsApp.BringSubScreen(new APIReconnectForm());
-						SetOverlayContent(null);
-					} else if (uid == -2) {
-						SetOverlayContent(null);
-					}
-				}
-			};
-			SetOverlayContent(new FillFlowContainer(new UIElement[] {
-					new SimpleText("Не удалось получить токен API.", 0),
-					new SimpleText("Онлайн-функции будут недоступны.", 0),
-					new Button("Ещё раз", -1, tokenFailHandler, 5), new Button("Закрыть", -2, tokenFailHandler, 5) }));
+			NotifyNullToken();
 		}
+	}
+
+	private void NotifyNullToken() {
+		SetOverlayContent(new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось получить токен API.", 0),
+				new SimpleText("Онлайн-функции будут недоступны.", 0), new Button("Ещё раз", -2, this, 5),
+				new Button("Закрыть", 0, this, 5) }));
 	}
 
 	public void SetOverlayContent(UIComposite ui) {
@@ -105,7 +113,6 @@ public class MapCanvas extends MultitouchCanvas {
 		g.fillRect(0, 0, w, h);
 		drawMap(g, w, h);
 		drawOverlay(g, w, h);
-		drawUi(g, w, h);
 		UIElement.CommitInputQueue();
 	}
 
@@ -161,53 +168,19 @@ public class MapCanvas extends MultitouchCanvas {
 		if (geo != null) {
 			g.drawString(GeoUpdateThread.states[geo.state], 5, 25, 0);
 			if (geo.DrawPoint()) {
-				g.drawString(geolocation.lat + " " + geolocation.lon, 5, 45, 0);
+				String lat = String.valueOf(geolocation.lat);
+				if (lat.length() > 4)
+					lat = lat.substring(0, 4);
+				String lon = String.valueOf(geolocation.lon);
+				if (lon.length() > 4)
+					lon = lon.substring(0, 4);
+				g.drawString(lat + " " + lon, 5, 45, 0);
 			}
 		}
 		if (overlay != null)
 			overlay.Paint(g, 0, 0, w, h);
-	}
-
-	private void drawUi(Graphics g, int w, int h) {
-		int y = h;
-		if (touch) {
-			for (int i = 0; i < 4; i++) {
-				y -= buttonSize;
-				y -= buttonMargin;
-				g.setGrayScale(220);
-				g.fillArc(w - buttonSize - buttonMargin, y, buttonSize, buttonSize, 0, 360);
-				if (i != 0) {
-					g.setColor(0);
-				} else {
-					// geo
-					if (geo == null) {
-						g.setColor(0);
-					} else {
-						if (geo.state == GeoUpdateThread.STATE_OK) {
-							g.setColor(0, 200, 0);
-						} else if (geo.state == GeoUpdateThread.STATE_PENDING) {
-							g.setColor(0, 0, 200);
-						} else {
-							g.setColor(255, 0, 0);
-						}
-					}
-				}
-				g.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
-				g.drawString(buttons[i], w - buttonMargin - buttonSize / 2,
-						y + buttonSize / 2 - g.getFont().getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
-			}
-		} else {
-			Font f = Font.getFont(0, 0, 8);
-			int fh = f.getHeight();
-			g.setFont(f);
-			g.setColor(0);
-			g.fillRect(0, h - fh, w, fh);
-			g.setColor(-1);
-			String geos = geo == null ? "Геопозиция" : GeoUpdateThread.states[geo.state];
-			g.drawString("Меню", 0, h - fh, 0);
-			g.drawString("Выбор", w / 2, h - fh, Graphics.TOP | Graphics.HCENTER);
-			g.drawString(geos, w, h - fh, Graphics.TOP | Graphics.RIGHT);
-		}
+		if (controls != null)
+			controls.Paint(g, 0, 0, w, h);
 	}
 
 	// LOGIC
@@ -327,34 +300,56 @@ public class MapCanvas extends MultitouchCanvas {
 			return;
 
 		UIElement.InvokeReleaseEvent();
-		if (overlay != null) {
-			if (UIElement.InvokeTouchEvent(x, y))
-				return;
-		}
-		int w = getWidth();
-		int h = getHeight();
-		// TODO cache tap areas
-		Rect menu = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 4, buttonSize,
-				buttonSize);
-		Rect plus = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 3, buttonSize,
-				buttonSize);
-		Rect minus = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin) * 2, buttonSize,
-				buttonSize);
-		Rect geo = new Rect(w - buttonSize - buttonMargin, h - (buttonSize + buttonMargin), buttonSize, buttonSize);
-		if (plus.containsBoth(x, y, startPx, startPy)) {
-			zoomIn();
-		} else if (minus.containsBoth(x, y, startPx, startPy)) {
-			zoomOut();
-		} else if (geo.containsBoth(x, y, startPx, startPy)) {
-			geo();
-		} else if (menu.containsBoth(x, y, startPx, startPy)) {
-			MahoMapsApp.BringMenu();
-		}
+		UIElement.InvokeTouchEvent(x, y);
 	}
 
 	public void dispose() {
 		if (geo != null)
 			geo.Dispose();
+	}
+
+	public void OnButtonTap(UIElement sender, int uid) {
+		switch (uid) {
+		case -2:
+			MahoMapsApp.BringSubScreen(new APIReconnectForm());
+			SetOverlayContent(null);
+			break;
+		case 0:
+			SetOverlayContent(null);
+			break;
+		case 1:
+			if (MahoMapsApp.api.token == null) {
+				NotifyNullToken();
+			} else if (MahoMapsApp.lastSearch != null) {
+				MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
+			} else {
+				MahoMapsApp.BringSubScreen(searchBox);
+			}
+			break;
+		case 2:
+			MahoMapsApp.BringMenu();
+			break;
+		case 3:
+			zoomIn();
+			break;
+		case 4:
+			zoomOut();
+			break;
+		case 5:
+			geo();
+			break;
+		}
+	}
+
+	public void commandAction(Command c, Displayable d) {
+		if (d == searchBox) {
+			if (c == back) {
+				MahoMapsApp.BringMap();
+			} else {
+				Geopoint geo = GetSearchAnchor();
+				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), geo));
+			}
+		}
 	}
 
 }

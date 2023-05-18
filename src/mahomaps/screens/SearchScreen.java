@@ -14,7 +14,6 @@ import org.json.me.JSONObject;
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.ui.Button;
-import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
 import mahomaps.ui.SimpleText;
@@ -79,11 +78,9 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 	}
 
 	public void SetUI() {
-
-		ColumnsContainer cols = new ColumnsContainer(
-				new UIElement[] { new Button("К списку", 1, this, 5), new Button("Закрыть", 2, this, 5) });
-		FillFlowContainer flow = new FillFlowContainer(new UIElement[] { new SimpleText(query, 0),
-				new SimpleText("Найдено: " + results.length(), 0), new SimpleText("Ничего не выбрано.", 0), cols });
+		FillFlowContainer flow = new FillFlowContainer(
+				new UIElement[] { new SimpleText(query, 0), new SimpleText("Найдено: " + results.length(), 0),
+						new SimpleText("Ничего не выбрано.", 0), new Button("Закрыть", 2, this, 5) });
 		MahoMapsApp.GetCanvas().SetOverlayContent(flow);
 	}
 
@@ -103,9 +100,7 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 	}
 
 	public void OnButtonTap(UIElement sender, int uid) {
-		if (uid == 1) {
-			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
-		} else if (uid == 2) {
+		if (uid == 2) {
 			ResetSearch();
 		}
 	}

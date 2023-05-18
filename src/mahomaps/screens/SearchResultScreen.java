@@ -85,7 +85,7 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 								new ColumnsContainer(new UIElement[] { new Button("Точка А", 2, this, 5),
 										new Button("Точка Б", 3, this, 5) }),
 								new ColumnsContainer(new UIElement[] { new Button("Карточка", 1, this, 5),
-										new Button("К списку", 4, this, 5), new Button("Ко всем", 5, this, 5) }) });
+										new Button("Назад", 5, this, 5) }) });
 
 				MahoMapsApp.GetCanvas().SetOverlayContent(flow);
 			}
@@ -100,9 +100,6 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 			break;
 		case 2:
 		case 3:
-			break;
-		case 4:
-			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
 			break;
 		case 5:
 			MahoMapsApp.lastSearch.SetPoints();
