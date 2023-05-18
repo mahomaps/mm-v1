@@ -57,8 +57,10 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
+			MahoMapsApp.lastSearch.onePointFocused = false;
 			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
 		} else if (c == toMap) {
+			MahoMapsApp.lastSearch.onePointFocused = true;
 			JSONArray results = MahoMapsApp.lastSearch.results;
 			Vector p = MahoMapsApp.GetCanvas().searchPoints;
 			p.removeAllElements();
@@ -102,6 +104,7 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 		case 3:
 			break;
 		case 5:
+			MahoMapsApp.lastSearch.onePointFocused = false;
 			MahoMapsApp.lastSearch.SetPoints();
 			MahoMapsApp.lastSearch.SetUI();
 			break;

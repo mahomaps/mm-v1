@@ -26,6 +26,8 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 	private Geopoint point;
 	public JSONArray results;
 
+	public boolean onePointFocused = false;
+
 	private Command reset = new Command("Сброс", Command.BACK, 0);
 	private Command toMap = new Command("К карте", Command.SCREEN, 0);
 
@@ -89,11 +91,13 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 			ResetSearch();
 			MahoMapsApp.BringMap();
 		} else if (c == toMap) {
+			onePointFocused = false;
 			MahoMapsApp.lastSearch = this;
 			SetPoints();
 			SetUI();
 			MahoMapsApp.BringMap();
 		} else if (c == SELECT_COMMAND) {
+			onePointFocused = true;
 			MahoMapsApp.lastSearch = this;
 			MahoMapsApp.BringSubScreen(new SearchResultScreen(results.getJSONObject(getSelectedIndex())));
 		}
