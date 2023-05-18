@@ -127,11 +127,15 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		while (trY * 256 < (h >> 1))
 			trY++;
 
+		// кэширование для защиты от подмены переключенным потоком
+		final int xo = xOffset;
+		final int tx = tileX;
+
 		int y = yOffset - trY * 256;
 		int yi = tileY - trY;
 		while (y < h / 2) {
-			int x = xOffset - trX * 256;
-			int xi = tileX - trX;
+			int x = xo - trX * 256;
+			int xi = tx - trX;
 			while (x < w / 2) {
 				TileCache tile = tiles.getTile(new TileId(xi, yi, zoom));
 				if (tile != null)
