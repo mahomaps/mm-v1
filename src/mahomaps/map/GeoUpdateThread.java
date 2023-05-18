@@ -19,6 +19,7 @@ public class GeoUpdateThread extends Thread {
 	public int state;
 	private LocationAPI locationAPI;
 	public boolean loop = true;
+	public long lastUpdateTime = System.currentTimeMillis();
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
@@ -50,6 +51,7 @@ public class GeoUpdateThread extends Thread {
 			positionPoint.lon = coordinates[1];
 			positionPoint.color = Geopoint.COLOR_GRAY;
 			state = STATE_OK_PENDING;
+			lastUpdateTime = System.currentTimeMillis();
 		}
 
 		try {
@@ -69,6 +71,7 @@ public class GeoUpdateThread extends Thread {
 					state = STATE_ERROR;
 					e.printStackTrace();
 				}
+				lastUpdateTime = System.currentTimeMillis();
 				Thread.sleep(1000);
 			}
 		} catch (InterruptedException e) {
