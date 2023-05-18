@@ -83,11 +83,10 @@ public class TilesProvider extends Thread {
 							tc.state = TileCache.STATE_READY;
 						}
 					}
-
 				}
 
-				if (errCount != 0)
-					continue;
+				// if (errCount != 0)
+				// continue;
 				if (idleCount != cache.size())
 					continue;
 				synchronized (downloadLock) {
