@@ -94,6 +94,19 @@ public class Geopoint {
 		}
 	}
 
+	public boolean isTouched(MapCanvas map, int x, int y) {
+		x -= map.getWidth() / 2;
+		y -= map.getHeight() / 2;
+		if (Math.abs(GetScreenX(map) - x) < 14) {
+			int py = GetScreenY(map);
+			if (y > py)
+				return false;
+			if (y > py - 40)
+				return true;
+		}
+		return false;
+	}
+
 	public String toString() {
 		String lat1 = String.valueOf(lat);
 		if (lat1.length() > 8)

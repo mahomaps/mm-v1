@@ -10,6 +10,8 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
 
+import org.json.me.JSONObject;
+
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
@@ -353,6 +355,24 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		if (UIElement.InvokeTouchEvent(x, y))
 			return;
 
+		// points
+
+		if (MahoMapsApp.lastSearch != null) {
+			Vector v = searchPoints;
+			for (int i = v.size() - 1; i >= 0; i--) {
+				Geopoint p = (Geopoint) v.elementAt(i);
+				if (p.color == Geopoint.COLOR_RED)
+					continue;
+				if (p.isTouched(this, x, y)) {
+					if (p.object != null) {
+						new SearchResultScreen((JSONObject) p.object).BringAtMap();
+						return;
+					}
+				}
+			}
+		}
+
+		// tap at map
 		if (MahoMapsApp.lastSearch == null) {
 			selection = GetAtCoords(x - getWidth() / 2, y - getHeight() / 2);
 			selection.color = Geopoint.COLOR_RED;
