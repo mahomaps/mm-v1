@@ -44,15 +44,19 @@ public class Geopoint {
 	}
 
 	public int GetScreenY(MapCanvas map) {
+		return GetY(map.zoom, map.tileY, map.yOffset);
+	}
+
+	public int GetY(int zoom, int tileY, int yOffset) {
 		double latR = lat * Math.PI / 180d;
 		double tg = Math.tan(latR / 2 + Math.PI / 4);
 		double linear = MahoMapsApp.ln(tg * CalcLatCorr(latR));
 		double linearLocal = linear * LAT_COEF; // [-128; 128]
 		double linearAbs = 128 - linearLocal; // [0; 256]
 
-		int tilesCount = 1 << map.zoom;
+		int tilesCount = 1 << zoom;
 
-		double py = (tilesCount * linearAbs) - (map.tileY * 256) + map.yOffset;
+		double py = (tilesCount * linearAbs) - (tileY * 256) + yOffset;
 
 		return (int) py;
 	}
@@ -68,7 +72,6 @@ public class Geopoint {
 		int s;
 		switch (type) {
 		case POI_SELECT:
-			break;
 		case POI_MARK:
 			s = search.getWidth() / 8;
 			g.drawRegion(search, s * (color + 4), 0, s, search.getHeight(), 0, px, py,
@@ -87,6 +90,16 @@ public class Geopoint {
 		case ROUTE_C:
 			break;
 		}
+	}
+
+	public String toString() {
+		String lat1 = String.valueOf(lat);
+		if (lat1.length() > 8)
+			lat1 = lat1.substring(0, 8);
+		String lon1 = String.valueOf(lon);
+		if (lon1.length() > 8)
+			lon1 = lon1.substring(0, 8);
+		return lat1 + " " + lon1;
 	}
 
 	public static final int COLOR_RED = 0;
