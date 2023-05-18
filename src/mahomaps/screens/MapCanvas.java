@@ -124,7 +124,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		while (trX * 256 < (w >> 1))
 			trX++;
 		int trY = 1;
-		while (trY * 256 < (w >> 1))
+		while (trY * 256 < (h >> 1))
 			trY++;
 
 		int y = yOffset - trY * 256;
