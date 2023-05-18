@@ -55,42 +55,47 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 		setCommandListener(this);
 	}
 
+	public void BringAtMap() {
+		MahoMapsApp.lastSearch.onePointFocused = true;
+		JSONArray results = MahoMapsApp.lastSearch.results;
+		Vector p = MahoMapsApp.GetCanvas().searchPoints;
+		p.removeAllElements();
+		for (int i = 0; i < results.length(); i++) {
+			JSONObject robj = results.getJSONObject(i);
+			if (robj == obj)
+				continue;
+			JSONArray point = robj.getJSONObject("geometry").getJSONArray("coordinates");
+			Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
+			gp.type = Geopoint.POI_SEARCH;
+			gp.color = Geopoint.COLOR_GRAY;
+			gp.object = robj;
+			p.addElement(gp);
+		}
+		{
+			JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
+			Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
+			gp.type = Geopoint.POI_SEARCH;
+			gp.color = Geopoint.COLOR_RED;
+			p.addElement(gp);
+		}
+		{
+			FillFlowContainer flow = new FillFlowContainer(new UIElement[] { new SimpleText(name, 0),
+					new SimpleText(descr, 0),
+					new ColumnsContainer(
+							new UIElement[] { new Button("Точка А", 2, this, 5), new Button("Точка Б", 3, this, 5) }),
+					new ColumnsContainer(
+							new UIElement[] { new Button("Карточка", 1, this, 5), new Button("Назад", 5, this, 5) }) });
+
+			MahoMapsApp.GetCanvas().SetOverlayContent(flow);
+		}
+	}
+
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			MahoMapsApp.lastSearch.onePointFocused = false;
 			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
 		} else if (c == toMap) {
-			MahoMapsApp.lastSearch.onePointFocused = true;
-			JSONArray results = MahoMapsApp.lastSearch.results;
-			Vector p = MahoMapsApp.GetCanvas().searchPoints;
-			p.removeAllElements();
-			for (int i = 0; i < results.length(); i++) {
-				JSONObject robj = results.getJSONObject(i);
-				if (robj == obj)
-					continue;
-				JSONArray point = robj.getJSONObject("geometry").getJSONArray("coordinates");
-				Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
-				gp.type = Geopoint.POI_SEARCH;
-				gp.color = Geopoint.COLOR_GRAY;
-				p.addElement(gp);
-			}
-			{
-				JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
-				Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
-				gp.type = Geopoint.POI_SEARCH;
-				gp.color = Geopoint.COLOR_RED;
-				p.addElement(gp);
-			}
-			{
-				FillFlowContainer flow = new FillFlowContainer(
-						new UIElement[] { new SimpleText(name, 0), new SimpleText(descr, 0),
-								new ColumnsContainer(new UIElement[] { new Button("Точка А", 2, this, 5),
-										new Button("Точка Б", 3, this, 5) }),
-								new ColumnsContainer(new UIElement[] { new Button("Карточка", 1, this, 5),
-										new Button("Назад", 5, this, 5) }) });
-
-				MahoMapsApp.GetCanvas().SetOverlayContent(flow);
-			}
+			BringAtMap();
 			MahoMapsApp.BringMap();
 		}
 	}

@@ -17,6 +17,8 @@ public class Geopoint {
 	public int type;
 	public int color;
 
+	public Object object;
+
 	public static Image locationIcons;
 	public static Image search;
 

@@ -75,6 +75,7 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 			Geopoint gp = new Geopoint(point1.getDouble(1), point1.getDouble(0));
 			gp.type = Geopoint.POI_SEARCH;
 			gp.color = Geopoint.COLOR_GREEN;
+			gp.object = results.getJSONObject(i);
 			p.addElement(gp);
 		}
 	}
