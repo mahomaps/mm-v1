@@ -131,24 +131,28 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 
 		Geopoint g = new Geopoint(0, lon);
 		double step = 45d;
-		while (step > 0.000001d) {
+		while (true) {
 			double or = g.lat;
+			if (Math.abs(g.GetScreenY(this) - y) <= 2) {
+				System.out.println("Leaving at lat " + g.lat + " due to small diff between target and real");
+				break;
+			}
 			g.lat = or + step;
 			int plus = g.GetScreenY(this);
 			g.lat = or - step;
 			int minus = g.GetScreenY(this);
 			plus -= y;
 			minus -= y;
-			if (Math.abs(plus - minus) <= 2) {
-				g.lat = or;
-				break;
-			}
 			if (Math.abs(plus) > Math.abs(minus)) {
 				g.lat = or - step;
 			} else {
 				g.lat = or + step;
 			}
 			step /= 2d;
+			if (step < 0.000001d) {
+				System.out.println("Leaving at lat " + g.lat + " due to too small step");
+				break;
+			}
 		}
 
 		return g;
