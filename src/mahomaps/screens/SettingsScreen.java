@@ -74,6 +74,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			Apply();
+			Settings.Save();
 			MahoMapsApp.BringMenu();
 		}
 	}

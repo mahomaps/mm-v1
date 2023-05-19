@@ -54,6 +54,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 
 	public void run() {
 		BringSubScreen(new Splash());
+		Settings.Read();
 		version = getAppProperty("MIDlet-Version");
 		String loc = "";
 		try {
