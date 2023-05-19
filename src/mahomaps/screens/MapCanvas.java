@@ -1,5 +1,6 @@
 package mahomaps.screens;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.microedition.lcdui.Command;
@@ -10,12 +11,15 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
 
+import org.json.me.JSONException;
 import org.json.me.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
+import mahomaps.api.YmapsApi;
 import mahomaps.map.GeoUpdateThread;
 import mahomaps.map.Geopoint;
+import mahomaps.map.Route;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
@@ -381,7 +385,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			SetOverlayContent(new FillFlowContainer(new UIElement[] { new SimpleText(selection.toString(), 0),
 					new Button("Что здесь?", 6, this, 5),
 					new ColumnsContainer(
-							new UIElement[] { new Button("Точка А", -2, null, 5), new Button("Точка Б", -2, null, 5) }),
+							new UIElement[] { new Button("Точка А", 7, this, 5), new Button("Точка Б", 8, this, 5) }),
 					new Button("Закрыть", 0, this, 5) }));
 		}
 	}
@@ -425,6 +429,12 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		case 6:
 			MahoMapsApp.BringSubScreen(new SearchScreen(selection.toString(), selection));
 			break;
+		case 7:
+			PushRoutePoint(selection, 1);
+			break;
+		case 8:
+			PushRoutePoint(selection, 2);
+			break;
 		}
 	}
 
@@ -436,6 +446,60 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 				Geopoint geo = GetSearchAnchor();
 				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), geo));
 			}
+		}
+	}
+
+	private void PushRoutePoint(Geopoint geo, int side) {
+		if (MahoMapsApp.api.token == null) {
+			NotifyNullToken();
+			return;
+		}
+		Geopoint a = null;
+		Geopoint b = null;
+		boolean set = false;
+		for (int i = 0; i < routePoints.size(); i++) {
+			Geopoint p = (Geopoint) routePoints.elementAt(i);
+			if (p.type == Geopoint.ROUTE_A)
+				a = p;
+			if (p.type == Geopoint.ROUTE_B)
+				b = p;
+
+			if (side == 1 && p.type == Geopoint.ROUTE_A) {
+				p.lat = geo.lat;
+				p.lon = geo.lon;
+				set = true;
+			}
+			if (side == 2 && p.type == Geopoint.ROUTE_B) {
+				p.lat = geo.lat;
+				p.lon = geo.lon;
+				set = true;
+			}
+		}
+		if (!set) {
+			Geopoint p = new Geopoint(geo.lat, geo.lon);
+			p.type = side == 1 ? Geopoint.ROUTE_A : Geopoint.ROUTE_B;
+			p.color = Geopoint.COLOR_BLUE;
+			if (side == 1)
+				a = p;
+			else
+				b = p;
+			routePoints.addElement(p);
+		}
+
+		if (a != null && b != null) {
+			try {
+				Geopoint[] res = new Route(MahoMapsApp.api.Route(a, b, YmapsApi.ROUTE_BYFOOT)).points;
+				for (int i = 0; i < res.length; i++) {
+					routePoints.addElement(res[i]);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 
