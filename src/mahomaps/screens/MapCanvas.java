@@ -128,19 +128,20 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		double lon = dx - 180d;
 
 		Geopoint g = new Geopoint(0, lon);
-		double step = 45d;
+		double step = 60d;
 		while (true) {
 			double or = g.lat;
-			if (Math.abs(g.GetScreenY(ms) - y) <= 2) {
+			int zero = Math.abs(g.GetScreenY(ms) - y);
+			if (zero <= 2)
 				break;
-			}
 			g.lat = or + step;
-			int plus = g.GetScreenY(ms);
+			int plus = Math.abs(g.GetScreenY(ms) - y);
 			g.lat = or - step;
-			int minus = g.GetScreenY(ms);
-			plus -= y;
-			minus -= y;
-			if (Math.abs(plus) > Math.abs(minus)) {
+			int minus = Math.abs(g.GetScreenY(ms) - y);
+
+			if (zero < Math.min(minus, plus)) {
+				g.lat = or;
+			} else if (minus < plus) {
 				g.lat = or - step;
 			} else {
 				g.lat = or + step;
@@ -148,7 +149,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			step /= 2d;
 			if (step < 0.000001d) {
 				System.out.println("Step too small, bumping");
-				step = 0.01d;
+				step = 0.05d;
 			}
 		}
 
