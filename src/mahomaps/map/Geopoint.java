@@ -116,24 +116,30 @@ public class Geopoint {
 		boolean latS = lat >= 0;
 		double latF = Math.abs(lat) % 1;
 		int latD = (int) (Math.abs(lat) - latF);
+		String latFS = String.valueOf(latF).substring(1);
+		if (latFS.length() > 7)
+			latFS = latFS.substring(0, 7);
 
 		boolean lonS = lon >= 0;
 		double lonF = Math.abs(lon) % 1;
 		int lonD = (int) (Math.abs(lon) - lonF);
+		String lonFS = String.valueOf(lonF).substring(1);
+		if (lonFS.length() > 7)
+			lonFS = lonFS.substring(0, 7);
 
 		StringBuffer sb = new StringBuffer();
 
-		if (latS)
+		if (!latS)
 			sb.append('-');
 		sb.append(latD);
-		sb.append(String.valueOf(latF).substring(1));
+		sb.append(latFS);
 
 		sb.append(' ');
 
-		if (lonS)
+		if (!lonS)
 			sb.append('-');
 		sb.append(lonD);
-		sb.append(String.valueOf(lonF).substring(1));
+		sb.append(lonFS);
 
 		return sb.toString();
 	}
