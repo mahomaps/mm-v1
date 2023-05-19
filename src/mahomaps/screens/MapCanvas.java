@@ -48,8 +48,8 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	public int zoom = 0;
 	public int tileX = 0;
 	public int tileY = 0;
-	public int xOffset = 0;
-	public int yOffset = 0;
+	public int xOffset = -128;
+	public int yOffset = -128;
 	int startPx, startPy;
 	int lastPx, lastPy;
 	boolean dragActive;
