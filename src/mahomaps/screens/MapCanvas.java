@@ -223,7 +223,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		if (Settings.drawTileInfo)
 			g.drawString(state.toString(), 5, 5, 0);
 
-		if (geo != null) {
+		if (geo != null && Settings.showGeo) {
 			g.drawString(GeoUpdateThread.states[geo.state] + " " + geo.sattelites + " " + geo.method, 5, 25, 0);
 			if (geo.DrawPoint()) {
 				g.drawString(geolocation.toString(), 5, 45, 0);
