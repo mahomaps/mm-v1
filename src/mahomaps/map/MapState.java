@@ -24,6 +24,21 @@ public class MapState {
 			tileY++;
 			yOffset += 256;
 		}
+
+		final int tc = (1 << zoom);
+
+		if (tileX < 0)
+			tileX += tc;
+		if (tileX >= tc)
+			tileX -= tc;
+		if (tileY < 0) {
+			tileY = 0;
+			yOffset = 0;
+		}
+		if (tileY >= tc) {
+			tileY = tc - 1;
+			yOffset = -255;
+		}
 	}
 
 	public MapState Clone() {
