@@ -13,6 +13,7 @@ import org.json.me.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
+import mahomaps.map.MapState;
 import mahomaps.ui.Button;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
@@ -27,6 +28,7 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 	private final JSONObject obj;
 	private final String name;
 	private final String descr;
+	private Geopoint point;
 
 	public SearchResultScreen(JSONObject obj) {
 		super("Результат поиска");
@@ -65,27 +67,29 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 			JSONObject robj = results.getJSONObject(i);
 			if (robj == obj)
 				continue;
-			JSONArray point = robj.getJSONObject("geometry").getJSONArray("coordinates");
-			Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
+			JSONArray jp = robj.getJSONObject("geometry").getJSONArray("coordinates");
+			Geopoint gp = new Geopoint(jp.getDouble(1), jp.getDouble(0));
 			gp.type = Geopoint.POI_SEARCH;
 			gp.color = Geopoint.COLOR_GRAY;
 			gp.object = robj;
 			p.addElement(gp);
 		}
 		{
-			JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
-			Geopoint gp = new Geopoint(point.getDouble(1), point.getDouble(0));
+			JSONArray jp = obj.getJSONObject("geometry").getJSONArray("coordinates");
+			Geopoint gp = new Geopoint(jp.getDouble(1), jp.getDouble(0));
 			gp.type = Geopoint.POI_SEARCH;
 			gp.color = Geopoint.COLOR_RED;
 			p.addElement(gp);
+			point = gp;
 		}
 		{
 			FillFlowContainer flow = new FillFlowContainer(new UIElement[] { new SimpleText(name, 0),
 					new SimpleText(descr, 0),
 					new ColumnsContainer(
-							new UIElement[] { new Button("Точка А", 2, this, 5), new Button("Точка Б", 3, this, 5) }),
+							new UIElement[] { new Button("Карточка", 1, this, 5), new Button("Показать", 4, this, 5) }),
 					new ColumnsContainer(
-							new UIElement[] { new Button("Карточка", 1, this, 5), new Button("Назад", 5, this, 5) }) });
+							new UIElement[] { new Button("Точка А", 2, this, 5), new Button("Точка Б", 3, this, 5) }),
+					new Button("Назад", 5, this, 5) });
 
 			MahoMapsApp.GetCanvas().SetOverlayContent(flow);
 		}
@@ -108,6 +112,10 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 			break;
 		case 2:
 		case 3:
+			break;
+		case 4:
+			if (point != null)
+				MahoMapsApp.GetCanvas().state = MapState.FocusAt(point);
 			break;
 		case 5:
 			MahoMapsApp.lastSearch.onePointFocused = false;
