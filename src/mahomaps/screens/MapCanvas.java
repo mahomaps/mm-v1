@@ -136,6 +136,10 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		double step = 60d;
 		while (true) {
 			double or = g.lat;
+			if (Math.abs(or) > 91d) {
+				g.lat = or > 0 ? 90 : -90;
+				return g;
+			}
 			int zero = Math.abs(g.GetScreenY(ms) - y);
 			if (zero <= 2)
 				break;
