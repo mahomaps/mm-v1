@@ -6,6 +6,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 import mahomaps.screens.MapCanvas;
 
 public class Geopoint {
@@ -85,7 +86,8 @@ public class Geopoint {
 			break;
 		case LOCATION:
 			s = locationIcons.getWidth() / 4;
-			g.drawRegion(locationIcons, s * color, s * 2, s, s, 0, px, py, Graphics.VCENTER | Graphics.HCENTER);
+			g.drawRegion(locationIcons, s * color, s * Settings.geoLook, s, s, 0, px, py,
+					Graphics.VCENTER | Graphics.HCENTER);
 			break;
 		case ROUTE_A:
 		case ROUTE_B:
