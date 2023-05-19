@@ -379,6 +379,10 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		// tap at map
 		if (MahoMapsApp.lastSearch == null) {
 			selection = GetAtCoords(x - getWidth() / 2, y - getHeight() / 2);
+			if (Math.abs(selection.lat) > 85) {
+				selection = null;
+				return;
+			}
 			selection.color = Geopoint.COLOR_RED;
 			selection.type = Geopoint.POI_SELECT;
 
