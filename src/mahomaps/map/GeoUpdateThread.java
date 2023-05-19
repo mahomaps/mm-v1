@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import javax.microedition.location.Coordinates;
 import javax.microedition.location.Location;
+import javax.microedition.location.LocationException;
 import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
 
@@ -71,6 +72,15 @@ public class GeoUpdateThread extends Thread {
 			lastUpdateTime = System.currentTimeMillis();
 		}
 		locationAPI.setupListener();
+		try {
+			while(true) {
+				synchronized(lock) {
+					lock.wait();
+				}
+				locationAPI.resetProvider();
+			}
+		} catch (Exception e) {
+		}
 	}
 	
 	public void restart() {
@@ -160,7 +170,20 @@ public class GeoUpdateThread extends Thread {
 		}
 
 		public void setupListener() {
-			locationProvider.setLocationListener(new LocationAPIListener(), 10, 10, 10);
+			locationProvider.setLocationListener(new LocationAPIListener(), 5, 5, 5);
+		}
+
+		public void resetProvider() throws Exception {
+			System.out.println("resetProvider");
+			Thread.sleep(5000);
+			LocationProvider old = locationProvider;
+			try {
+				locationProvider = LocationProvider.getInstance(null);
+				old.setLocationListener(null, 0, 0, 0);
+				setupListener();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		class LocationAPIListener implements LocationListener {
@@ -231,6 +254,10 @@ public class GeoUpdateThread extends Thread {
 			public void providerStateChanged(LocationProvider provider, int newState) {
 				if(newState != LocationProvider.AVAILABLE) {
 					state = STATE_OK_PENDING;
+				}
+				// на случай если изменился провайдер
+				if(newState == LocationProvider.OUT_OF_SERVICE) {
+					restart();
 				}
 			}
 		}
