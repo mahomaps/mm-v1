@@ -44,7 +44,8 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 			JSONObject hours = org.optJSONObject("Hours");
 			if (hours != null)
 				append(new StringItem("Режим работы", hours.optString("text")));
-			append(new StringItem("Сайт", org.optString("url")));
+			if (org.optString("url", null) != null)
+				append(new StringItem("Сайт", org.optString("url")));
 			JSONArray phones = org.optJSONArray("Phones");
 			if (phones != null && phones.length() != 0)
 				append(new StringItem("Телефон", phones.getJSONObject(0).optString("formatted")));
