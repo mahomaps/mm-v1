@@ -132,7 +132,6 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		while (true) {
 			double or = g.lat;
 			if (Math.abs(g.GetScreenY(ms) - y) <= 2) {
-				System.out.println("Leaving at lat " + g.lat + " due to small diff between target and real");
 				break;
 			}
 			g.lat = or + step;
@@ -148,8 +147,8 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			}
 			step /= 2d;
 			if (step < 0.000001d) {
-				System.out.println("Leaving at lat " + g.lat + " due to too small step");
-				break;
+				System.out.println("Step too small, bumping");
+				step = 0.01d;
 			}
 		}
 
