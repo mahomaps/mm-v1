@@ -36,17 +36,17 @@ public class Geopoint {
 		this.lon = lon;
 	}
 
-	public int GetScreenX(MapCanvas map) {
-		int tilesCount = 1 << map.zoom;
+	public int GetScreenX(MapState ms) {
+		int tilesCount = 1 << ms.zoom;
 		double tile = (tilesCount * (lon + 180d)) / 360d;
-		tile -= map.tileX;
+		tile -= ms.tileX;
 		tile *= 256;
-		tile += map.xOffset;
+		tile += ms.xOffset;
 		return (int) tile;
 	}
 
-	public int GetScreenY(MapCanvas map) {
-		return GetY(map.zoom, map.tileY, map.yOffset);
+	public int GetScreenY(MapState ms) {
+		return GetY(ms.zoom, ms.tileY, ms.yOffset);
 	}
 
 	public int GetY(int zoom, int tileY, int yOffset) {
@@ -68,9 +68,9 @@ public class Geopoint {
 		return MahoMapsApp.pow(base, (EL_CORR / 2));
 	}
 
-	public void paint(Graphics g, MapCanvas map) {
-		int px = GetScreenX(map);
-		int py = GetScreenY(map);
+	public void paint(Graphics g, MapState ms) {
+		int px = GetScreenX(ms);
+		int py = GetScreenY(ms);
 		int s;
 		switch (type) {
 		case POI_SELECT:
@@ -90,15 +90,18 @@ public class Geopoint {
 		case ROUTE_A:
 		case ROUTE_B:
 		case ROUTE_C:
+			s = search.getWidth() / 8;
+			g.drawRegion(search, s * (color + 4), 0, s, search.getHeight(), 0, px, py,
+					Graphics.BOTTOM | Graphics.HCENTER);
 			break;
 		}
 	}
 
-	public boolean isTouched(MapCanvas map, int x, int y) {
+	public boolean isTouched(MapCanvas map, MapState ms, int x, int y) {
 		x -= map.getWidth() / 2;
 		y -= map.getHeight() / 2;
-		if (Math.abs(GetScreenX(map) - x) < 14) {
-			int py = GetScreenY(map);
+		if (Math.abs(GetScreenX(ms) - x) < 14) {
+			int py = GetScreenY(ms);
 			if (y > py)
 				return false;
 			if (y > py - 40)

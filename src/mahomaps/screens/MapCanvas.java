@@ -19,6 +19,7 @@ import mahomaps.Settings;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.GeoUpdateThread;
 import mahomaps.map.Geopoint;
+import mahomaps.map.MapState;
 import mahomaps.map.Route;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
@@ -45,11 +46,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	public GeoUpdateThread geo = null;
 
 	// STATE
-	public int zoom = 0;
-	public int tileX = 0;
-	public int tileY = 0;
-	public int xOffset = -128;
-	public int yOffset = -128;
+	public volatile MapState state = MapState.Default();
 	int startPx, startPy;
 	int lastPx, lastPy;
 	boolean dragActive;
@@ -120,11 +117,12 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	 * @return Точка.
 	 */
 	public Geopoint GetAtCoords(int x, int y) {
-		int tilesCount = 1 << zoom;
+		MapState ms = state.Clone();
+		int tilesCount = 1 << ms.zoom;
 		double dx = x;
-		dx -= xOffset;
+		dx -= ms.xOffset;
 		dx /= 256;
-		dx += tileX;
+		dx += ms.tileX;
 		dx *= 360d;
 		dx /= tilesCount;
 		double lon = dx - 180d;
@@ -133,14 +131,14 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		double step = 45d;
 		while (true) {
 			double or = g.lat;
-			if (Math.abs(g.GetScreenY(this) - y) <= 2) {
+			if (Math.abs(g.GetScreenY(ms) - y) <= 2) {
 				System.out.println("Leaving at lat " + g.lat + " due to small diff between target and real");
 				break;
 			}
 			g.lat = or + step;
-			int plus = g.GetScreenY(this);
+			int plus = g.GetScreenY(ms);
 			g.lat = or - step;
-			int minus = g.GetScreenY(this);
+			int minus = g.GetScreenY(ms);
 			plus -= y;
 			minus -= y;
 			if (Math.abs(plus) > Math.abs(minus)) {
@@ -171,6 +169,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	}
 
 	private void drawMap(Graphics g, int w, int h) {
+		MapState ms = state;
 		tiles.BeginMapPaint();
 		g.translate(w >> 1, h >> 1);
 
@@ -182,16 +181,16 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			trY++;
 
 		// кэширование для защиты от подмены переключенным потоком
-		final int xo = xOffset;
-		final int tx = tileX;
+		final int xo = ms.xOffset;
+		final int tx = ms.tileX;
 
-		int y = yOffset - trY * 256;
-		int yi = tileY - trY;
+		int y = ms.yOffset - trY * 256;
+		int yi = ms.tileY - trY;
 		while (y < h / 2) {
 			int x = xo - trX * 256;
 			int xi = tx - trX;
 			while (x < w / 2) {
-				TileCache tile = tiles.getTile(new TileId(xi, yi, zoom));
+				TileCache tile = tiles.getTile(new TileId(xi, yi, ms.zoom));
 				if (tile != null)
 					tile.paint(g, x, y);
 				x += 256;
@@ -202,18 +201,18 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		}
 
 		if (geo != null && geo.DrawPoint()) {
-			geolocation.paint(g, this);
+			geolocation.paint(g, ms);
 		}
 		for (int i = 0; i < searchPoints.size(); i++) {
 			Geopoint p = (Geopoint) searchPoints.elementAt(i);
-			p.paint(g, this);
+			p.paint(g, ms);
 		}
 		for (int i = 0; i < routePoints.size(); i++) {
 			Geopoint p = (Geopoint) routePoints.elementAt(i);
-			p.paint(g, this);
+			p.paint(g, ms);
 		}
 		if (selection != null)
-			selection.paint(g, this);
+			selection.paint(g, ms);
 
 		g.translate(-(w >> 1), -(h >> 1));
 		tiles.EndMapPaint();
@@ -223,39 +222,39 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		g.setColor(0);
 		g.setFont(Font.getFont(0, 0, 8));
 		if (Settings.drawTileInfo)
-			g.drawString("x " + tileX + " y " + tileY + " zoom=" + zoom, 5, 5, 0);
+			g.drawString("x " + state.tileX + " y " + state.tileY + " zoom=" + state.zoom, 5, 5, 0);
 
 		if (geo != null) {
 			String s = "";
 			int t = geo.type;
-			if((t & 1) == 1) {
+			if ((t & 1) == 1) {
 				s = "GPS";
 			}
-			if((t & 262144) == 262144) {
+			if ((t & 262144) == 262144) {
 				s = "A" + s;
 			}
-			if((t & 524288) == 524288) {
+			if ((t & 524288) == 524288) {
 				s = "U" + s;
 			}
-			if((t & 2) == 2) {
+			if ((t & 2) == 2) {
 				s += "TD";
 			}
-			if((t & 4) == 4) {
+			if ((t & 4) == 4) {
 				s += "TOA";
 			}
-			if((t & 8) == 8) {
+			if ((t & 8) == 8) {
 				s += "CID";
 			}
-			if((t & 16) == 16) {
+			if ((t & 16) == 16) {
 				s += "SR";
 			}
-			if((t & 32) == 32) {
+			if ((t & 32) == 32) {
 				s += "AOA";
 			}
-			if((t & 65536) == 65536) {
+			if ((t & 65536) == 65536) {
 				s += "TB";
 			}
-			if((t & 131072) == 131072) {
+			if ((t & 131072) == 131072) {
 				s += "NB";
 			}
 			g.drawString(GeoUpdateThread.states[geo.state] + " " + geo.sattelites + " " + s, 5, 25, 0);
@@ -282,43 +281,12 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		flushGraphics();
 	}
 
-	public void zoomIn() {
-		if (zoom >= 18)
-			return;
-		zoom++;
-		tileX *= 2;
-		tileY *= 2;
-		xOffset *= 2;
-		yOffset *= 2;
-		if (xOffset < -255) {
-			tileX++;
-			xOffset += 256;
-		}
-		if (yOffset < -255) {
-			tileY++;
-			yOffset += 256;
-		}
-	}
-
-	public void zoomOut() {
-		if (zoom <= 0)
-			return;
-		zoom--;
-		tileX /= 2;
-		tileY /= 2;
-		xOffset /= 2;
-		yOffset /= 2;
-	}
-
 	public void geo() {
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
 		} else if (geo.DrawPoint()) {
-			zoom = 16;
-			xOffset -= geolocation.GetScreenX(this);
-			yOffset -= geolocation.GetScreenY(this);
-			ClampOffset();
+			state = MapState.FocusAt(geolocation);
 		} else if (geo.state == GeoUpdateThread.STATE_UNAVAILABLE) {
 			geo.start();
 		}
@@ -359,31 +327,12 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 				} else
 					return;
 			}
-			xOffset += x - lastPx;
-			yOffset += y - lastPy;
+			state.xOffset += x - lastPx;
+			state.yOffset += y - lastPy;
 			lastPx = x;
 			lastPy = y;
 
-			ClampOffset();
-		}
-	}
-
-	private void ClampOffset() {
-		while (xOffset > 0) {
-			tileX--;
-			xOffset -= 256;
-		}
-		while (yOffset > 0) {
-			tileY--;
-			yOffset -= 256;
-		}
-		while (xOffset < -255) {
-			tileX++;
-			xOffset += 256;
-		}
-		while (yOffset < -255) {
-			tileY++;
-			yOffset += 256;
+			state.ClampOffset();
 		}
 	}
 
@@ -405,7 +354,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 				Geopoint p = (Geopoint) v.elementAt(i);
 				if (p.color == Geopoint.COLOR_RED)
 					continue;
-				if (p.isTouched(this, x, y)) {
+				if (p.isTouched(this, state, x, y)) {
 					if (p.object != null) {
 						new SearchResultScreen((JSONObject) p.object).BringAtMap();
 						return;
@@ -460,10 +409,10 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			MahoMapsApp.BringMenu();
 			break;
 		case 3:
-			zoomIn();
+			state = state.ZoomIn();
 			break;
 		case 4:
-			zoomOut();
+			state = state.ZoomOut();
 			break;
 		case 5:
 			geo();
@@ -485,8 +434,8 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			if (c == back) {
 				MahoMapsApp.BringMap();
 			} else {
-				Geopoint geo = GetSearchAnchor();
-				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), geo));
+				Geopoint sa = GetSearchAnchor();
+				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), sa));
 			}
 		}
 	}
