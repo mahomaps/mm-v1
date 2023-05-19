@@ -225,39 +225,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			g.drawString("x " + state.tileX + " y " + state.tileY + " zoom=" + state.zoom, 5, 5, 0);
 
 		if (geo != null) {
-			String s = "";
-			int t = geo.type;
-			if ((t & 1) == 1) {
-				s = "GPS";
-			}
-			if ((t & 262144) == 262144) {
-				s = "A" + s;
-			}
-			if ((t & 524288) == 524288) {
-				s = "U" + s;
-			}
-			if ((t & 2) == 2) {
-				s += "TD";
-			}
-			if ((t & 4) == 4) {
-				s += "TOA";
-			}
-			if ((t & 8) == 8) {
-				s += "CID";
-			}
-			if ((t & 16) == 16) {
-				s += "SR";
-			}
-			if ((t & 32) == 32) {
-				s += "AOA";
-			}
-			if ((t & 65536) == 65536) {
-				s += "TB";
-			}
-			if ((t & 131072) == 131072) {
-				s += "NB";
-			}
-			g.drawString(GeoUpdateThread.states[geo.state] + " " + geo.sattelites + " " + s, 5, 25, 0);
+			g.drawString(GeoUpdateThread.states[geo.state] + " " + geo.sattelites + " " + geo.method, 5, 25, 0);
 			if (geo.DrawPoint()) {
 				String lat = String.valueOf(geolocation.lat);
 				if (lat.length() > 4)
@@ -288,7 +256,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		} else if (geo.DrawPoint()) {
 			state = MapState.FocusAt(geolocation);
 		} else if (geo.state == GeoUpdateThread.STATE_UNAVAILABLE) {
-			geo.start();
+			geo.restart();
 		}
 	}
 

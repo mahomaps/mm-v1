@@ -23,7 +23,9 @@ public class GeoUpdateThread extends Thread {
 	public boolean loop = true;
 	public long lastUpdateTime = System.currentTimeMillis();
 	public int sattelites;
-	public int type;
+	public String method;
+	private Object lock = new Object();
+	public String bearer;
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
@@ -43,8 +45,18 @@ public class GeoUpdateThread extends Thread {
 			state = STATE_UNSUPPORTED;
 			System.out.println("Location api is not supported");
 			e.printStackTrace();
+			return;
 		}
 		if (locationAPI == null) {
+			try {
+				while(true) {
+					synchronized(lock) {
+						lock.wait();
+					}
+					run();
+				}
+			} catch (Exception e) {
+			}
 			return;
 		}
 		positionPoint.lat = 0;
@@ -58,42 +70,13 @@ public class GeoUpdateThread extends Thread {
 			state = STATE_OK_PENDING;
 			lastUpdateTime = System.currentTimeMillis();
 		}
-		/*
-		try {
-			while (loop) {
-				try {
-					coordinates = locationAPI.getNewCoordinates(-1);
-					String nmea = locationAPI.getNmea();
-					if(nmea != null) {
-						String[] sequence = split(nmea, '\n');
-						for(int i = 0; i < sequence.length; i++) {
-							String[] sentence = split(sequence[i], ',');
-							if(sentence[0].endsWith("GSV")) {
-								sattelites = Integer.parseInt(sentence[3]);
-							}
-						}
-					}
-					if (coordinates[0] != 0 && coordinates[1] != 0) {
-						positionPoint.lat = coordinates[0];
-						positionPoint.lon = coordinates[1];
-						positionPoint.color = Geopoint.COLOR_RED;
-						state = STATE_OK;
-					} else {
-						state = STATE_UNAVAILABLE;
-					}
-				} catch (Exception e) {
-					positionPoint.color = Geopoint.COLOR_GRAY;
-					state = STATE_ERROR;
-					e.printStackTrace();
-				}
-				lastUpdateTime = System.currentTimeMillis();
-				Thread.sleep(1000);
-			}
-		} catch (InterruptedException e) {
-		}
-		state = STATE_UNAVAILABLE;
-		*/
 		locationAPI.setupListener();
+	}
+	
+	public void restart() {
+		synchronized(lock) {
+			lock.notify();
+		}
 	}
 	
 	private static String[] split(String str, char d) {
@@ -161,7 +144,6 @@ public class GeoUpdateThread extends Thread {
 	// для безопасных вызовов
 	class LocationAPI {
 		public LocationProvider locationProvider;
-//		private Location location;
 
 		public LocationAPI() throws Exception {
 			locationProvider = LocationProvider.getInstance(null);
@@ -176,16 +158,7 @@ public class GeoUpdateThread extends Thread {
 				return null;
 			return new double[] { coordinates.getLatitude(), coordinates.getLongitude() };
 		}
-/*
-		public double[] getNewCoordinates(int timeout) throws Exception {
-			location = locationProvider.getLocation(timeout);
-			if(!location.isValid()) {
-				return null;
-			}
-			Coordinates coordinates = location.getQualifiedCoordinates();
-			return new double[] { coordinates.getLatitude(), coordinates.getLongitude() };
-		}
-*/
+
 		public void setupListener() {
 			locationProvider.setLocationListener(new LocationAPIListener(), 10, 10, 10);
 		}
@@ -193,6 +166,7 @@ public class GeoUpdateThread extends Thread {
 		class LocationAPIListener implements LocationListener {
 
 			public void locationUpdated(LocationProvider provider, Location location) {
+				// определение кол-ва спутников
 				String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
 				if(nmea != null) {
 					String[] sequence = split(nmea, '\n');
@@ -208,7 +182,38 @@ public class GeoUpdateThread extends Thread {
 					}
 					sattelites = s;
 				}
-				type = location.getLocationMethod();
+				String s = "";
+				int t = location.getLocationMethod();
+				if((t & Location.MTE_SATELLITE) == Location.MTE_SATELLITE) {
+					s = "GPS";
+				}
+				if((t & Location.MTE_TIMEDIFFERENCE) == Location.MTE_TIMEDIFFERENCE) {
+					s += "TD";
+				}
+				if((t & Location.MTE_TIMEOFARRIVAL) == Location.MTE_TIMEOFARRIVAL) {
+					s += "TOA";
+				}
+				if((t & Location.MTE_CELLID) == Location.MTE_CELLID) {
+					s += "CID";
+				}
+				if((t & Location.MTE_SHORTRANGE) == Location.MTE_SHORTRANGE) {
+					s += "SR";
+				}
+				if((t & Location.MTE_ANGLEOFARRIVAL) == Location.MTE_ANGLEOFARRIVAL) {
+					s += "AOA";
+				}
+				if((t & Location.MTA_ASSISTED) == Location.MTA_ASSISTED) {
+					s = "A " + s;
+				} else if((t & Location.MTA_UNASSISTED) == Location.MTA_UNASSISTED) {
+					s = "U " + s;
+				}
+				if((t & Location.MTY_TERMINALBASED) == Location.MTY_TERMINALBASED) {
+					s = "TB " + s;
+				}
+				if((t & Location.MTY_NETWORKBASED) == Location.MTY_NETWORKBASED) {
+					s = "NB " + s;
+				}
+				method = s;
 				if(location.isValid()) {
 					Coordinates coordinates = location.getQualifiedCoordinates();
 					if (coordinates.getLatitude() != 0 && coordinates.getLongitude() != 0) {
