@@ -23,9 +23,9 @@ public class GeoUpdateThread extends Thread {
 	public boolean loop = true;
 	public long lastUpdateTime = System.currentTimeMillis();
 	public int sattelites;
-	public String method;
+	public String method = "";
 	private Object lock = new Object();
-	public String bearer;
+	public String bearer = "";
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
