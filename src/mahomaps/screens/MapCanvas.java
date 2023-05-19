@@ -106,7 +106,12 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		if (geo != null && geo.DrawPoint()) {
 			return geolocation;
 		}
-		return GetAtCoords(0, 0);
+		Geopoint p = GetAtCoords(0, 0);
+		if (p.lat > 80d)
+			p.lat = 80d;
+		if (p.lat < -80d)
+			p.lat = -80d;
+		return p;
 	}
 
 	/**
