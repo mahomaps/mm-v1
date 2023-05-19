@@ -78,4 +78,8 @@ public class MapState {
 		ms.yOffset = -128;
 		return ms;
 	}
+
+	public String toString() {
+		return "X: " + xOffset + "|" + tileX + " Y: " + yOffset + "|" + tileY + " Z: " + zoom;
+	}
 }

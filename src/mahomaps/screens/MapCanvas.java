@@ -221,18 +221,12 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		g.setColor(0);
 		g.setFont(Font.getFont(0, 0, 8));
 		if (Settings.drawTileInfo)
-			g.drawString("x " + state.tileX + " y " + state.tileY + " zoom=" + state.zoom, 5, 5, 0);
+			g.drawString(state.toString(), 5, 5, 0);
 
 		if (geo != null) {
 			g.drawString(GeoUpdateThread.states[geo.state] + " " + geo.sattelites + " " + geo.method, 5, 25, 0);
 			if (geo.DrawPoint()) {
-				String lat = String.valueOf(geolocation.lat);
-				if (lat.length() > 4)
-					lat = lat.substring(0, 4);
-				String lon = String.valueOf(geolocation.lon);
-				if (lon.length() > 4)
-					lon = lon.substring(0, 4);
-				g.drawString(lat + " " + lon, 5, 45, 0);
+				g.drawString(geolocation.toString(), 5, 45, 0);
 			}
 		}
 		if (overlay != null)

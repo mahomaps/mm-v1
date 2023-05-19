@@ -113,13 +113,29 @@ public class Geopoint {
 	}
 
 	public String toString() {
-		String lat1 = String.valueOf(lat);
-		if (lat1.length() > 8)
-			lat1 = lat1.substring(0, 8);
-		String lon1 = String.valueOf(lon);
-		if (lon1.length() > 8)
-			lon1 = lon1.substring(0, 8);
-		return lat1 + " " + lon1;
+		boolean latS = lat >= 0;
+		double latF = Math.abs(lat) % 1;
+		int latD = (int) (Math.abs(lat) - latF);
+
+		boolean lonS = lon >= 0;
+		double lonF = Math.abs(lon) % 1;
+		int lonD = (int) (Math.abs(lon) - lonF);
+
+		StringBuffer sb = new StringBuffer();
+
+		if (latS)
+			sb.append('-');
+		sb.append(latD);
+		sb.append(String.valueOf(latF).substring(1));
+
+		sb.append(' ');
+
+		if (lonS)
+			sb.append('-');
+		sb.append(lonD);
+		sb.append(String.valueOf(lonF).substring(1));
+
+		return sb.toString();
 	}
 
 	public static final int COLOR_RED = 0;
