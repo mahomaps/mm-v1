@@ -83,33 +83,30 @@ public class RouteDecoder {
 	}
 
 	public static Geopoint[] DecodeRoutePath(final String data) {
-		System.out.println(data);
 		double o = 1000000d;
-		// поведение отличается от атоб в жс!
-		byte[] t = Base64ToBlob(data.replace('-', '/').replace('_', '+'));
-		for (int i = 0; i < 16; i++) {
-			int d = (t[i] & 0xFF);
-			System.out.println(i + ": " + d);
-		}
+		byte[] t = Base64ToBlob(data.replace('-', '+').replace('_', '/'));
+
 		Stack stack = new Stack();
 		double[] n = new double[2];
-		for (int i = 0; i < t.length; i += 8) {
+		for (int i = 0; i < t.length - 8; i += 8) {
 			int c1 = 0;
 			int c2 = 0;
 			for (int j = 0; j < 4; j++) {
 				c1 |= (t[i + j] & 0xFF) << (8 * j);
 				c2 |= (t[i + j + 4] & 0xFF) << (8 * j);
 			}
-			System.out.println(c1 + " " + c2);
 			double d1 = c1 / o;
 			double d2 = c2 / o;
 			double[] l = new double[] { d1 + n[0], d2 + n[1] };
 			n = l;
 
-			stack.push(new Geopoint(l[1], l[0]));
+			Geopoint g = new Geopoint(l[1], l[0]);
+			g.type = Geopoint.ROUTE_VERTEX;
+			stack.push(g);
 		}
 		Geopoint[] arr = new Geopoint[stack.size()];
 		stack.copyInto(arr);
+		System.out.println("Route points count: " + arr.length);
 		return arr;
 	}
 }

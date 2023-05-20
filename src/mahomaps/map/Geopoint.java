@@ -103,6 +103,9 @@ public class Geopoint {
 			s = route.getWidth() / 3;
 			g.drawRegion(route, s * 2, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
 			break;
+		case ROUTE_VERTEX:
+			g.setColor(0xff0000);
+			g.fillRect(px - 2, py - 2, 4, 4);
 		}
 	}
 
@@ -172,6 +175,7 @@ public class Geopoint {
 	public static final int ROUTE_A = 4;
 	public static final int ROUTE_B = 5;
 	public static final int ROUTE_C = 6;
+	public static final int ROUTE_VERTEX = 7;
 
 	public static final double PI = 3.14159265358979323846;
 	public static final double LAT_COEF = 40.74366567247929d;
