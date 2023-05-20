@@ -22,11 +22,13 @@ public class Geopoint {
 
 	public static Image locationIcons;
 	public static Image search;
+	public static Image route;
 
 	static {
 		try {
 			locationIcons = Image.createImage("/geo40.png");
 			search = Image.createImage("/search40.png");
+			route = Image.createImage("/route40.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -90,11 +92,16 @@ public class Geopoint {
 					Graphics.VCENTER | Graphics.HCENTER);
 			break;
 		case ROUTE_A:
-		case ROUTE_B:
-		case ROUTE_C:
-			s = search.getWidth() / 8;
-			g.drawRegion(search, s * (color + 4), 0, s, search.getHeight(), 0, px, py,
+			g.drawRegion(route, 0, 0, route.getWidth() / 3, route.getHeight(), 0, px, py,
 					Graphics.BOTTOM | Graphics.HCENTER);
+			break;
+		case ROUTE_B:
+			s = route.getWidth() / 3;
+			g.drawRegion(route, s, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+			break;
+		case ROUTE_C:
+			s = route.getWidth() / 3;
+			g.drawRegion(route, s * 2, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
 			break;
 		}
 	}
