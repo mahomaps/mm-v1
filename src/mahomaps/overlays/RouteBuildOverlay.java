@@ -3,6 +3,7 @@ package mahomaps.overlays;
 import java.util.Vector;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
 import mahomaps.ui.Button;
 import mahomaps.ui.ColumnsContainer;
@@ -13,7 +14,7 @@ import mahomaps.ui.UIElement;
 
 public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 
-	private static final String ID = "route";
+	public static final String ID = "route";
 	private final Vector v = new Vector();
 	private Geopoint a, b;
 
@@ -90,12 +91,22 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		}
 		if (a == null || b == null)
 			return;
+		if (!MahoMapsApp.GetCanvas().CheckApiAcsess())
+			return;
+		int method = 0;
 		switch (uid) {
 		case 1:
+			method = YmapsApi.ROUTE_AUTO;
 			break;
-
+		case 2:
+			method = YmapsApi.ROUTE_BYFOOT;
+			break;
+		case 3:
+			method = YmapsApi.ROUTE_TRANSPORT;
+			break;
 		}
 
+		MahoMapsApp.GetCanvas().PushOverlay(new RouteOverlay(a, b, method));
 	}
 
 }
