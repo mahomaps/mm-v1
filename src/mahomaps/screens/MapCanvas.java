@@ -102,6 +102,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 	}
 
+	public MapOverlay GetOverlay(String id) {
+		synchronized (overlays) {
+			for (int i = overlays.size() - 1; i >= 0; i--) {
+				MapOverlay mo = (MapOverlay) overlays.elementAt(i);
+				if (mo.GetId().equals(id))
+					return mo;
+			}
+			return null;
+		}
+	}
+
 	public Geopoint GetSearchAnchor() {
 		if (geo != null && geo.DrawPoint()) {
 			return geolocation;
