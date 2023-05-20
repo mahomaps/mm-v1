@@ -4,7 +4,7 @@ MIDlet-Vendor: nnproject
 MIDlet-Version: 0.0.6
 MIDlet-Icon: /icon.png
 MicroEdition-Configuration: CLDC-1.1
-MIDlet-1: MahoMapsApp,/icon.png,mahomaps.MahoMapsApp
+MIDlet-1: MahoMaps,/icon.png,mahomaps.MahoMapsApp
 MIDlet-Name: MahoMaps v1
 MicroEdition-Profile: MIDP-2.0
 MIDlet-Jar-URL: mm-v1.jar
