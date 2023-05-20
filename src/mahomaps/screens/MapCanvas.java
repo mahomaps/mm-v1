@@ -41,6 +41,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	int lastPx, lastPy;
 	boolean dragActive;
 	private final Vector overlays = new Vector();
+	private int overlaysH;
 	public final Geopoint geolocation;
 	public ControlButtonsContainer controls;
 	private boolean touch = hasPointerEvents();
@@ -167,8 +168,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	// DRAW SECTION
 
 	private void repaint(Graphics g) {
-		final int w = getWidth();
-		final int h = getHeight();
+		int w = getWidth();
+		int h = getHeight();
 		g.setGrayScale(127);
 		g.fillRect(0, 0, w, h);
 		drawMap(g, w, h);
@@ -236,15 +237,20 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				g.drawString(geolocation.toString(), 5, 45, 0);
 			}
 		}
-		if (controls != null)
-			controls.Paint(g, 0, 0, w, h);
 
-		int y = 5;
+		int y = h - overlaysH;
+		int oh = 0;
 		for (int i = 0; i < overlays.size(); i++) {
 			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
 			mo.Paint(g, 5, y, w - 10, h);
 			y += mo.H + 15;
+			oh += mo.H + 15;
 		}
+
+		if (controls != null)
+			controls.Paint(g, 0, 0, w, h - overlaysH);
+
+		overlaysH = oh;
 	}
 
 	// LOGIC
@@ -356,7 +362,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			if (MahoMapsApp.lastSearch != null) {
 				throw new IllegalStateException("Can't begin new search while old one is open!");
 			}
-			
+
 			MahoMapsApp.BringSubScreen(searchBox);
 		}
 	}
