@@ -24,6 +24,7 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 		switch (uid) {
 		case 1:
 			map.BeginTextSearch();
+			break;
 		case 2:
 			MahoMapsApp.BringMenu();
 			break;
