@@ -1,7 +1,5 @@
 package mahomaps.screens;
 
-import java.util.Vector;
-
 import javax.microedition.lcdui.Choice;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -13,18 +11,15 @@ import org.json.me.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
-import mahomaps.ui.Button;
-import mahomaps.ui.FillFlowContainer;
-import mahomaps.ui.IButtonHandler;
-import mahomaps.ui.SimpleText;
-import mahomaps.ui.UIElement;
+import mahomaps.overlays.SearchOverlay;
 
-public class SearchScreen extends List implements Runnable, CommandListener, IButtonHandler {
+public class SearchScreen extends List implements Runnable, CommandListener {
 
 	private Thread th;
 	public final String query;
 	private Geopoint point;
 	public JSONArray results;
+	private SearchOverlay overlay;
 
 	public boolean onePointFocused = false;
 
@@ -49,6 +44,9 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 				append(props.getString("name") + "\n" + props.optString("description", ""), null);
 			}
 			results = arr;
+			MahoMapsApp.lastSearch = this;
+			overlay = new SearchOverlay(point, query, results, this);
+			MahoMapsApp.GetCanvas().PushOverlay(overlay);
 			setTitle(query);
 			addCommand(reset);
 			addCommand(toMap);
@@ -63,28 +61,7 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 
 	public static void ResetSearch() {
 		MahoMapsApp.lastSearch = null;
-		MahoMapsApp.GetCanvas().SetOverlayContent(null);
-		MahoMapsApp.GetCanvas().searchPoints.removeAllElements();
-	}
-
-	public void SetPoints() {
-		Vector p = MahoMapsApp.GetCanvas().searchPoints;
-		p.removeAllElements();
-		for (int i = 0; i < results.length(); i++) {
-			JSONArray point1 = results.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
-			Geopoint gp = new Geopoint(point1.getDouble(1), point1.getDouble(0));
-			gp.type = Geopoint.POI_SEARCH;
-			gp.color = Geopoint.COLOR_GREEN;
-			gp.object = results.getJSONObject(i);
-			p.addElement(gp);
-		}
-	}
-
-	public void SetUI() {
-		FillFlowContainer flow = new FillFlowContainer(
-				new UIElement[] { new SimpleText(query, 0), new SimpleText("Найдено: " + results.length(), 0),
-						new SimpleText("Ничего не выбрано.", 0), new Button("Закрыть", 2, this, 5) });
-		MahoMapsApp.GetCanvas().SetOverlayContent(flow);
+		MahoMapsApp.GetCanvas().CloseOverlay(SearchOverlay.ID);
 	}
 
 	public void commandAction(Command c, Displayable d) {
@@ -92,21 +69,10 @@ public class SearchScreen extends List implements Runnable, CommandListener, IBu
 			ResetSearch();
 			MahoMapsApp.BringMap();
 		} else if (c == toMap) {
-			onePointFocused = false;
-			MahoMapsApp.lastSearch = this;
-			SetPoints();
-			SetUI();
 			MahoMapsApp.BringMap();
 		} else if (c == SELECT_COMMAND) {
-			onePointFocused = true;
-			MahoMapsApp.lastSearch = this;
-			MahoMapsApp.BringSubScreen(new SearchResultScreen(results.getJSONObject(getSelectedIndex())));
-		}
-	}
-
-	public void OnButtonTap(UIElement sender, int uid) {
-		if (uid == 2) {
-			ResetSearch();
+			overlay.SetSelection(results.getJSONObject(getSelectedIndex()));
+			MahoMapsApp.BringSubScreen(new SearchResultScreen(results.getJSONObject(getSelectedIndex()), overlay));
 		}
 	}
 

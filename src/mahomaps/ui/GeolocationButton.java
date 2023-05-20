@@ -10,7 +10,7 @@ public class GeolocationButton extends ControlButton {
 	private final MapCanvas map;
 
 	public GeolocationButton(MapCanvas map) {
-		super(4, map, 5);
+		super(4, null, 0);
 		this.map = map;
 	}
 
@@ -34,4 +34,7 @@ public class GeolocationButton extends ControlButton {
 		super.Paint(g, x, y, w, h);
 	}
 
+	public void OnTap() {
+		map.ShowGeo();
+	}
 }

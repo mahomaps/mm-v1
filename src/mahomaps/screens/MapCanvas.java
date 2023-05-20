@@ -1,6 +1,5 @@
 package mahomaps.screens;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import javax.microedition.lcdui.Command;
@@ -11,30 +10,21 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
 
-import org.json.me.JSONException;
-import org.json.me.JSONObject;
-
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
-import mahomaps.api.YmapsApi;
 import mahomaps.map.GeoUpdateThread;
 import mahomaps.map.Geopoint;
 import mahomaps.map.MapState;
-import mahomaps.map.Route;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
-import mahomaps.ui.Button;
-import mahomaps.ui.ColumnsContainer;
+import mahomaps.overlays.MapOverlay;
+import mahomaps.overlays.NoApiTokenOverlay;
+import mahomaps.overlays.SelectOverlay;
 import mahomaps.ui.ControlButtonsContainer;
-import mahomaps.ui.FillFlowContainer;
-import mahomaps.ui.IButtonHandler;
-import mahomaps.ui.MapOverlay;
-import mahomaps.ui.SimpleText;
-import mahomaps.ui.UIComposite;
 import mahomaps.ui.UIElement;
 
-public class MapCanvas extends MultitouchCanvas implements IButtonHandler, CommandListener {
+public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public final int buttonSize = 50;
 	public final int buttonMargin = 10;
@@ -50,11 +40,8 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 	int startPx, startPy;
 	int lastPx, lastPy;
 	boolean dragActive;
-	public final Vector searchPoints = new Vector();
-	public final Vector routePoints = new Vector();
+	private final Vector overlays = new Vector();
 	public final Geopoint geolocation;
-	public Geopoint selection;
-	public MapOverlay overlay;
 	public ControlButtonsContainer controls;
 	private boolean touch = hasPointerEvents();
 	private final Image dummyBuffer = Image.createImage(1, 1);
@@ -75,31 +62,43 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 
 		controls = new ControlButtonsContainer(this);
 
+		CheckApiAcsess();
+	}
+
+	/**
+	 * Проверяет есть ли доступ к апи. Выводит окно предупреждения.
+	 * 
+	 * @return False если нету.
+	 */
+	public boolean CheckApiAcsess() {
 		if (MahoMapsApp.api.token == null) {
-			NotifyNullToken();
+			PushOverlay(new NoApiTokenOverlay());
+			return false;
+		}
+		return true;
+	}
+
+	public void CloseOverlay(MapOverlay o) {
+		CloseOverlay(o.GetId());
+	}
+
+	public void CloseOverlay(String id) {
+		synchronized (overlays) {
+			for (int i = overlays.size() - 1; i >= 0; i--) {
+				if (((MapOverlay) overlays.elementAt(i)).GetId().equals(id))
+					overlays.removeElementAt(i);
+			}
 		}
 	}
 
-	private void NotifyNullToken() {
-		SetOverlayContent(new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось получить токен API.", 0),
-				new SimpleText("Онлайн-функции будут недоступны.", 0), new Button("Ещё раз", -2, this, 5),
-				new Button("Закрыть", 0, this, 5) }));
-	}
-
-	public void SetOverlayContent(UIComposite ui) {
-		if (ui == null) {
-			overlay = null;
-			return;
+	public void PushOverlay(MapOverlay o) {
+		synchronized (overlays) {
+			CloseOverlay(o.GetId());
+			// Рисуем в никуда для пересчёта макета (для обхода 1-кадрового мигания)
+			// Почему бы не отделить макет от отрисовки? А зачем?
+			o.Paint(dummyBuffer.getGraphics(), 0, 0, getWidth(), getHeight());
+			overlays.addElement(o);
 		}
-		MapOverlay o = new MapOverlay();
-		o.X = 5;
-		o.Y = 5;
-		o.W = getWidth() - 10;
-		o.content = ui;
-		// Рисуем в никуда для пересчёта макета (для обхода 1-кадрового мигания)
-		// Почему бы не отделить макет от отрисовки? А зачем?
-		o.Paint(dummyBuffer.getGraphics(), 0, 0, getWidth(), getHeight());
-		overlay = o;
 	}
 
 	public Geopoint GetSearchAnchor() {
@@ -212,16 +211,14 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		if (geo != null && geo.DrawPoint()) {
 			geolocation.paint(g, ms);
 		}
-		for (int i = 0; i < searchPoints.size(); i++) {
-			Geopoint p = (Geopoint) searchPoints.elementAt(i);
-			p.paint(g, ms);
+
+		for (int i = 0; i < overlays.size(); i++) {
+			Vector points = ((MapOverlay) overlays.elementAt(i)).GetPoints();
+			int s = points.size();
+			for (int j = 0; j < s; j++) {
+				((Geopoint) points.elementAt(j)).paint(g, ms);
+			}
 		}
-		for (int i = 0; i < routePoints.size(); i++) {
-			Geopoint p = (Geopoint) routePoints.elementAt(i);
-			p.paint(g, ms);
-		}
-		if (selection != null)
-			selection.paint(g, ms);
 
 		g.translate(-(w >> 1), -(h >> 1));
 		tiles.EndMapPaint();
@@ -239,10 +236,16 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 				g.drawString(geolocation.toString(), 5, 45, 0);
 			}
 		}
-		if (overlay != null)
-			overlay.Paint(g, 0, 0, w, h);
 		if (controls != null)
 			controls.Paint(g, 0, 0, w, h);
+
+		int y = 5;
+		for (int i = 0; i < overlays.size(); i++) {
+			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
+			mo.Paint(g, 5, y, w-10, h);
+			y += mo.H;
+			y += 25;
+		}
 	}
 
 	// LOGIC
@@ -252,7 +255,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		flushGraphics();
 	}
 
-	public void geo() {
+	public void ShowGeo() {
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
@@ -270,7 +273,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 		if (k == -6)
 			MahoMapsApp.BringMenu();
 		if (k == -7)
-			geo();
+			ShowGeo();
 	}
 
 	protected void keyReleased(int k) {
@@ -319,16 +322,16 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 
 		// points
 
-		if (MahoMapsApp.lastSearch != null) {
-			Vector v = searchPoints;
-			for (int i = v.size() - 1; i >= 0; i--) {
-				Geopoint p = (Geopoint) v.elementAt(i);
-				if (p.color == Geopoint.COLOR_RED)
-					continue;
-				if (p.isTouched(this, state, x, y)) {
-					if (p.object != null) {
-						new SearchResultScreen((JSONObject) p.object).BringAtMap();
-						return;
+		synchronized (overlays) {
+			for (int i = 0; i < overlays.size(); i++) {
+				MapOverlay mo = (MapOverlay) overlays.elementAt(i);
+				Vector points = mo.GetPoints();
+				int s = points.size();
+				for (int j = 0; j < s; j++) {
+					Geopoint p = (Geopoint) points.elementAt(j);
+					if (p.isTouched(this, state, x, y)) {
+						if (mo.OnPointTap(p))
+							return;
 					}
 				}
 			}
@@ -340,15 +343,7 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			if (Math.abs(s.lat) > 85) {
 				return;
 			}
-			selection = s;
-			selection.color = Geopoint.COLOR_RED;
-			selection.type = Geopoint.POI_SELECT;
-
-			SetOverlayContent(new FillFlowContainer(new UIElement[] { new SimpleText(selection.toString(), 0),
-					new Button("Что здесь?", 6, this, 5),
-					new ColumnsContainer(
-							new UIElement[] { new Button("Точка А", 7, this, 5), new Button("Точка Б", 8, this, 5) }),
-					new Button("Закрыть", 0, this, 5) }));
+			PushOverlay(new SelectOverlay(s));
 		}
 	}
 
@@ -357,46 +352,13 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			geo.Dispose();
 	}
 
-	public void OnButtonTap(UIElement sender, int uid) {
-		switch (uid) {
-		case -2:
-			MahoMapsApp.BringSubScreen(new APIReconnectForm());
-			SetOverlayContent(null);
-			break;
-		case 0:
-			selection = null;
-			SetOverlayContent(null);
-			break;
-		case 1:
-			if (MahoMapsApp.api.token == null) {
-				NotifyNullToken();
-			} else if (MahoMapsApp.lastSearch != null) {
-				MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
-			} else {
-				MahoMapsApp.BringSubScreen(searchBox);
+	public void BeginTextSearch() {
+		if (CheckApiAcsess()) {
+			if (MahoMapsApp.lastSearch != null) {
+				throw new IllegalStateException("Can't begin new search while old one is open!");
 			}
-			break;
-		case 2:
-			MahoMapsApp.BringMenu();
-			break;
-		case 3:
-			state = state.ZoomIn();
-			break;
-		case 4:
-			state = state.ZoomOut();
-			break;
-		case 5:
-			geo();
-			break;
-		case 6:
-			MahoMapsApp.BringSubScreen(new SearchScreen(selection.toString(), selection));
-			break;
-		case 7:
-			PushRoutePoint(selection, 1);
-			break;
-		case 8:
-			PushRoutePoint(selection, 2);
-			break;
+			
+			MahoMapsApp.BringSubScreen(searchBox);
 		}
 	}
 
@@ -405,17 +367,16 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			if (c == back) {
 				MahoMapsApp.BringMap();
 			} else {
+				CloseOverlay(SelectOverlay.ID);
 				Geopoint sa = GetSearchAnchor();
 				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), sa));
 			}
 		}
 	}
-
+/*
 	private void PushRoutePoint(Geopoint geo, int side) {
-		if (MahoMapsApp.api.token == null) {
-			NotifyNullToken();
+		if (!CheckApiAcsess())
 			return;
-		}
 		Geopoint a = null;
 		Geopoint b = null;
 		boolean set = false;
@@ -463,6 +424,6 @@ public class MapCanvas extends MultitouchCanvas implements IButtonHandler, Comma
 			}
 
 		}
-	}
+	}*/
 
 }

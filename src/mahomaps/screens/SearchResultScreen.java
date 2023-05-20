@@ -1,7 +1,5 @@
 package mahomaps.screens;
 
-import java.util.Vector;
-
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -12,32 +10,22 @@ import org.json.me.JSONArray;
 import org.json.me.JSONObject;
 
 import mahomaps.MahoMapsApp;
-import mahomaps.map.Geopoint;
-import mahomaps.map.MapState;
-import mahomaps.ui.Button;
-import mahomaps.ui.ColumnsContainer;
-import mahomaps.ui.FillFlowContainer;
-import mahomaps.ui.IButtonHandler;
-import mahomaps.ui.SimpleText;
-import mahomaps.ui.UIElement;
+import mahomaps.overlays.SearchOverlay;
 
-public class SearchResultScreen extends Form implements CommandListener, IButtonHandler {
+public class SearchResultScreen extends Form implements CommandListener {
 
 	private Command back = new Command("К списку", Command.BACK, 0);
 	private Command toMap = new Command("К карте", Command.OK, 0);
-	private final JSONObject obj;
-	private final String name;
-	private final String descr;
-	private Geopoint point;
+	private final SearchOverlay o;
 
-	public SearchResultScreen(JSONObject obj) {
+	public SearchResultScreen(JSONObject obj, SearchOverlay o) {
 		super("Результат поиска");
-		this.obj = obj;
+		this.o = o;
 		JSONObject props = obj.getJSONObject("properties");
 		JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
-		name = props.optString("name");
+		String name = props.optString("name");
 		append(new StringItem("Название", name));
-		descr = props.optString("description", null);
+		String descr = props.optString("description", null);
 		if (descr != null)
 			append(new StringItem("Описание", descr));
 		append(new StringItem("Координаты", point.getDouble(1) + " " + point.getDouble(0)));
@@ -58,70 +46,12 @@ public class SearchResultScreen extends Form implements CommandListener, IButton
 		setCommandListener(this);
 	}
 
-	public void BringAtMap() {
-		MahoMapsApp.lastSearch.onePointFocused = true;
-		JSONArray results = MahoMapsApp.lastSearch.results;
-		Vector p = MahoMapsApp.GetCanvas().searchPoints;
-		p.removeAllElements();
-		for (int i = 0; i < results.length(); i++) {
-			JSONObject robj = results.getJSONObject(i);
-			if (robj == obj)
-				continue;
-			JSONArray jp = robj.getJSONObject("geometry").getJSONArray("coordinates");
-			Geopoint gp = new Geopoint(jp.getDouble(1), jp.getDouble(0));
-			gp.type = Geopoint.POI_SEARCH;
-			gp.color = Geopoint.COLOR_GRAY;
-			gp.object = robj;
-			p.addElement(gp);
-		}
-		{
-			JSONArray jp = obj.getJSONObject("geometry").getJSONArray("coordinates");
-			Geopoint gp = new Geopoint(jp.getDouble(1), jp.getDouble(0));
-			gp.type = Geopoint.POI_SEARCH;
-			gp.color = Geopoint.COLOR_RED;
-			p.addElement(gp);
-			point = gp;
-		}
-		{
-			FillFlowContainer flow = new FillFlowContainer(new UIElement[] { new SimpleText(name, 0),
-					new SimpleText(descr, 0),
-					new ColumnsContainer(
-							new UIElement[] { new Button("Карточка", 1, this, 5), new Button("Показать", 4, this, 5) }),
-					new ColumnsContainer(
-							new UIElement[] { new Button("Точка А", 2, this, 5), new Button("Точка Б", 3, this, 5) }),
-					new Button("Назад", 5, this, 5) });
-
-			MahoMapsApp.GetCanvas().SetOverlayContent(flow);
-		}
-	}
-
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
-			MahoMapsApp.lastSearch.onePointFocused = false;
+			o.SetNullSelection();
 			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
 		} else if (c == toMap) {
-			BringAtMap();
 			MahoMapsApp.BringMap();
-		}
-	}
-
-	public void OnButtonTap(UIElement sender, int uid) {
-		switch (uid) {
-		case 1:
-			MahoMapsApp.BringSubScreen(this);
-			break;
-		case 2:
-		case 3:
-			break;
-		case 4:
-			if (point != null)
-				MahoMapsApp.GetCanvas().state = MapState.FocusAt(point);
-			break;
-		case 5:
-			MahoMapsApp.lastSearch.onePointFocused = false;
-			MahoMapsApp.lastSearch.SetPoints();
-			MahoMapsApp.lastSearch.SetUI();
-			break;
 		}
 	}
 }
