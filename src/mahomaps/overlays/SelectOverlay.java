@@ -57,8 +57,12 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 			}
 			break;
 		case 2:
+			Close();
+			RouteBuildOverlay.Get().SetA(selection);
 			break;
 		case 3:
+			Close();
+			RouteBuildOverlay.Get().SetB(selection);
 			break;
 		}
 	}

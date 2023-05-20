@@ -120,8 +120,12 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 			MahoMapsApp.GetCanvas().state = MapState.FocusAt(selected);
 			break;
 		case 4:
+			Close();
+			RouteBuildOverlay.Get().SetA(selected);
 			break;
 		case 5:
+			Close();
+			RouteBuildOverlay.Get().SetB(selected);
 			break;
 		case 6:
 			SetNullSelection();
