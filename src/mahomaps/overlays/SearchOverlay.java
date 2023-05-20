@@ -67,7 +67,7 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		}
 		points.addElement(p);
 
-		JSONObject data = (JSONObject) p.object;
+		JSONObject data = ((JSONObject) p.object).getJSONObject("properties");
 
 		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.optString("name"), 0),
 				new SimpleText(data.optString("description"), 0),
