@@ -242,9 +242,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		int y = 5;
 		for (int i = 0; i < overlays.size(); i++) {
 			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
-			mo.Paint(g, 5, y, w-10, h);
-			y += mo.H;
-			y += 25;
+			mo.Paint(g, 5, y, w - 10, h);
+			y += mo.H + 15;
 		}
 	}
 

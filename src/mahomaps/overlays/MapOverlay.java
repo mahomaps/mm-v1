@@ -29,12 +29,12 @@ public abstract class MapOverlay extends UIElement implements ITouchAcceptor {
 	public UIComposite content;
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
-		RegisterForInput(this, x, y, w, H + 20);
+		RegisterForInput(this, x, y, w, H + 10);
 		if (content == null)
 			return;
 		g.setColor(-1);
-		g.fillRoundRect(x, y, w, H + 20, 10, 10);
-		content.Paint(g, x + 10, y + 10, w - 20, 0);
+		g.fillRoundRect(x, y, w, H + 10, 10, 10);
+		content.Paint(g, x + 5, y + 5, w - 10, 0);
 		H = content.H;
 	}
 

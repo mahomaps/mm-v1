@@ -8,7 +8,7 @@ public class Button extends UIElement implements ITouchAcceptor {
 	private String text;
 	private int id;
 	private IButtonHandler handler;
-	public int margin = 5;
+	public int margin = 3;
 	private boolean hold = false;
 
 	public Button(String text, int id, IButtonHandler handler) {
