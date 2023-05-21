@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 
-public class TilesProvider extends Thread {
+public class TilesProvider implements Runnable {
 
 	private static final String INVALID_THREAD_ERR = "Map paint can be performed only from update thread.";
 	public final String lang;
@@ -38,29 +38,87 @@ public class TilesProvider extends Thread {
 	private Vector cache = new Vector();
 
 	private final Object downloadLock = new Object();
+	private final Object cacheLock = new Object();
 
 	private boolean paintState = false;
 
-	public TilesProvider(String lang, String localPath) throws IOException {
+	private Thread networkTh;
+	private Thread cacheTh;
+
+	public TilesProvider(String lang, String localPath) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
 		this.lang = lang;
 		this.localPath = localPath;
+	}
+
+	public void Start() {
+		networkTh = new Thread(this, "tiles_net");
+		cacheTh = new Thread(this, "tiles_cache");
+		networkTh.start();
+		cacheTh.start();
+	}
+
+	public void Stop() {
+		if (networkTh != null)
+			networkTh.interrupt();
+		networkTh = null;
+		if (cacheTh != null)
+			cacheTh.interrupt();
+		cacheTh = null;
+	}
+
+	public void CheckCacheFolder() throws IOException, SecurityException {
 		FileConnection fc = (FileConnection) Connector.open(localPath);
-		if (!fc.exists())
-			fc.mkdir();
-		fc.close();
+		try {
+			if (!fc.exists())
+				fc.mkdir();
+		} finally {
+			fc.close();
+		}
+	}
+
+	public void ForceMissingDownload() {
+		synchronized (cache) {
+			for (int i = 0; i < cache.size(); i++) {
+				TileCache tc = (TileCache) cache.elementAt(i);
+				synchronized (tc) {
+					if (tc.state == TileCache.STATE_MISSING) {
+						tc.state = TileCache.STATE_CACHE_PENDING;
+					}
+				}
+			}
+		}
+
+		synchronized (downloadLock) {
+			downloadLock.notifyAll();
+		}
+		synchronized (cacheLock) {
+			cacheLock.notifyAll();
+		}
 	}
 
 	public void run() {
+		if (Thread.currentThread() == networkTh) {
+			RunNetwork();
+		} else if (Thread.currentThread() == cacheTh) {
+			RunCache();
+		} else {
+			throw new IllegalStateException("Unknown thread type!");
+		}
+	}
+
+	public void RunCache() {
 		try {
+			// цикл обработки
 			while (true) {
-				int idleCount = 0;
-				int errCount = 0;
+				int idleCount = 0; // счётчик готовых тайлов (если равен длине кэша - ничего грузить не надо)
 				int i = -1;
+				// цикл перебора тайлов в очереди
 				while (true) {
 					TileCache tc = null;
 					synchronized (cache) {
+						// инкремент + проверки выхода за границы
 						i++;
 						int s = cache.size();
 						if (i >= s)
@@ -68,18 +126,129 @@ public class TilesProvider extends Thread {
 						tc = (TileCache) cache.elementAt(i);
 					}
 					synchronized (tc) {
-						if (tc.state == TileCache.STATE_READY || tc.state == TileCache.STATE_UNLOADED) {
+						switch (tc.state) {
+						case TileCache.STATE_CACHE_PENDING:
+							// читаем кэш
+							break;
+						case TileCache.STATE_SERVER_PENDING:
+						case TileCache.STATE_LOADING:
+						case TileCache.STATE_READY:
+						case TileCache.STATE_ERROR:
+						case TileCache.STATE_UNLOADED:
+						case TileCache.STATE_MISSING:
 							idleCount++;
+							// к следующему тайлу
 							continue;
 						}
-						tc.state = TileCache.STATE_LOADING;
 					}
 
-					Image img = download(tc);
+					Image img = null;
+					if (Settings.cacheMode == Settings.CACHE_FS) {
+						img = tryLoadFromFS(tc);
+					} else if (Settings.cacheMode == Settings.CACHE_RMS) {
+						// TODO
+					}
+
+					synchronized (tc) {
+						if (img != null) {
+							tc.img = img;
+							tc.state = TileCache.STATE_READY;
+						} else if (Settings.allowDownload) {
+							tc.state = TileCache.STATE_SERVER_PENDING;
+							synchronized (downloadLock) {
+								downloadLock.notifyAll();
+							}
+						} else {
+							tc.state = TileCache.STATE_MISSING;
+						}
+					}
+				}
+
+				// if (errCount != 0)
+				// continue;
+				if (idleCount != cache.size())
+					continue;
+				synchronized (cacheLock) {
+					cacheLock.wait(4000);
+				}
+
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	public void RunNetwork() {
+		try {
+			// цикл обработки
+			while (true) {
+				if (!Settings.allowDownload) {
+					try {
+						synchronized (downloadLock) {
+							downloadLock.wait();
+						}
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+
+				int idleCount = 0; // счётчик готовых тайлов (если равен длине кэша - ничего грузить не надо)
+				int errCount = 0; // счётчик битых тайлов (если не равен 0 надо ещё раз всё грузить)
+				int i = -1;
+				// цикл перебора тайлов в очереди
+				while (true) {
+					TileCache tc = null;
+					synchronized (cache) {
+						// инкремент + проверки выхода за границы
+						i++;
+						int s = cache.size();
+						if (i >= s)
+							break;
+						tc = (TileCache) cache.elementAt(i);
+					}
+					synchronized (tc) {
+						switch (tc.state) {
+						case TileCache.STATE_CACHE_PENDING:
+							// ждём чтения кэша
+							// к следующему тайлу
+							continue;
+						case TileCache.STATE_SERVER_PENDING:
+							// переключаем состояние
+							tc.state = TileCache.STATE_LOADING;
+							// начинаем загрузку
+							break;
+						case TileCache.STATE_LOADING:
+							throw new IllegalStateException(
+									tc.toString() + " was in loading state before loading sequence!");
+						case TileCache.STATE_READY:
+							idleCount++;
+							// к следующему тайлу
+							continue;
+						case TileCache.STATE_ERROR:
+							// переключаем состояние
+							tc.state = TileCache.STATE_LOADING;
+							// начинаем загрузку
+							break;
+						case TileCache.STATE_UNLOADED:
+							idleCount++;
+							// к следующему тайлу
+							continue;
+						case TileCache.STATE_MISSING:
+							idleCount++;
+							// к следующему тайлу
+							continue;
+						}
+					}
+
+					Image img = Settings.allowDownload ? download(tc) : null;
+
 					synchronized (tc) {
 						if (img == null) {
-							tc.state = TileCache.STATE_ERROR;
-							errCount++;
+							if (Settings.allowDownload) {
+								tc.state = TileCache.STATE_ERROR;
+								errCount++;
+							} else {
+								tc.state = TileCache.STATE_MISSING;
+							}
 						} else {
 							tc.img = img;
 							tc.state = TileCache.STATE_READY;
@@ -100,9 +269,15 @@ public class TilesProvider extends Thread {
 		}
 	}
 
+	/**
+	 * Скачивает тайл с сервера и помещает его в кэш. Не обрабатывает статусы тайла!
+	 * Не проверяет, разрешена ли загрузка!
+	 * 
+	 * @param id Тайл для скачки.
+	 * @return Тайл, либо null в случае ошибки.
+	 * @throws InterruptedException Если поток прерван.
+	 */
 	private Image download(TileId id) throws InterruptedException {
-		if (!Settings.allowDownload)
-			return null;
 
 		HttpConnection hc = null;
 		FileConnection fc = null;
@@ -280,20 +455,13 @@ public class TilesProvider extends Thread {
 			throw new IllegalStateException("Paint isn't performing now.");
 
 		cached = new TileCache(tileId);
-		Image img = null;
-		if (Settings.cacheMode == Settings.CACHE_FS) {
-			img = tryLoadFromFS(tileId);
-		} else if (Settings.cacheMode == Settings.CACHE_RMS) {
-			// TODO
+		cached.state = TileCache.STATE_CACHE_PENDING;
+		synchronized (cache) {
+			cache.addElement(cached);
 		}
-		if (img != null) {
-			cached.img = img;
-			cached.state = TileCache.STATE_READY;
-		}
-		cache.addElement(cached);
 
-		synchronized (downloadLock) {
-			downloadLock.notifyAll();
+		synchronized (cacheLock) {
+			cacheLock.notifyAll();
 		}
 
 		return cached;

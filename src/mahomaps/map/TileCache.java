@@ -9,7 +9,7 @@ import mahomaps.Settings;
 public class TileCache extends TileId {
 
 	public Image img;
-	public volatile int state = STATE_PENDING;
+	public volatile int state = 0;
 	public int unuseCount;
 
 	public TileCache(int x, int y, int zoom) {
@@ -28,18 +28,12 @@ public class TileCache extends TileId {
 		Font f = Font.getFont(0, 0, 8);
 		int vo = f.getHeight();
 		g.setFont(f);
-		if (state == STATE_READY) {
+		if(state == STATE_READY) {
 			g.drawImage(img, tx, ty, 0);
 			g.setColor(0, 0, 255);
-		} else if (state == STATE_LOADING) {
-			g.setColor(0, 127, 0);
-			g.drawString("Загружаем...", tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
-		} else if (state == STATE_ERROR) {
-			g.setColor(255, 0, 0);
-			g.drawString("Ошибка загрузки", tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
 		} else {
 			g.setGrayScale(0);
-			g.drawString("В очереди", tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(GetState(), tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
 		}
 		if (Settings.drawTileInfo) {
 			g.drawRect(tx, ty, 255, 255);
@@ -53,9 +47,22 @@ public class TileCache extends TileId {
 		}
 	}
 
-	public static final int STATE_PENDING = 0;
-	public static final int STATE_LOADING = 1;
-	public static final int STATE_READY = 2;
-	public static final int STATE_ERROR = 3;
-	public static final int STATE_UNLOADED = 4;
+	public String GetState() {
+		if (state < 0)
+			return "";
+		if (state > STATE_MISSING)
+			return "";
+		return STATE_DESCRIPTION[state];
+	}
+
+	public static final String[] STATE_DESCRIPTION = new String[] { "Ожидание кэша", "Ожидание скачивания", "Загрузка",
+			"Готово", "Ошибка загрузки", "Выгружен", "Загрузка невозможна" };
+
+	public static final int STATE_CACHE_PENDING = 0;
+	public static final int STATE_SERVER_PENDING = 1;
+	public static final int STATE_LOADING = 2;
+	public static final int STATE_READY = 3;
+	public static final int STATE_ERROR = 4;
+	public static final int STATE_UNLOADED = 5;
+	public static final int STATE_MISSING = 6;
 }

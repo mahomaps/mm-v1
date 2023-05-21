@@ -22,7 +22,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	private static Display display;
 	public static Thread thread;
-	private static TilesProvider tiles;
+	public static TilesProvider tiles;
 	private static MapCanvas canvas;
 	private static MenuScreen menu;
 	private static MahoMapsApp midlet;
@@ -48,7 +48,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
 		thread.interrupt();
 		if (tiles != null)
-			tiles.interrupt();
+			tiles.Stop();
 		if (canvas != null)
 			canvas.dispose();
 	}
@@ -61,7 +61,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		Settings.Read();
 		version = getAppProperty("MIDlet-Version");
 		String loc = "";
-		try {
+		{
 			boolean kem = IsKemulator();
 
 			if (kem) {
@@ -75,6 +75,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 				loc = loc + "ym/";
 			}
 			tiles = new TilesProvider("ru_RU", loc);
+		}
+		try {
+			tiles.CheckCacheFolder();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Form f = new Form("Ошибка",
@@ -90,7 +93,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 		menu = new MenuScreen();
 		canvas = new MapCanvas(tiles);
-		tiles.start();
+		tiles.Start();
 		BringMap();
 		while (true) {
 			canvas.update();

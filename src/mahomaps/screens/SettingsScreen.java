@@ -74,6 +74,9 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.drawTileInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
 		Settings.allowDownload = download.getSelectedIndex() == 1;
+		if (Settings.allowDownload) {
+			MahoMapsApp.tiles.ForceMissingDownload();
+		}
 	}
 
 	public void commandAction(Command c, Displayable d) {
