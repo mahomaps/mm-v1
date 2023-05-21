@@ -16,7 +16,11 @@ public class Settings {
 	public static int geoLook = 0;
 	public static boolean showGeo = true;
 	public static boolean allowDownload = true;
-	public static int cacheMode = 0;
+	public static int cacheMode = 1;
+
+	public static final int CACHE_FS = 1;
+	public static final int CACHE_RMS = 2;
+	public static final int CACHE_DISABLED = 0;
 
 	public static boolean Read() {
 		try {
@@ -37,7 +41,7 @@ public class Settings {
 			geoLook = j.optInt("geo_look", 0);
 			showGeo = j.optBoolean("show_geo", true);
 			allowDownload = j.optBoolean("online", true);
-			cacheMode = j.optInt("cache", 0);
+			cacheMode = j.optInt("cache", 1);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

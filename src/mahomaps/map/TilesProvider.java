@@ -7,6 +7,8 @@ import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
+import mahomaps.overlays.TileCacheForbiddenOverlay;
+import mahomaps.overlays.TileDownloadForbiddenOverlay;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -98,7 +100,7 @@ public class TilesProvider extends Thread {
 		}
 	}
 
-	private Image download(TileId id) {
+	private Image download(TileId id) throws InterruptedException {
 		if (!Settings.allowDownload)
 			return null;
 
@@ -124,16 +126,29 @@ public class TilesProvider extends Thread {
 			hc = null;
 			byte[] blobc = blob.toByteArray();
 			blob = null;
-			fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
-			fc.create();
-			OutputStream os = fc.openOutputStream();
-			os.write(blobc);
-			os.flush();
-			os.close();
-			fc.close();
+			if (Settings.cacheMode == Settings.CACHE_FS) {
+				try {
+					fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
+					fc.create();
+					OutputStream os = fc.openOutputStream();
+					os.write(blobc);
+					os.flush();
+					os.close();
+				} catch (SecurityException e) {
+					MahoMapsApp.GetCanvas().PushOverlay(new TileCacheForbiddenOverlay());
+					Settings.cacheMode = Settings.CACHE_DISABLED;
+				} catch (IOException e) {
+					// TODO: Выводить на экран алерт что закэшить не удалось
+				} finally {
+					if (fc != null)
+						fc.close();
+				}
+			} else if (Settings.cacheMode == Settings.CACHE_RMS) {
+				// TODO
+			}
 			Image img = Image.createImage(blobc, 0, blobc.length);
 			return img;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			if (hc != null) {
 				try {
@@ -146,6 +161,12 @@ public class TilesProvider extends Thread {
 					fc.close();
 				} catch (IOException ex) {
 				}
+			}
+			if (e instanceof SecurityException) {
+				MahoMapsApp.GetCanvas().PushOverlay(new TileDownloadForbiddenOverlay());
+				Settings.allowDownload = false;
+			} else if (e instanceof IOException) {
+				Thread.sleep(4000);
 			}
 		}
 		return null;
@@ -168,19 +189,21 @@ public class TilesProvider extends Thread {
 			InputStream s = fc.openInputStream();
 			Image img = Image.createImage(s);
 			s.close();
-			fc.close();
-			fc = null;
 			return img;
-		} catch (IOException e) {
+		} catch (SecurityException e) {
+			MahoMapsApp.GetCanvas().PushOverlay(new TileCacheForbiddenOverlay());
+			Settings.cacheMode = Settings.CACHE_DISABLED;
+		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
 			if (fc != null) {
 				try {
 					fc.close();
 				} catch (IOException ex) {
 				}
 			}
-			return null;
 		}
+		return null;
 	}
 
 	/**
@@ -257,7 +280,12 @@ public class TilesProvider extends Thread {
 			throw new IllegalStateException("Paint isn't performing now.");
 
 		cached = new TileCache(tileId);
-		Image img = tryLoadFromFS(tileId);
+		Image img = null;
+		if (Settings.cacheMode == Settings.CACHE_FS) {
+			img = tryLoadFromFS(tileId);
+		} else if (Settings.cacheMode == Settings.CACHE_RMS) {
+			// TODO
+		}
 		if (img != null) {
 			cached.img = img;
 			cached.state = TileCache.STATE_READY;

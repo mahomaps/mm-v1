@@ -25,7 +25,9 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup tileInfo = new ChoiceGroup("Отладка тайлов", Choice.EXCLUSIVE,
 			new String[] { "Выключено", "Включено" }, null);
 	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.EXCLUSIVE,
-			new String[] { "В файловую", "В данные приложения", "Не сохранять" }, null);
+			new String[] { "Запрещено", "В файловую" }, null);
+	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.EXCLUSIVE,
+			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
 
 	public SettingsScreen() {
 		super("Настройки");
@@ -55,12 +57,14 @@ public class SettingsScreen extends Form implements CommandListener {
 		geoStatus.setSelectedIndex(Settings.showGeo ? 1 : 0, true);
 		tileInfo.setSelectedIndex(Settings.drawTileInfo ? 1 : 0, true);
 		cache.setSelectedIndex(Settings.cacheMode, true);
+		download.setSelectedIndex(Settings.allowDownload ? 1 : 0, true);
 
 		append(focusZoom);
 		append(geoLook);
 		append(geoStatus);
 		append(tileInfo);
 		// append(cache);
+		append(download);
 	}
 
 	private void Apply() {
@@ -69,6 +73,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.showGeo = geoStatus.getSelectedIndex() == 1;
 		Settings.drawTileInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
+		Settings.allowDownload = download.getSelectedIndex() == 1;
 	}
 
 	public void commandAction(Command c, Displayable d) {
