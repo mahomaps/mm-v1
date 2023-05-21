@@ -197,11 +197,17 @@ public class GeoUpdateThread extends Thread {
 					for(int i = sequence.length-1; i >= 0; i--) {
 						String[] sentence = split(sequence[i], ',');
 						if(sentence[0].endsWith("GGA")) {
-							s1 = Integer.parseInt(sentence[7]);
+							try {
+								s1 = Integer.parseInt(sentence[7]);
+							} catch (Exception e) {
+							}
 							s2 = Math.max(s2, s1);
 							break;
 						} else if(sentence[0].endsWith("GSV")) {
-							s1 = s2 = Math.max(s2, Integer.parseInt(sentence[3]));
+							try {
+								s1 = s2 = Math.max(s2, Integer.parseInt(sentence[3]));
+							} catch (Exception e) {
+							}
 						}
 					}
 					sattelites = s1;
@@ -238,7 +244,7 @@ public class GeoUpdateThread extends Thread {
 				if((t & Location.MTY_NETWORKBASED) == Location.MTY_NETWORKBASED) {
 					s = "NB " + s;
 				}
-				method = s.length()==0 ? null : s;
+				method = s.length() == 0 ? null : s;
 				if(location.isValid()) {
 					Coordinates coordinates = location.getQualifiedCoordinates();
 					if (coordinates.getLatitude() != 0 && coordinates.getLongitude() != 0) {
@@ -246,11 +252,11 @@ public class GeoUpdateThread extends Thread {
 						positionPoint.lon = coordinates.getLongitude();
 						positionPoint.color = Geopoint.COLOR_RED;
 						state = STATE_OK;
+						lastUpdateTime = System.currentTimeMillis();
 					} else {
 						state = STATE_UNAVAILABLE;
 					}
 				}
-				lastUpdateTime = System.currentTimeMillis();
 			}
 
 			public void providerStateChanged(LocationProvider provider, int newState) {
