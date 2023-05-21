@@ -194,7 +194,7 @@ public class GeoUpdateThread extends Thread {
 				if(nmea != null) {
 					String[] sequence = split(nmea, '\n');
 					int s = 0;
-					for(int i = sequence.length-1; i > 0; i--) {
+					for(int i = sequence.length-1; i >= 0; i--) {
 						String[] sentence = split(sequence[i], ',');
 						if(sentence[0].endsWith("GGA")) {
 							s = Integer.parseInt(sentence[7]);
