@@ -306,7 +306,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	// LOGIC
 
 	public void update() {
+		long time = System.currentTimeMillis();
 		repaint(getGraphics());
+		time = System.currentTimeMillis() - time;
+		getGraphics().setColor(0);
+		getGraphics().drawString(time + " ms", 5, 65, 0);
 		flushGraphics();
 	}
 
