@@ -1,5 +1,7 @@
 package mahomaps.ui;
 
+import java.util.Vector;
+
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
@@ -11,7 +13,7 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 	private final FillFlowContainer flow;
 	private final MapCanvas map;
 
-	public String[] info;
+	public Vector info;
 
 	public ControlButtonsContainer(MapCanvas map) {
 		this.map = map;
@@ -22,15 +24,15 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		flow.Paint(g, w - flow.W, h - flow.H, flow.W, flow.H);
 
-		String[] s = info;
+		Vector s = info;
 		if (s != null) {
 			Font f = Font.getFont(0, 0, 8);
 			final int fh = f.getHeight();
-			final int ih = s.length * fh;
-			int iy = ih - 3 - 5;
+			final int ih = s.size() * fh;
+			int iy = h - ih - 3 - 5;
 			int iw = 0;
-			for (int i = 0; i < s.length; i++) {
-				int lw = f.stringWidth(s[i]);
+			for (int i = 0; i < s.size(); i++) {
+				int lw = f.stringWidth((String) s.elementAt(i)) + 6;
 				if (lw > iw)
 					iw = lw;
 			}
@@ -38,8 +40,8 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 			g.setColor(0x1E1E1E);
 			g.fillRoundRect(5, iy - 3, iw + 6, ih + 6, 10, 10);
 			g.setColor(-1);
-			for (int i = 0; i < s.length; i++) {
-				g.drawString(s[i], 8, iy, 0);
+			for (int i = 0; i < s.size(); i++) {
+				g.drawString((String) s.elementAt(i), 11, iy, 0);
 				iy += fh;
 			}
 		}
