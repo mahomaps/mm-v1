@@ -147,7 +147,7 @@ public class GeoUpdateThread extends Thread {
 	 */
 	public final static int STATE_OK = 2;
 
-	public final static String[] states = new String[] { "Ожидание сигнала", "Ожидание сигнала", "Готово", "Ошибка",
+	public final static String[] states = new String[] { "Ожид. сигнала", "Ожид. сигнала", "Готово", "Ошибка",
 			"Недоступно", "Не поддерживается" };
 
 	// для безопасных вызовов

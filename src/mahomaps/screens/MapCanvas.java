@@ -310,8 +310,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		// статус и время
 		int passed = (int) ((System.currentTimeMillis() - geo.lastUpdateTime) / 1000);
 		if (geo.state != GeoUpdateThread.STATE_OK) {
-			String s = GeoUpdateThread.states[geo.state] + " (" + passed + " c.)";
-			v.addElement(s);
+			v.addElement(GeoUpdateThread.states[geo.state]);
+			v.addElement("Прошло " + passed + " с.");
 		} else if (passed >= 5) {
 			v.addElement("Не обновлялось: " + passed + " с.");
 		}
