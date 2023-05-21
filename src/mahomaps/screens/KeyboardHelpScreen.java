@@ -14,7 +14,12 @@ public class KeyboardHelpScreen extends Form implements CommandListener {
 
 	public KeyboardHelpScreen() {
 		super("Справка");
-		append(new StringItem("Клавиатура пока не поддерживается", "Прям совсем."));
+		append(new StringItem("Навигация", "D-PAD/2/4/6/8"));
+		append(new StringItem("Масштаб", "1 - отдалить\n3 - приблизить"));
+		append(new StringItem("Поиск", "7"));
+		append(new StringItem("Геопозиция", "9"));
+		append(new StringItem("Меню приложения", "Левая софт-клавиша"));
+		append(new StringItem("Меню карты", "Правая софт-клавиша"));
 		addCommand(back);
 		setCommandListener(this);
 	}

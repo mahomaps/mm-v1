@@ -43,8 +43,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private final Vector overlays = new Vector();
 	private int overlaysH;
 	public final Geopoint geolocation;
-	public ControlButtonsContainer controls;
+	public final ControlButtonsContainer controls;
 	private boolean touch = hasPointerEvents();
+	private boolean mapFocused = true;
 	private final Image dummyBuffer = Image.createImage(1, 1);
 
 	private Command back = new Command("Назад", Command.BACK, 0);
@@ -237,8 +238,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	private void drawOverlay(Graphics g, int w, int h) {
+		Font f = Font.getFont(0, 0, 8);
 		g.setColor(0);
-		g.setFont(Font.getFont(0, 0, 8));
+		g.setFont(f);
 		if (Settings.drawTileInfo)
 			g.drawString(state.toString(), 5, 5, 0);
 
@@ -249,6 +251,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 		}
 
+		boolean t = touch;
+		int fh = f.getHeight();
+		if (!t)
+			h -= fh;
+
 		int y = h - overlaysH;
 		int oh = 0;
 		for (int i = 0; i < overlays.size(); i++) {
@@ -258,10 +265,26 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			oh += mo.H + 15;
 		}
 
-		if (controls != null)
+		if (t)
 			controls.Paint(g, 0, 0, w, h - overlaysH);
 
 		overlaysH = oh;
+
+		if (!t) {
+			g.setColor(0);
+			g.fillRect(0, h, w, fh);
+			g.setColor(-1);
+			g.setFont(f);
+
+			g.drawString("Меню", 0, y, 0);
+			g.drawString("Выбор", w / 2, y, Graphics.TOP | Graphics.HCENTER);
+			if (mapFocused) {
+				if (!UIElement.IsQueueEmpty())
+					g.drawString("К панелям", w, y, Graphics.TOP | Graphics.RIGHT);
+			} else {
+				g.drawString("К карте", w, y, Graphics.TOP | Graphics.RIGHT);
+			}
+		}
 	}
 
 	// LOGIC
@@ -286,10 +309,77 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	protected void keyPressed(int k) {
 		touch = false;
-		if (k == -6)
+		if (k == -6) {
 			MahoMapsApp.BringMenu();
-		if (k == -7)
-			ShowGeo();
+			return;
+		}
+		if (k == -7) {
+			if (mapFocused) {
+				if (!UIElement.IsQueueEmpty()) {
+					mapFocused = false;
+					UIElement.SelectDown();
+				}
+			} else {
+				mapFocused = true;
+				UIElement.Deselect();
+			}
+			return;
+		}
+		int ga = getGameAction(k);
+		if (mapFocused) {
+			switch (ga) {
+			case FIRE:
+				Geopoint s = GetAtCoords(0, 0);
+				if (Math.abs(s.lat) <= 85) {
+					PushOverlay(new SelectOverlay(s));
+				}
+				return;
+			case UP:
+				state.yOffset += 50;
+				state.ClampOffset();
+				return;
+			case DOWN:
+				state.yOffset -= 50;
+				state.ClampOffset();
+				return;
+			case LEFT:
+				state.xOffset += 50;
+				state.ClampOffset();
+				return;
+			case RIGHT:
+				state.xOffset -= 50;
+				state.ClampOffset();
+				return;
+			}
+			switch (k) {
+			case KEY_NUM1:
+				state = state.ZoomOut();
+				return;
+			case KEY_NUM3:
+				state = state.ZoomIn();
+				return;
+			case KEY_NUM7:
+				BeginTextSearch();
+				return;
+			case KEY_NUM9:
+				ShowGeo();
+				return;
+			}
+		} else {
+			switch (ga) {
+			case FIRE:
+				UIElement.TriggerSelected();
+				return;
+			case UP:
+			case LEFT:
+				UIElement.SelectUp();
+				return;
+			case DOWN:
+			case RIGHT:
+				UIElement.SelectDown();
+				return;
+			}
+		}
 	}
 
 	protected void keyReleased(int k) {
@@ -298,6 +388,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	protected void pointerPressed(int x, int y, int n) {
 		touch = true;
+		mapFocused = true;
 		if (n == 0) {
 			UIElement.InvokePressEvent(x, y);
 			dragActive = false;
@@ -336,6 +427,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (UIElement.InvokeTouchEvent(x, y))
 			return;
 
+		if (y > getHeight() - overlaysH)
+			return;
+
 		// points
 
 		synchronized (overlays) {
@@ -356,7 +450,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		// tap at map
 		if (MahoMapsApp.lastSearch == null) {
 			Geopoint s = GetAtCoords(x - getWidth() / 2, y - getHeight() / 2);
-			if (Math.abs(s.lat) > 85) {
+			if (Math.abs(s.lat) > 85 || Math.abs(s.lon) >= 180) {
 				return;
 			}
 			PushOverlay(new SelectOverlay(s));
@@ -370,11 +464,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public void BeginTextSearch() {
 		if (CheckApiAcsess()) {
-			if (MahoMapsApp.lastSearch != null) {
-				throw new IllegalStateException("Can't begin new search while old one is open!");
+			if (MahoMapsApp.lastSearch == null) {
+				MahoMapsApp.BringSubScreen(searchBox);
 			}
-
-			MahoMapsApp.BringSubScreen(searchBox);
 		}
 	}
 

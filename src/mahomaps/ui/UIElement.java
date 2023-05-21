@@ -14,36 +14,106 @@ public abstract class UIElement {
 
 	private static volatile Vector queue = new Vector();
 	private static volatile Vector queueTemp = new Vector();
+	private static int selectedIndex = -1;
+	private static boolean isSelectedInQueue = false;
 
-	private static UITouchZone holdElement = null;
+	private static ITouchAcceptor holdElement = null;
 
 	protected static synchronized void RegisterForInput(ITouchAcceptor ta, int x, int y, int w, int h) {
 		queueTemp.addElement(new UITouchZone(ta, x, y, w, h));
+		if (ta == holdElement)
+			isSelectedInQueue = true;
 	}
 
-	public synchronized static void CommitInputQueue() {
+	public static synchronized void CommitInputQueue() {
 		queue = queueTemp;
 		queueTemp = new Vector(queue.size());
+		if (holdElement != null) {
+			if (!isSelectedInQueue) {
+				InvokeReleaseEvent();
+				selectedIndex = -1;
+			}
+		}
+		isSelectedInQueue = false;
 	}
 
 	public static synchronized boolean InvokePressEvent(int x, int y) {
+		InvokeReleaseEvent();
 		Vector v = queue;
 		for (int i = v.size() - 1; i >= 0; i--) {
 			UITouchZone z = (UITouchZone) v.elementAt(i);
 			if (z.contains(x, y)) {
+				selectedIndex = i;
 				z.element.OnPress();
-				holdElement = z;
+				holdElement = z.element;
 				return true;
 			}
 		}
 		return false;
 	}
 
+	public static synchronized boolean InvokePressEvent(ITouchAcceptor ta) {
+		InvokeReleaseEvent();
+		Vector v = queue;
+		for (int i = v.size() - 1; i >= 0; i--) {
+			UITouchZone z = (UITouchZone) v.elementAt(i);
+			if (z.element == ta) {
+				selectedIndex = i;
+				z.element.OnPress();
+				holdElement = z.element;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static synchronized boolean InvokePressEvent(int i) {
+		InvokeReleaseEvent();
+		if (i < 0)
+			return false;
+		if (i >= queue.size())
+			return false;
+		UITouchZone z = (UITouchZone) queue.elementAt(i);
+		selectedIndex = i;
+		z.element.OnPress();
+		holdElement = z.element;
+		return true;
+
+	}
+
 	public static synchronized void InvokeReleaseEvent() {
-		UITouchZone z = holdElement;
+		ITouchAcceptor z = holdElement;
 		holdElement = null;
 		if (z != null)
-			z.element.OnRelease();
+			z.OnRelease();
+	}
+
+	public static synchronized void SelectUp() {
+		selectedIndex--;
+		if (selectedIndex < 0)
+			selectedIndex = queue.size() - 1;
+		InvokePressEvent(selectedIndex);
+	}
+
+	public static synchronized void SelectDown() {
+		selectedIndex++;
+		if (selectedIndex >= queue.size())
+			selectedIndex = 0;
+		InvokePressEvent(selectedIndex);
+	}
+
+	public static synchronized void Deselect() {
+		selectedIndex = -1;
+		InvokeReleaseEvent();
+	}
+
+	public static synchronized void TriggerSelected() {
+		if (holdElement != null)
+			holdElement.OnTap();
+	}
+
+	public static synchronized boolean IsQueueEmpty() {
+		return queue.size() == 0;
 	}
 
 	/**
