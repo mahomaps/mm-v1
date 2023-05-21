@@ -17,7 +17,7 @@ abstract class YmapsApiBase {
 
 	private final Hashtable cookies = new Hashtable();
 
-	protected final String GetToken(String key) {
+	protected final String GetToken(String key) throws Exception {
 		HttpConnection hc = null;
 		InputStream raw = null;
 		InputStreamReader stream = null;
@@ -27,10 +27,19 @@ abstract class YmapsApiBase {
 			hc.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0");
 			int r = hc.getResponseCode();
-			if (r != 200)
-				throw new IOException("Http code: " + r);
 			AcceptCookies(hc);
 			raw = hc.openInputStream();
+			if (r != 200) {
+				ByteArrayOutputStream o = new ByteArrayOutputStream();
+				byte[] buf = new byte[256];
+				int len;
+				while ((len = raw.read(buf)) != -1) {
+					o.write(buf, 0, len);
+				}
+				String str = new String(o.toByteArray(), "UTF-8");
+				o.close();
+				throw new IOException("Http code: " + r + "\nResponse: " + str);
+			}
 			stream = new InputStreamReader(raw, "UTF-8");
 			while (true) {
 				int c = stream.read();
@@ -63,9 +72,6 @@ abstract class YmapsApiBase {
 					return buf.toString();
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (RuntimeException e) {
 		} finally {
 			try {
 				if (stream != null)
@@ -80,9 +86,6 @@ abstract class YmapsApiBase {
 			}
 
 		}
-
-		return null;
-
 	}
 
 	protected String GetUtf(String url) throws IOException {

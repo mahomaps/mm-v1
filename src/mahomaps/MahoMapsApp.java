@@ -77,7 +77,10 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 					new Item[] { new StringItem("Не удалось подключить кэш", "Отказано в доступе по пути " + loc) }));
 			return;
 		}
-		api.RefreshToken();
+		try {
+			api.RefreshToken();
+		} catch (Exception e) {
+		}
 		menu = new MenuScreen();
 		canvas = new MapCanvas(tiles);
 		tiles.start();

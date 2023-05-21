@@ -16,10 +16,9 @@ public final class YmapsApi extends YmapsApiBase {
 
 	public String token = null;
 
-	public final synchronized boolean RefreshToken() {
+	public final synchronized void RefreshToken() throws Exception {
 		token = null;
 		token = GetToken(key);
-		return token != null;
 	}
 
 	private final String GetSearchUrl(String text, Geopoint around, double zone) {

@@ -26,25 +26,30 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener 
 
 	public void run() {
 		Thread.yield();
-		boolean sucs = MahoMapsApp.api.RefreshToken();
-		Thread.yield();
-		if (sucs)
+		try {
+			MahoMapsApp.api.RefreshToken();
 			ShowOk();
-		else
-			ShowFail();
+		} catch (Exception e) {
+			ShowFail(e);
+		}
+
 	}
 
 	private void ShowOk() {
 		deleteAll();
 		append(new StringItem("Статус", "Подключено"));
-		append(new StringItem("Токен", MahoMapsApp.api.token));
 		addCommand(back);
 	}
 
-	private void ShowFail() {
+	private void ShowFail(Exception e) {
 		deleteAll();
-		append(new StringItem("Статус", "Ошибка. Попытайтесь ещё раз."));
-		append(new StringItem("Токен", "-"));
+		if (e instanceof SecurityException) {
+			append(new StringItem("Статус", "Приложению запрещён доступ в интернет."));
+		} else {
+			append(new StringItem("Статус", "Ошибка. Попытайтесь ещё раз."));
+			append(new StringItem("Возникшее исключение", e.getClass().getName()));
+			append(new StringItem("Сведения", e.getMessage()));
+		}
 		addCommand(back);
 	}
 
