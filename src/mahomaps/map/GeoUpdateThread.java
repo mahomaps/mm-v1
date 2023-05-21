@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import javax.microedition.location.Coordinates;
 import javax.microedition.location.Location;
-import javax.microedition.location.LocationException;
 import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
 
@@ -15,7 +14,7 @@ public class GeoUpdateThread extends Thread {
 	/**
 	 * Точка геопозиции.
 	 */
-	private final Geopoint positionPoint;
+	final Geopoint positionPoint;
 	/**
 	 * Состояние получения геопозиции. Одно из state-значений.
 	 */
@@ -24,7 +23,7 @@ public class GeoUpdateThread extends Thread {
 	public boolean loop = true;
 	public long lastUpdateTime = System.currentTimeMillis();
 	public int sattelites;
-	public String method = "";
+	public String method = null;
 	private Object lock = new Object();
 	public String bearer = "";
 
@@ -89,7 +88,7 @@ public class GeoUpdateThread extends Thread {
 		}
 	}
 	
-	private static String[] split(String str, char d) {
+	static String[] split(String str, char d) {
 		int i = str.indexOf(d);
 		if(i == -1)
 			return new String[] {str};
@@ -236,7 +235,7 @@ public class GeoUpdateThread extends Thread {
 				if((t & Location.MTY_NETWORKBASED) == Location.MTY_NETWORKBASED) {
 					s = "NB " + s;
 				}
-				method = s;
+				method = s.length()==0 ? null : s;
 				if(location.isValid()) {
 					Coordinates coordinates = location.getQualifiedCoordinates();
 					if (coordinates.getLatitude() != 0 && coordinates.getLongitude() != 0) {

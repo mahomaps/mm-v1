@@ -261,10 +261,29 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			g.drawString(state.toString(), 5, 5, 0);
 
 		if (geo != null && Settings.showGeo) {
-			g.drawString(GeoUpdateThread.states[geo.state] + " " + geo.sattelites + " " + geo.method, 5, 25, 0);
-			if (geo.DrawPoint()) {
-				g.drawString(geolocation.toString(), 5, 45, 0);
+			Vector v = new Vector();
+			if (geo.state != GeoUpdateThread.STATE_OK)
+				v.addElement(GeoUpdateThread.states[geo.state]);
+
+			String s = geo.method;
+			if (geo.sattelites != 0) {
+				if (s == null) {
+					s = "Спутников: " + geo.sattelites;
+				} else {
+					s += " (" + geo.sattelites + ")";
+				}
 			}
+			if (s != null)
+				v.addElement(s);
+
+			if (geo.DrawPoint()) {
+				String[] r = geolocation.GetRounded();
+				v.addElement(r[0]);
+				v.addElement(r[1]);
+			}
+			controls.info = v;
+		} else {
+			controls.info = null;
 		}
 
 		boolean t = touch;

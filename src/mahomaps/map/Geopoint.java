@@ -122,7 +122,7 @@ public class Geopoint {
 		return false;
 	}
 
-	public String toString() {
+	public String[] GetRounded() {
 		boolean latS = lat >= 0;
 		double latF = Math.abs(lat) % 1;
 		int latD = (int) (Math.abs(lat) - latF);
@@ -138,20 +138,28 @@ public class Geopoint {
 			lonFS = lonFS.substring(0, 7);
 
 		StringBuffer sb = new StringBuffer();
+		String[] r = new String[2];
 
 		if (!latS)
 			sb.append('-');
 		sb.append(latD);
 		sb.append(latFS);
 
-		sb.append(' ');
+		r[0] = sb.toString();
+		sb = new StringBuffer();
 
 		if (!lonS)
 			sb.append('-');
 		sb.append(lonD);
 		sb.append(lonFS);
 
-		return sb.toString();
+		r[1] = sb.toString();
+		return r;
+	}
+
+	public String toString() {
+		String[] r = GetRounded();
+		return r[0] + " " + r[1];
 	}
 
 	public static final int COLOR_RED = 0;
