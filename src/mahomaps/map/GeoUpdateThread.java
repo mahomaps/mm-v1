@@ -24,8 +24,8 @@ public class GeoUpdateThread extends Thread {
 	public long lastUpdateTime = System.currentTimeMillis();
 	public int sattelites;
 	public String method = null;
+	public int totalSattelitesInView;
 	private Object lock = new Object();
-	public String bearer = "";
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
@@ -192,17 +192,20 @@ public class GeoUpdateThread extends Thread {
 				String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
 				if(nmea != null) {
 					String[] sequence = split(nmea, '\n');
-					int s = 0;
+					int s1 = 0;
+					int s2 = 0;
 					for(int i = sequence.length-1; i >= 0; i--) {
 						String[] sentence = split(sequence[i], ',');
 						if(sentence[0].endsWith("GGA")) {
-							s = Integer.parseInt(sentence[7]);
+							s1 = Integer.parseInt(sentence[7]);
+							s2 = Math.max(s2, s1);
 							break;
 						} else if(sentence[0].endsWith("GSV")) {
-							s = Math.max(s, Integer.parseInt(sentence[3]));
+							s1 = s2 = Math.max(s2, Integer.parseInt(sentence[3]));
 						}
 					}
-					sattelites = s;
+					sattelites = s1;
+					totalSattelitesInView = s2;
 				}
 				String s = "";
 				int t = location.getLocationMethod();
