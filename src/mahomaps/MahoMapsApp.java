@@ -23,7 +23,7 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	private static TilesProvider tiles;
 	private static MapCanvas canvas;
 	private static MenuScreen menu;
-	private static MIDlet midlet;
+	private static MahoMapsApp midlet;
 	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
 
@@ -116,6 +116,14 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 			midlet.platformRequest(link);
 		} catch (ConnectionNotFoundException e) {
 		}
+	}
+
+	public static void Exit() {
+		try {
+			midlet.destroyApp(true);
+		} catch (MIDletStateChangeException e) {
+		}
+		midlet.notifyDestroyed();
 	}
 
 	private final static double E = 2.71828182845904523536028d;

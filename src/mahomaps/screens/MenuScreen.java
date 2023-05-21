@@ -13,8 +13,8 @@ public class MenuScreen extends List implements CommandListener {
 	private Command back = new Command("Назад", Command.BACK, 0);
 
 	public MenuScreen() {
-		super("MahoMaps v1", Choice.IMPLICIT, new String[] {"Подключение к API", "Справка по клавиатуре", "Настройки",
-				"О программе", "Другие программы", }, null);
+		super("MahoMaps v1", Choice.IMPLICIT, new String[] { "Подключение к API", "Справка по клавиатуре", "Настройки",
+				"О программе", "Другие программы", "Выход" }, null);
 		addCommand(back);
 		setCommandListener(this);
 	}
@@ -35,6 +35,8 @@ public class MenuScreen extends List implements CommandListener {
 					MahoMapsApp.BringSubScreen(new AboutScreen());
 				} else if (sel == 4) {
 					MahoMapsApp.BringSubScreen(new OtherAppsScreen());
+				} else if (sel == 5) {
+					MahoMapsApp.Exit();
 				}
 			}
 		}
