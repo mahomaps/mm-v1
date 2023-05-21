@@ -17,7 +17,7 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 
 	StringItem vk = new StringItem("VK", "VK4ME (curoviyxru)", Item.HYPERLINK);
 	StringItem ok = new StringItem("OK", "ok.ru mod (shinovon)", Item.HYPERLINK);
-	StringItem tg = new StringItem("Telegram", "MPGram (shinovon)", Item.HYPERLINK);
+	StringItem tg = new StringItem("Telegram", "MPGram Web (shinovon)", Item.HYPERLINK);
 	StringItem jt = new StringItem("YouTube", "JTube (shinovon)", Item.HYPERLINK);
 	StringItem bt = new StringItem("Translator", "Bing Translate (shinovon)", Item.HYPERLINK);
 	StringItem nm = new StringItem("osu! beatmaps player", "nmania (Feodor0090)", Item.HYPERLINK);
@@ -32,11 +32,11 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 		append(new StringItem(null,
 				"Мы собрали для вас некоторые другие наши приложения для доступа к актуальным сервисам."));
 		appendLink(vk);
-		appendLink(ok);
 		appendLink(tg);
 		appendLink(jt);
 		appendLink(bt);
 		appendLink(nm);
+		appendLink(ok);
 		appendLink(kem);
 		appendLink(j2l);
 	}
