@@ -5,6 +5,7 @@ import java.util.Vector;
 import mahomaps.MahoMapsApp;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
+import mahomaps.map.Line;
 import mahomaps.map.Route;
 import mahomaps.ui.Button;
 import mahomaps.ui.FillFlowContainer;
@@ -49,9 +50,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method), 0),
 					new SimpleText("Расстояние: " + route.distance, 0), new SimpleText("Время: " + route.time, 0),
 					new Button("Закрыть", 0, this) });
-			for (int i = 0; i < route.points.length; i++) {
-				v.addElement(route.points[i]);
-			}
+			MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут.", 0),
@@ -60,8 +59,10 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	}
 
 	public void OnButtonTap(UIElement sender, int uid) {
-		if (uid == 0)
+		if (uid == 0) {
+			MahoMapsApp.GetCanvas().line = null;
 			Close();
+		}
 	}
 
 	private static String Type(int t) {

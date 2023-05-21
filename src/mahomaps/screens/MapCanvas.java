@@ -14,6 +14,7 @@ import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
 import mahomaps.map.Geopoint;
+import mahomaps.map.Line;
 import mahomaps.map.MapState;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
@@ -43,6 +44,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	int lastPx, lastPy;
 	boolean dragActive;
 	private final Vector overlays = new Vector();
+	public Line line;
 	private int overlaysH;
 	public final Geopoint geolocation;
 	public final ControlButtonsContainer controls;
@@ -230,6 +232,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			y += 256;
 			yi++;
 		}
+
+		Line l = line;
+		if (l != null)
+			l.Draw(g, this);
 
 		if (geo != null && geo.DrawPoint()) {
 			geolocation.paint(g, ms);
