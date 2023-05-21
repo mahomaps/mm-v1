@@ -68,9 +68,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		CheckApiAcsess();
 		if (Settings.cacheMode == Settings.CACHE_DISABLED)
-			MahoMapsApp.GetCanvas().PushOverlay(new TileCacheForbiddenOverlay());
+			PushOverlay(new TileCacheForbiddenOverlay());
 		if (!Settings.allowDownload)
-			MahoMapsApp.GetCanvas().PushOverlay(new TileDownloadForbiddenOverlay());
+			PushOverlay(new TileDownloadForbiddenOverlay());
 	}
 
 	/**
