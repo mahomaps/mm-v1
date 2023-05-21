@@ -276,8 +276,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			oh += mo.H + 5 + 6;
 		}
 
-		if (t)
+		if (t) {
 			controls.Paint(g, 0, 0, w, h - overlaysH);
+		}
+		controls.PaintInfo(g, 0, 0, w, h - overlaysH);
 
 		overlaysH = oh;
 

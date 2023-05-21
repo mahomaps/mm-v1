@@ -23,7 +23,9 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		flow.Paint(g, w - flow.W, h - flow.H, flow.W, flow.H);
+	}
 
+	public void PaintInfo(Graphics g, int x, int y, int w, int h) {
 		Vector s = info;
 		if (s != null) {
 			Font f = Font.getFont(0, 0, 8);
