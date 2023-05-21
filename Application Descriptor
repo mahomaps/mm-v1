@@ -1,7 +1,7 @@
 Nokia-MIDlet-Scalable-Icon-1: /icon.svg
 Nokia-MIDlet-Background-Event: pause
 MIDlet-Vendor: nnproject
-MIDlet-Version: 0.0.10
+MIDlet-Version: 0.1.0
 MIDlet-Icon: /icon.png
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-1: MahoMaps,/icon.png,mahomaps.MahoMapsApp
