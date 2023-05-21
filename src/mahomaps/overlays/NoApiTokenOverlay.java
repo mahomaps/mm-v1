@@ -15,8 +15,8 @@ import mahomaps.ui.UIElement;
 public class NoApiTokenOverlay extends MapOverlay implements IButtonHandler {
 
 	public NoApiTokenOverlay() {
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось получить токен API.", 0),
-				new SimpleText("Онлайн-функции недоступны.", 0), new ColumnsContainer(
+		content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось получить токен API."),
+				new SimpleText("Онлайн-функции недоступны."), new ColumnsContainer(
 						new UIElement[] { new Button("Ещё раз", 1, this), new Button("Закрыть", 0, this) }) });
 	}
 

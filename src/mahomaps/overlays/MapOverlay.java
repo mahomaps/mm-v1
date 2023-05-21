@@ -30,9 +30,9 @@ public abstract class MapOverlay extends UIElement {
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		if (content == null)
 			return;
-		g.setColor(-1);
-		g.fillRoundRect(x, y, w, H + 10, 10, 10);
-		content.Paint(g, x + 5, y + 5, w - 10, 0);
+		g.setColor(0x1E1E1E);
+		g.fillRoundRect(x, y, w, H + 6, 10, 10);
+		content.Paint(g, x + 3, y + 3, w - 6, 0);
 		H = content.H;
 	}
 

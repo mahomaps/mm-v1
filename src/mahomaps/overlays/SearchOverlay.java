@@ -48,8 +48,8 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		}
 
 		content = new FillFlowContainer(
-				new UIElement[] { new SimpleText(query, 0), new SimpleText("Найдено: " + results.length(), 0),
-						new SimpleText("Ничего не выбрано.", 0), new ColumnsContainer(
+				new UIElement[] { new SimpleText(query), new SimpleText("Найдено: " + results.length()),
+						new SimpleText("Ничего не выбрано."), new ColumnsContainer(
 								new UIElement[] { new Button("Список", 1, this), new Button("Закрыть", 0, this) }) });
 	}
 
@@ -69,13 +69,13 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 
 		JSONObject data = ((JSONObject) p.object).getJSONObject("properties");
 
-		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.optString("name"), 0),
-				new SimpleText(data.optString("description"), 0),
-				new ColumnsContainer(
-						new UIElement[] { new Button("Карточка", 2, this), new Button("Показать", 3, this) }),
-				new ColumnsContainer(
-						new UIElement[] { new Button("Точка А", 4, this), new Button("Точка Б", 5, this) }),
-				new Button("Назад", 6, this) });
+		content = new FillFlowContainer(
+				new UIElement[] { new SimpleText(data.optString("name")), new SimpleText(data.optString("description")),
+						new ColumnsContainer(
+								new UIElement[] { new Button("Карточка", 2, this), new Button("Показать", 3, this) }),
+						new ColumnsContainer(
+								new UIElement[] { new Button("Отсюда", 4, this), new Button("Сюда", 5, this) }),
+						new Button("Назад", 6, this) });
 
 	}
 

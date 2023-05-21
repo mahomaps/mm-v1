@@ -27,7 +27,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		this.method = method;
 		v.addElement(a);
 		v.addElement(b);
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Загружаем маршрут...", 0) });
+		content = new FillFlowContainer(new UIElement[] { new SimpleText("Загружаем маршрут...") });
 		Thread th = new Thread(this, "Route api request");
 		th.start();
 	}
@@ -47,13 +47,13 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	public void run() {
 		try {
 			route = new Route(MahoMapsApp.api.Route(a, b, method));
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method), 0),
-					new SimpleText("Расстояние: " + route.distance, 0), new SimpleText("Время: " + route.time, 0),
+			content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
+					new SimpleText("Расстояние: " + route.distance), new SimpleText("Время: " + route.time),
 					new Button("Закрыть", 0, this) });
 			MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 		} catch (Exception e) {
 			e.printStackTrace();
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут.", 0),
+			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
 					new Button("Закрыть", 0, this) });
 		}
 	}

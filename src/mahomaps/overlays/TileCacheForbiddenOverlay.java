@@ -14,8 +14,8 @@ import mahomaps.ui.UIElement;
 
 public class TileCacheForbiddenOverlay extends MapOverlay implements IButtonHandler {
 	public TileCacheForbiddenOverlay() {
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Доступ в файловую запрещён.", 0),
-				new SimpleText("Кэширование отключено.", 0), new ColumnsContainer(
+		content = new FillFlowContainer(new UIElement[] { new SimpleText("Доступ в файловую запрещён."),
+				new SimpleText("Кэширование отключено."), new ColumnsContainer(
 						new UIElement[] { new Button("Включить", 1, this), new Button("Закрыть", 0, this) }) });
 	}
 

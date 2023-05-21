@@ -5,6 +5,7 @@ import java.util.Vector;
 import mahomaps.MahoMapsApp;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
+import mahomaps.screens.MapCanvas;
 import mahomaps.ui.Button;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
@@ -32,19 +33,22 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 
 					}), new Button("Отмена", 0, this) });
 		} else if (a == null && b == null) {
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Выберите точки А и Б на карте.", 0),
+			content = new FillFlowContainer(new UIElement[] { new SimpleText("Выберите точки А и Б на карте."),
 					new Button("Отмена", 0, this) });
 		} else {
 			String s;
+			Button bt;
 			if (b == null) {
 				s = "Точка А: " + a.toString();
+				bt = new Button("До моей геолокации", 10, this);
 				v.addElement(a);
 			} else {
 				s = "Точка Б: " + b.toString();
+				bt = new Button("От моей геолокации", 11, this);
 				v.addElement(b);
 			}
-			content = new FillFlowContainer(new UIElement[] { new SimpleText(s, 0),
-					new SimpleText("Выберите вторую точку.", 0), new Button("Отмена", 0, this) });
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(s),
+					new SimpleText("Выберите вторую точку."), bt, new Button("Отмена", 0, this) });
 		}
 	}
 
@@ -85,8 +89,21 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	public void OnButtonTap(UIElement sender, int uid) {
+		MapCanvas m = MahoMapsApp.GetCanvas();
 		if (uid == 0) {
 			Close();
+			return;
+		}
+		if (uid == 10) {
+			if (m.geo.DrawPoint()) {
+				SetB(m.geolocation);
+			}
+			return;
+		}
+		if (uid == 11) {
+			if (m.geo.DrawPoint()) {
+				SetA(m.geolocation);
+			}
 			return;
 		}
 		if (a == null || b == null)

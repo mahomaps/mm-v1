@@ -20,9 +20,16 @@ public class Button extends UIElement implements ITouchAcceptor {
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		RegisterForInput(this, x, y, w, h);
-		g.setColor(hold ? 0x440000 : 0);
 		g.setFont(Font.getFont(0, 0, 8));
-		g.fillRoundRect(x + margin, y + margin, w - margin - margin, h - margin - margin, 10, 10);
+		if (hold) {
+			g.setColor(0xFC6155);
+			g.fillRoundRect(x + margin, y + margin, w - margin - margin, h - margin - margin, 10, 10);
+			g.setColor(0x343434);
+			g.fillRoundRect(x + margin * 2, y + margin * 2, w - margin * 4, h - margin * 4, 10, 10);
+		} else {
+			g.setColor(0x343434);
+			g.fillRoundRect(x + margin, y + margin, w - margin - margin, h - margin - margin, 10, 10);
+		}
 		int fh = g.getFont().getHeight();
 		g.setColor(-1);
 		g.drawString(text, x + w / 2, y + h / 2 - fh / 2, Graphics.TOP | Graphics.HCENTER);

@@ -27,9 +27,9 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 		v.addElement(selection);
 
 		content = new FillFlowContainer(
-				new UIElement[] { new SimpleText(p.toString(), 0), new Button("Что здесь?", 1, this),
+				new UIElement[] { new SimpleText(p.toString()), new Button("Что здесь?", 1, this),
 						new ColumnsContainer(
-								new UIElement[] { new Button("Точка А", 2, this), new Button("Точка Б", 3, this) }),
+								new UIElement[] { new Button("Отсюда", 2, this), new Button("Сюда", 3, this) }),
 						new Button("Закрыть", 0, this) });
 	}
 

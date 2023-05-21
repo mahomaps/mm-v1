@@ -7,26 +7,23 @@ public class SimpleText extends UIElement {
 
 	private String text;
 	private Font font;
-	private int color;
 	private int hAnchor;
 	private int vAnchor;
 
-	public SimpleText(String s, Font f, int color, int hAnchor, int vAnchor) {
+	public SimpleText(String s, Font f, int hAnchor, int vAnchor) {
 		this.text = s;
 		if (f == null)
 			f = Font.getFont(0, 0, 8);
 		this.font = f;
-		this.color = color;
 		this.hAnchor = hAnchor;
 		this.vAnchor = vAnchor;
 		this.W = font.stringWidth(text);
 		this.H = font.getHeight();
 	}
 
-	public SimpleText(String s, int color) {
+	public SimpleText(String s) {
 		this.text = s;
 		this.font = Font.getFont(0, 0, 8);
-		this.color = color;
 		this.hAnchor = 0;
 		this.vAnchor = 0;
 		this.W = font.stringWidth(text);
@@ -41,13 +38,13 @@ public class SimpleText extends UIElement {
 		case 0:
 		case Graphics.LEFT:
 			hAnchor = Graphics.LEFT;
-			rx = x;
+			rx = x + 3;
 			break;
 		case Graphics.HCENTER:
 			rx = x + (w >> 1);
 			break;
 		case Graphics.RIGHT:
-			rx = x + w;
+			rx = x + w - 3;
 			break;
 		default:
 			throw new IllegalArgumentException();
@@ -72,7 +69,7 @@ public class SimpleText extends UIElement {
 		}
 
 		g.setFont(font);
-		g.setColor(color);
+		g.setColor(-1);
 		g.drawString(text, rx, ry, hAnchor | va);
 	}
 
