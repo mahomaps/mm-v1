@@ -1,6 +1,8 @@
 package mahomaps;
 
 import javax.microedition.io.ConnectionNotFoundException;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
@@ -16,7 +18,7 @@ import mahomaps.screens.MenuScreen;
 import mahomaps.screens.SearchScreen;
 import mahomaps.screens.Splash;
 
-public class MahoMapsApp extends MIDlet implements Runnable {
+public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	private static Display display;
 	public static Thread thread;
@@ -26,6 +28,8 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 	private static MahoMapsApp midlet;
 	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
+
+	private Command exit = new Command("Выход", Command.EXIT, 0);
 
 	public static String version;
 
@@ -73,8 +77,11 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 			tiles = new TilesProvider("ru_RU", loc);
 		} catch (Exception e) {
 			e.printStackTrace();
-			BringSubScreen(new Form("Ошибка",
-					new Item[] { new StringItem("Не удалось подключить кэш", "Отказано в доступе по пути " + loc) }));
+			Form f = new Form("Ошибка",
+					new Item[] { new StringItem("Не удалось подключить кэш", "Отказано в доступе по пути " + loc) });
+			f.addCommand(exit);
+			f.setCommandListener(this);
+			BringSubScreen(f);
 			return;
 		}
 		try {
@@ -203,5 +210,11 @@ public class MahoMapsApp extends MIDlet implements Runnable {
 		}
 
 		return sumY;
+	}
+
+	public void commandAction(Command c, Displayable d) {
+		if (c == exit) {
+			Exit();
+		}
 	}
 }
