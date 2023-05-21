@@ -319,11 +319,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		// метод и спутники
 		{
 			String s = geo.method;
-			if (geo.sattelites > 0 || geo.totalSattelitesInView > 0) {
+			if (geo.totalSattelitesInView >= 0) {
+				String s2 = (geo.sattelites >= 0 ? geo.sattelites + "/" : "") + geo.totalSattelitesInView;
 				if (s == null) {
-					s = "Спутников: " + geo.sattelites + "/" + geo.totalSattelitesInView;
+					s = "Спутников: " + s2;
 				} else {
-					s += " (" + geo.sattelites + "/" + geo.totalSattelitesInView + ")";
+					s += " (" + s2 + ")";
 				}
 			}
 			if (s != null)

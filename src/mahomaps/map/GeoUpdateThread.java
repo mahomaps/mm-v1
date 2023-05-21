@@ -192,26 +192,29 @@ public class GeoUpdateThread extends Thread {
 				String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
 				if(nmea != null) {
 					String[] sequence = split(nmea, '\n');
-					int s1 = 0;
-					int s2 = 0;
+					int s1 = -1;
+					int s2 = -1;
 					for(int i = sequence.length-1; i >= 0; i--) {
 						String[] sentence = split(sequence[i], ',');
 						if(sentence[0].endsWith("GGA")) {
 							try {
 								s1 = Integer.parseInt(sentence[7]);
 							} catch (Exception e) {
+								s1 = -1;
 							}
 							s2 = Math.max(s2, s1);
 							break;
 						} else if(sentence[0].endsWith("GSV")) {
 							try {
-								s1 = s2 = Math.max(s2, Integer.parseInt(sentence[3]));
+								s2 = Math.max(s2, Integer.parseInt(sentence[3]));
 							} catch (Exception e) {
 							}
 						}
 					}
 					sattelites = s1;
 					totalSattelitesInView = s2;
+				} else {
+					totalSattelitesInView = sattelites = -1;
 				}
 				String s = "";
 				int t = location.getLocationMethod();
@@ -234,9 +237,9 @@ public class GeoUpdateThread extends Thread {
 					s += "AOA";
 				}
 				if((t & Location.MTA_ASSISTED) == Location.MTA_ASSISTED) {
-					s = "A " + s;
+					s = "A" + s;
 				} else if((t & Location.MTA_UNASSISTED) == Location.MTA_UNASSISTED) {
-					s = "U " + s;
+					s = "U" + s;
 				}
 				if((t & Location.MTY_TERMINALBASED) == Location.MTY_TERMINALBASED) {
 					s = "TB " + s;
