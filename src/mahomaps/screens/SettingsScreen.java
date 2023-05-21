@@ -63,7 +63,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(geoLook);
 		append(geoStatus);
 		append(tileInfo);
-		// append(cache);
+		append(cache);
 		append(download);
 	}
 
