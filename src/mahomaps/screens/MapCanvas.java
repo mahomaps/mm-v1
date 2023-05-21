@@ -187,6 +187,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		drawMap(g, w, h);
 		drawOverlay(g, w, h);
 		UIElement.CommitInputQueue();
+		if (UIElement.IsQueueEmpty() && !touch) {
+			mapFocused = true;
+			UIElement.Deselect();
+		}
 	}
 
 	private void drawMap(Graphics g, int w, int h) {
