@@ -21,6 +21,8 @@ import mahomaps.map.TilesProvider;
 import mahomaps.overlays.MapOverlay;
 import mahomaps.overlays.NoApiTokenOverlay;
 import mahomaps.overlays.SelectOverlay;
+import mahomaps.overlays.TileCacheForbiddenOverlay;
+import mahomaps.overlays.TileDownloadForbiddenOverlay;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
 
@@ -65,6 +67,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		controls = new ControlButtonsContainer(this);
 
 		CheckApiAcsess();
+		if (Settings.cacheMode == Settings.CACHE_DISABLED)
+			MahoMapsApp.GetCanvas().PushOverlay(new TileCacheForbiddenOverlay());
+		if (!Settings.allowDownload)
+			MahoMapsApp.GetCanvas().PushOverlay(new TileDownloadForbiddenOverlay());
 	}
 
 	/**
