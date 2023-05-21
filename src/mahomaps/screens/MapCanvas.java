@@ -260,38 +260,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (Settings.drawTileInfo)
 			g.drawString(state.toString(), 5, 5, 0);
 
-		if (geo != null && Settings.showGeo) {
-			Vector v = new Vector();
-			int passed = (int) ((System.currentTimeMillis() - geo.lastUpdateTime) / 1000);
-			if (geo.state != GeoUpdateThread.STATE_OK) {
-				String s = GeoUpdateThread.states[geo.state] + " (" + passed + " c.)";
-				v.addElement(s);
-			} else if (passed >= 5) {
-				v.addElement("Не обновлялось: " + passed + " с.");
-			}
-
-			{
-				String s = geo.method;
-				if (geo.sattelites != 0 || geo.totalSattelitesInView != 0) {
-					if (s == null) {
-						s = "Спутников: " + geo.sattelites + "/" + geo.totalSattelitesInView;
-					} else {
-						s += " (" + geo.sattelites + "/" + geo.totalSattelitesInView + ")";
-					}
-				}
-				if (s != null)
-					v.addElement(s);
-			}
-
-			if (geo.DrawPoint()) {
-				String[] r = geolocation.GetRounded();
-				v.addElement(r[0]);
-				v.addElement(r[1]);
-			}
-			controls.info = v;
-		} else {
-			controls.info = null;
-		}
+		controls.info = GetGeoInfo();
 
 		boolean t = touch;
 		int fh = f.getHeight();
@@ -327,6 +296,45 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				g.drawString("К карте", w, y, Graphics.TOP | Graphics.RIGHT);
 			}
 		}
+	}
+
+	private Vector GetGeoInfo() {
+		if (geo == null || !Settings.showGeo) {
+			return null;
+		}
+
+		Vector v = new Vector();
+
+		// статус и время
+		int passed = (int) ((System.currentTimeMillis() - geo.lastUpdateTime) / 1000);
+		if (geo.state != GeoUpdateThread.STATE_OK) {
+			String s = GeoUpdateThread.states[geo.state] + " (" + passed + " c.)";
+			v.addElement(s);
+		} else if (passed >= 5) {
+			v.addElement("Не обновлялось: " + passed + " с.");
+		}
+
+		// метод и спутники
+		{
+			String s = geo.method;
+			if (geo.sattelites != 0 || geo.totalSattelitesInView != 0) {
+				if (s == null) {
+					s = "Спутников: " + geo.sattelites + "/" + geo.totalSattelitesInView;
+				} else {
+					s += " (" + geo.sattelites + "/" + geo.totalSattelitesInView + ")";
+				}
+			}
+			if (s != null)
+				v.addElement(s);
+		}
+
+		// координаты
+		if (geo.DrawPoint()) {
+			String[] r = geolocation.GetRounded();
+			v.addElement(r[0]);
+			v.addElement(r[1]);
+		}
+		return v;
 	}
 
 	// LOGIC
