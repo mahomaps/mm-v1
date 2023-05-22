@@ -398,6 +398,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void keyPressedInternal(int k) {
+		// "home" button
+		if (k == -12)
+			return;
 		touch = false;
 		if (k == -6) {
 			MahoMapsApp.BringMenu();
