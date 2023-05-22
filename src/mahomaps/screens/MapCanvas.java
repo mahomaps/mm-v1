@@ -53,6 +53,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private boolean mapFocused = true;
 	private final Image dummyBuffer = Image.createImage(1, 1);
 	private boolean repaintDebugTick = true;
+	private int repeatCount = 0;
 
 	private Command back = new Command("Назад", Command.BACK, 0);
 	private Command search = new Command("Поиск", Command.OK, 1);
@@ -418,19 +419,19 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				}
 				return;
 			case UP:
-				state.yOffset += 50;
+				state.yOffset += 10;
 				state.ClampOffset();
 				return;
 			case DOWN:
-				state.yOffset -= 50;
+				state.yOffset -= 10;
 				state.ClampOffset();
 				return;
 			case LEFT:
-				state.xOffset += 50;
+				state.xOffset += 10;
 				state.ClampOffset();
 				return;
 			case RIGHT:
-				state.xOffset -= 50;
+				state.xOffset -= 10;
 				state.ClampOffset();
 				return;
 			}
@@ -465,8 +466,40 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 	}
 
-	protected void keyReleased(int k) {
+	protected void keyRepeated(int k) {
+		touch = false;
+		int ga = getGameAction(k);
+		if (mapFocused) {
+			int val;
+			if (repeatCount < 25) {
+				val = 2 * repeatCount;
+			} else {
+				val = 50;
+			}
+			switch (ga) {
+			case UP:
+				state.yOffset += val;
+				break;
+			case DOWN:
+				state.yOffset -= val;
+				break;
+			case LEFT:
+				state.xOffset += val;
+				break;
+			case RIGHT:
+				state.xOffset -= val;
+				break;
+			default:
+				return;
+			}
+			state.ClampOffset();
+			repeatCount++;
+			MahoMapsApp.repaintGate.Reset();
+		}
+	}
 
+	protected void keyReleased(int k) {
+		repeatCount = 0;
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
