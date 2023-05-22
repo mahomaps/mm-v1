@@ -14,14 +14,25 @@ import mahomaps.screens.UpdateScreen;
 public class UpdateCheckThread extends Thread {
 
 	public void run() {
-		String dev = MahoMapsApp.IsKemulator() ? "KEmulator" : System.getProperty("microedition.platform");
+		String dev = System.getProperty("microedition.platform");
 		String os = System.getProperty("os.name");
 		String osver = System.getProperty("os.version");
+		if (MahoMapsApp.IsKemulator()) {
+			dev += "|KEmulator";
+			String kemV = System.getProperty("kemulator.mod.version");
+			if(kemV != null)
+				dev += "/nnmod" + kemV;
+		}
+		try {
+			Class.forName("ru.playsoftware.j2meloader.EmulatorApplication");
+			dev += "|J2MELoader";
+		} catch (Exception e) {
+		}
 		if (os != null) {
-			dev += " " + os;
+			dev += "|o:" + os;
 		}
 		if (osver != null) {
-			dev += " " + osver;
+			dev += "|v:" + osver;
 		}
 		boolean hasGeo = false;
 		try {
