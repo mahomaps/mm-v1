@@ -2,6 +2,12 @@ package mahomaps.overlays;
 
 import java.util.Vector;
 
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Displayable;
+
 import mahomaps.MahoMapsApp;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
@@ -13,13 +19,16 @@ import mahomaps.ui.IButtonHandler;
 import mahomaps.ui.SimpleText;
 import mahomaps.ui.UIElement;
 
-public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler {
+public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler, CommandListener {
 
 	final Vector v = new Vector();
 	private Geopoint a;
 	private Geopoint b;
 	private final int method;
 	Route route;
+
+	private Command leave = new Command("Нет", Command.CANCEL, 0);
+	private Command discard = new Command("Да", Command.OK, 0);
 
 	public RouteOverlay(Geopoint a, Geopoint b, int method) {
 		this.a = a;
@@ -48,21 +57,27 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		try {
 			route = new Route(MahoMapsApp.api.Route(a, b, method));
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
-					new SimpleText("Расстояние: " + route.distance), new SimpleText("Время: " + route.time),
-					new Button("Закрыть", 0, this) });
+					new SimpleText(route.distance + ", " + route.time), new Button("Закрыть", 0, this) });
 			InvalidateSize();
 			MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
-					new Button("Закрыть", 0, this) });
+					new Button("Закрыть", 1, this) });
 			InvalidateSize();
 		}
 	}
 
 	public void OnButtonTap(UIElement sender, int uid) {
 		if (uid == 0) {
-			MahoMapsApp.GetCanvas().line = null;
+			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
+			a1.setTimeout(Alert.FOREVER);
+			a1.addCommand(discard);
+			a1.addCommand(leave);
+			a1.setCommandListener(this);
+			MahoMapsApp.BringSubScreen(a1);
+		} else if (uid == 1) {
+			// close after error
 			Close();
 		}
 	}
@@ -77,6 +92,14 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			return "на транспорте";
 		}
 		return "";
+	}
+
+	public void commandAction(Command c, Displayable d) {
+		if (c == discard) {
+			MahoMapsApp.GetCanvas().line = null;
+			Close();
+		}
+		MahoMapsApp.BringMap();
 	}
 
 }

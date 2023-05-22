@@ -10,7 +10,6 @@ public class Route {
 
 	public Route(JSONObject props) {
 		JSONObject meta = props.getJSONObject("PathMetaData");
-		System.out.println(meta);
 		time = meta.getJSONObject("Duration").getString("text");
 		JSONObject dist = meta.optJSONObject("Distance");
 		if (dist == null)
