@@ -171,7 +171,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	public static boolean IsKemulator() {
 		try {
-			Class.forName("emulator.Emulator");
+			Class.forName("emulator.custom.CustomMethod");
 			return true;
 		} catch (Exception e) {
 			return false;
