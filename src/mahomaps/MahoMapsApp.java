@@ -101,8 +101,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		BringMap();
 		(new UpdateCheckThread()).start();
 		while (true) {
-			canvas.update();
 			try {
+				canvas.update();
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				thread = null;
