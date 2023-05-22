@@ -54,6 +54,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private final Image dummyBuffer = Image.createImage(1, 1);
 	private boolean repaintDebugTick = true;
 	private int repeatCount = 0;
+	public boolean hidden = false;
 
 	private Command back = new Command("Назад", Command.BACK, 0);
 	private Command search = new Command("Поиск", Command.OK, 1);
@@ -364,7 +365,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// LOGIC
 
-	public void update() {
+	public void update() throws InterruptedException {
+		if (hidden) {
+			// wait until canvas is visible
+			// will be reset by showNotify
+			MahoMapsApp.repaintGate.Pass();
+		}
 		long time = System.currentTimeMillis();
 		repaint(getGraphics());
 		time = System.currentTimeMillis() - time;
@@ -603,7 +609,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		MahoMapsApp.repaintGate.Reset();
 	}
 
+	protected void hideNotify() {
+		hidden = true;
+	}
+
 	protected void showNotify() {
+		hidden = false;
 		super.showNotify();
 		MahoMapsApp.repaintGate.Reset();
 	}
