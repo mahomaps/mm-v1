@@ -67,14 +67,14 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	public static RouteBuildOverlay Get() {
-		MapOverlay mo = MahoMapsApp.GetCanvas().GetOverlay(ID);
+		MapOverlay mo = MahoMapsApp.Overlays().GetOverlay(ID);
 		if (mo != null) {
 			if (mo instanceof RouteBuildOverlay) {
 				return (RouteBuildOverlay) mo;
 			}
 		}
 		RouteBuildOverlay o = new RouteBuildOverlay();
-		MahoMapsApp.GetCanvas().PushOverlay(o);
+		MahoMapsApp.Overlays().PushOverlay(o);
 		return o;
 	}
 
@@ -125,7 +125,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			break;
 		}
 
-		MahoMapsApp.GetCanvas().PushOverlay(new RouteOverlay(a, b, method));
+		MahoMapsApp.Overlays().PushOverlay(new RouteOverlay(a, b, method));
 	}
 
 }

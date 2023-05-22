@@ -319,7 +319,7 @@ public class TilesProvider implements Runnable {
 					os.flush();
 					os.close();
 				} catch (SecurityException e) {
-					MahoMapsApp.GetCanvas().PushOverlay(new TileCacheForbiddenOverlay());
+					MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
 					Settings.cacheMode = Settings.CACHE_DISABLED;
 				} catch (IOException e) {
 					// TODO: Выводить на экран алерт что закэшить не удалось
@@ -347,7 +347,7 @@ public class TilesProvider implements Runnable {
 				}
 			}
 			if (e instanceof SecurityException) {
-				MahoMapsApp.GetCanvas().PushOverlay(new TileDownloadForbiddenOverlay());
+				MahoMapsApp.Overlays().PushOverlay(new TileDownloadForbiddenOverlay());
 				Settings.allowDownload = false;
 			}
 		}
@@ -373,7 +373,7 @@ public class TilesProvider implements Runnable {
 			s.close();
 			return img;
 		} catch (SecurityException e) {
-			MahoMapsApp.GetCanvas().PushOverlay(new TileCacheForbiddenOverlay());
+			MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
 			Settings.cacheMode = Settings.CACHE_DISABLED;
 		} catch (Exception e) {
 			e.printStackTrace();

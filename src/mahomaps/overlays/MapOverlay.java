@@ -37,11 +37,11 @@ public abstract class MapOverlay extends UIElement {
 	}
 
 	protected void Close() {
-		MahoMapsApp.GetCanvas().CloseOverlay(this);
+		MahoMapsApp.Overlays().CloseOverlay(this);
 	}
 
 	protected void InvalidateSize() {
-		MahoMapsApp.GetCanvas().InvalidateOverlayHeight(this);
+		MahoMapsApp.Overlays().InvalidateOverlayHeight(this);
 	}
 
 }

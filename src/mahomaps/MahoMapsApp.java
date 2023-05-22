@@ -12,6 +12,7 @@ import javax.microedition.midlet.MIDlet;
 
 import mahomaps.api.YmapsApi;
 import mahomaps.map.TilesProvider;
+import mahomaps.overlays.OverlaysManager;
 import mahomaps.screens.MapCanvas;
 import mahomaps.screens.MenuScreen;
 import mahomaps.screens.SearchScreen;
@@ -31,20 +32,20 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	private Command exit = new Command("Выход", Command.EXIT, 0);
 
 	public static String version;
-	
+
 	public static boolean paused;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
 	}
 
-	protected void startApp()  {
+	protected void startApp() {
 		paused = false;
 		if (thread == null) {
 			midlet = this;
 			thread = new Thread(this);
 			thread.start();
-		} else if(canvas != null) {
+		} else if (canvas != null) {
 			canvas.requestRepaint();
 		}
 	}
@@ -108,7 +109,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		try {
 			canvas.run();
 		} catch (RuntimeException e) {
-			if("interrupt".equals(e.getMessage())) {
+			if ("interrupt".equals(e.getMessage())) {
 				thread = null;
 			}
 		}
@@ -128,6 +129,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	public static MapCanvas GetCanvas() {
 		return canvas;
+	}
+
+	public static OverlaysManager Overlays() {
+		return canvas.overlays;
 	}
 
 	public static void open(String link) {

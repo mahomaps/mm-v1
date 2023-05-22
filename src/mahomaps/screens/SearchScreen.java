@@ -46,7 +46,7 @@ public class SearchScreen extends List implements Runnable, CommandListener {
 			results = arr;
 			MahoMapsApp.lastSearch = this;
 			overlay = new SearchOverlay(point, query, results, this);
-			MahoMapsApp.GetCanvas().PushOverlay(overlay);
+			MahoMapsApp.Overlays().PushOverlay(overlay);
 			setTitle(query);
 			addCommand(reset);
 			addCommand(toMap);
@@ -61,7 +61,7 @@ public class SearchScreen extends List implements Runnable, CommandListener {
 
 	public static void ResetSearch() {
 		MahoMapsApp.lastSearch = null;
-		MahoMapsApp.GetCanvas().CloseOverlay(SearchOverlay.ID);
+		MahoMapsApp.Overlays().CloseOverlay(SearchOverlay.ID);
 	}
 
 	public void commandAction(Command c, Displayable d) {
