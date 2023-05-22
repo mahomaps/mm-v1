@@ -17,8 +17,14 @@ public class UpdateCheckThread extends Thread {
 		String dev = System.getProperty("microedition.platform");
 		if (dev == null)
 			dev = "";
+		boolean hasGeo = false;
+		try {
+			Class.forName("javax.microedition.location.LocationProvider");
+			hasGeo = true;
+		} catch (Exception e) {
+		}
 		String url = "http://nnp.nnchan.ru/mahomaps/check.php?v=1." + MahoMapsApp.version + "&gt=" + Settings.geoLook
-				+ "&device=" + YmapsApiBase.EncodeUrl(dev);
+				+ "&geo=" + (hasGeo ? 1 : 0) + "&device=" + YmapsApiBase.EncodeUrl(dev);
 		System.out.println("GET " + url);
 		HttpConnection hc = null;
 		InputStream is = null;
