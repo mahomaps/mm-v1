@@ -10,6 +10,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 
 public class APIReconnectForm extends Form implements Runnable, CommandListener, ItemCommandListener {
 
@@ -64,6 +65,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 			append(new StringItem("Статус", "Приложению запрещён доступ в интернет."));
 		} else {
 			append(new StringItem("Статус", "Ошибка. Попытайтесь ещё раз."));
+			append(new StringItem("Прокси", Settings.proxyApi ? "Включено" : "Выключено"));
 			append(new StringItem("Возникшее исключение", e.getClass().getName()));
 			append(new StringItem("Сведения", e.getMessage()));
 		}

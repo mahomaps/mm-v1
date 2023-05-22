@@ -18,6 +18,7 @@ public class Settings {
 	public static boolean allowDownload = true;
 	public static int cacheMode = 1;
 	public static boolean proxyTiles = false;
+	public static boolean proxyApi = false;
 
 	public static final int CACHE_FS = 1;
 	public static final int CACHE_RMS = 2;
@@ -33,8 +34,10 @@ public class Settings {
 			r.closeRecordStore();
 
 			// parse
-			if (d == null)
+			if (d == null) {
+				ApplyOptimal();
 				return true;
+			}
 
 			JSONObject j = new JSONObject(new String(d));
 			drawTileInfo = j.optBoolean("tile_info", false);
@@ -44,16 +47,23 @@ public class Settings {
 			allowDownload = j.optBoolean("online", true);
 			cacheMode = j.optInt("cache", 1);
 			proxyTiles = j.optBoolean("proxy_tiles");
+			proxyApi = j.optBoolean("proxy_api");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			if(!MahoMapsApp.IsKemulator()) {
-				String platform = System.getProperty("microedition.platform");
-				proxyTiles = platform == null ||
-						platform.indexOf("platform_version=5.") == -1 ||
-						platform.indexOf("platform_version=5.0") != -1;
-			}
+			ApplyOptimal();
 			return false;
+		}
+	}
+
+	private static void ApplyOptimal() {
+		if (MahoMapsApp.IsKemulator()) {
+			proxyApi = false;
+			proxyTiles = false;
+		} else {
+			String platform = System.getProperty("microedition.platform");
+			proxyTiles = proxyApi = platform == null || platform.indexOf("platform_version=5.") == -1
+					|| platform.indexOf("platform_version=5.0") != -1;
 		}
 	}
 
@@ -66,6 +76,7 @@ public class Settings {
 		j.put("online", allowDownload);
 		j.put("cache", cacheMode);
 		j.put("proxy_tiles", proxyTiles);
+		j.put("proxy_api", proxyApi);
 		return j.toString();
 	}
 

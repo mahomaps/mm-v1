@@ -14,6 +14,8 @@ import javax.microedition.io.HttpConnection;
 import org.json.me.JSONArray;
 import org.json.me.JSONObject;
 
+import mahomaps.Settings;
+
 public abstract class YmapsApiBase {
 
 	private final String tokenMark = "token\":\"";
@@ -24,8 +26,12 @@ public abstract class YmapsApiBase {
 		HttpConnection hc = null;
 		InputStream raw = null;
 		InputStreamReader stream = null;
+		String url = "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=" + key;
+		if (Settings.proxyApi) {
+			url = "http://nnp.nnchan.ru/mahoproxy.php?u=" + YmapsApiBase.EncodeUrl(url);
+		}
 		try {
-			hc = (HttpConnection) Connector.open("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=" + key);
+			hc = (HttpConnection) Connector.open(url);
 			hc.setRequestMethod("GET");
 			hc.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0");
@@ -92,6 +98,9 @@ public abstract class YmapsApiBase {
 	}
 
 	protected String GetUtf(String url) throws IOException {
+		if (Settings.proxyApi) {
+			url = "http://nnp.nnchan.ru/mahoproxy.php?u=" + YmapsApiBase.EncodeUrl(url);
+		}
 		System.out.println("GET " + url);
 		HttpConnection hc = (HttpConnection) Connector.open(url);
 		InputStream is = null;
