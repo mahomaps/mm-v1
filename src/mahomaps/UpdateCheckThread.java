@@ -14,9 +14,15 @@ import mahomaps.screens.UpdateScreen;
 public class UpdateCheckThread extends Thread {
 
 	public void run() {
-		String dev = System.getProperty("microedition.platform");
-		if (dev == null)
-			dev = "";
+		String dev = MahoMapsApp.IsKemulator() ? "KEmulator" : System.getProperty("microedition.platform");
+		String os = System.getProperty("os.name");
+		String osver = System.getProperty("os.version");
+		if (os != null) {
+			dev += " " + os;
+		}
+		if (osver != null) {
+			dev += " " + osver;
+		}
 		boolean hasGeo = false;
 		try {
 			Class.forName("javax.microedition.location.LocationProvider");
