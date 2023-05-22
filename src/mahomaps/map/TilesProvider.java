@@ -241,11 +241,14 @@ public class TilesProvider implements Runnable {
 
 					Image img = Settings.allowDownload ? download(tc) : null;
 
+					boolean waitAfterError = false;
+
 					synchronized (tc) {
 						if (img == null) {
 							if (Settings.allowDownload) {
 								tc.state = TileCache.STATE_ERROR;
 								errCount++;
+								waitAfterError = true;
 							} else {
 								tc.state = TileCache.STATE_MISSING;
 							}
@@ -254,6 +257,10 @@ public class TilesProvider implements Runnable {
 							tc.state = TileCache.STATE_READY;
 						}
 					}
+
+					if (waitAfterError)
+						Thread.sleep(4000);
+
 				}
 
 				// if (errCount != 0)
@@ -340,8 +347,6 @@ public class TilesProvider implements Runnable {
 			if (e instanceof SecurityException) {
 				MahoMapsApp.GetCanvas().PushOverlay(new TileDownloadForbiddenOverlay());
 				Settings.allowDownload = false;
-			} else if (e instanceof IOException) {
-				Thread.sleep(4000);
 			}
 		}
 		return null;
