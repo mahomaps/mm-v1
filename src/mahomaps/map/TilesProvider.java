@@ -5,6 +5,7 @@ import javax.microedition.io.HttpConnection;
 import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Image;
 
+import mahomaps.Gate;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
@@ -37,8 +38,8 @@ public class TilesProvider implements Runnable {
 	 */
 	private Vector cache = new Vector();
 
-	private final Object downloadLock = new Object();
-	private final Object cacheLock = new Object();
+	private final Gate downloadGate = new Gate(false);
+	private final Gate cacheGate = new Gate(false);
 
 	private boolean paintState = false;
 
@@ -90,12 +91,8 @@ public class TilesProvider implements Runnable {
 			}
 		}
 
-		synchronized (downloadLock) {
-			downloadLock.notifyAll();
-		}
-		synchronized (cacheLock) {
-			cacheLock.notifyAll();
-		}
+		downloadGate.Reset();
+		cacheGate.Reset();
 	}
 
 	public void run() {
@@ -156,9 +153,7 @@ public class TilesProvider implements Runnable {
 							MahoMapsApp.GetCanvas().requestRepaint();
 						} else if (Settings.allowDownload) {
 							tc.state = TileCache.STATE_SERVER_PENDING;
-							synchronized (downloadLock) {
-								downloadLock.notifyAll();
-							}
+							downloadGate.Reset();
 						} else {
 							tc.state = TileCache.STATE_MISSING;
 						}
@@ -169,10 +164,7 @@ public class TilesProvider implements Runnable {
 				// continue;
 				if (idleCount != cache.size())
 					continue;
-				synchronized (cacheLock) {
-					cacheLock.wait(4000);
-				}
-
+				cacheGate.Pass();
 			}
 		} catch (InterruptedException e) {
 		}
@@ -184,16 +176,13 @@ public class TilesProvider implements Runnable {
 			while (true) {
 				if (!Settings.allowDownload) {
 					try {
-						synchronized (downloadLock) {
-							downloadLock.wait();
-						}
+						downloadGate.wait();
 					} catch (InterruptedException e) {
 						return;
 					}
 				}
 
 				int idleCount = 0; // счётчик готовых тайлов (если равен длине кэша - ничего грузить не надо)
-				int errCount = 0; // счётчик битых тайлов (если не равен 0 надо ещё раз всё грузить)
 				int i = -1;
 				// цикл перебора тайлов в очереди
 				while (true) {
@@ -248,7 +237,6 @@ public class TilesProvider implements Runnable {
 						if (img == null) {
 							if (Settings.allowDownload) {
 								tc.state = TileCache.STATE_ERROR;
-								errCount++;
 								waitAfterError = true;
 							} else {
 								tc.state = TileCache.STATE_MISSING;
@@ -262,17 +250,11 @@ public class TilesProvider implements Runnable {
 
 					if (waitAfterError)
 						Thread.sleep(4000);
-
 				}
 
-				// if (errCount != 0)
-				// continue;
 				if (idleCount != cache.size())
 					continue;
-				synchronized (downloadLock) {
-					downloadLock.wait(4000);
-				}
-
+				downloadGate.Pass();
 			}
 		} catch (InterruptedException e) {
 		}
@@ -467,9 +449,7 @@ public class TilesProvider implements Runnable {
 			cache.addElement(cached);
 		}
 
-		synchronized (cacheLock) {
-			cacheLock.notifyAll();
-		}
+		cacheGate.Reset();
 
 		return cached;
 	}
