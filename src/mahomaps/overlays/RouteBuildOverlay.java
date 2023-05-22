@@ -56,12 +56,14 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		a = new Geopoint(p.lat, p.lon);
 		a.type = Geopoint.ROUTE_A;
 		Update();
+		InvalidateSize();
 	}
 
 	public void SetB(Geopoint p) {
 		b = new Geopoint(p.lat, p.lon);
 		b.type = Geopoint.ROUTE_B;
 		Update();
+		InvalidateSize();
 	}
 
 	public static RouteBuildOverlay Get() {

@@ -40,4 +40,8 @@ public abstract class MapOverlay extends UIElement {
 		MahoMapsApp.GetCanvas().CloseOverlay(this);
 	}
 
+	protected void InvalidateSize() {
+		MahoMapsApp.GetCanvas().InvalidateOverlayHeight(this);
+	}
+
 }

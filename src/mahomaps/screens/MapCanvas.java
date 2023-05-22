@@ -125,6 +125,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		overlaysH = oh;
 	}
 
+	public void InvalidateOverlayHeight(MapOverlay o) {
+		synchronized (overlays) {
+			o.Paint(dummyBuffer.getGraphics(), 0, 0, getWidth(), getHeight());
+			RecalcOverlaysHeight();
+		}
+	}
+
 	public MapOverlay GetOverlay(String id) {
 		synchronized (overlays) {
 			for (int i = overlays.size() - 1; i >= 0; i--) {
