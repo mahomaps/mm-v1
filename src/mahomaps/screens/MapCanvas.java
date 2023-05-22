@@ -31,6 +31,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public final int buttonSize = 50;
 	public final int buttonMargin = 10;
+	public final static int OVERLAYS_SPACING = 11;
 
 	private TilesProvider tiles;
 
@@ -99,6 +100,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				if (((MapOverlay) overlays.elementAt(i)).GetId().equals(id))
 					overlays.removeElementAt(i);
 			}
+			RecalcOverlaysHeight();
 		}
 	}
 
@@ -106,10 +108,21 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		synchronized (overlays) {
 			CloseOverlay(o.GetId());
 			// Рисуем в никуда для пересчёта макета (для обхода 1-кадрового мигания)
-			// Почему бы не отделить макет от отрисовки? А зачем?
 			o.Paint(dummyBuffer.getGraphics(), 0, 0, getWidth(), getHeight());
 			overlays.addElement(o);
+
+			RecalcOverlaysHeight();
 		}
+	}
+
+	private void RecalcOverlaysHeight() {
+		int oh = 0;
+		for (int i = 0; i < overlays.size(); i++) {
+			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
+			oh += mo.H + OVERLAYS_SPACING;
+		}
+
+		overlaysH = oh;
 	}
 
 	public MapOverlay GetOverlay(String id) {
@@ -273,8 +286,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		for (int i = 0; i < overlays.size(); i++) {
 			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
 			mo.Paint(g, 5, y, w - 10, h);
-			y += mo.H + 5 + 6;
-			oh += mo.H + 5 + 6;
+			y += mo.H + OVERLAYS_SPACING;
+			oh += mo.H + OVERLAYS_SPACING;
 		}
 
 		if (t) {
