@@ -87,8 +87,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			BringSubScreen(f);
 			return;
 		}
+		api.TryRead();
 		try {
-			api.RefreshToken();
+			if (api.token == null)
+				api.RefreshToken();
 		} catch (Exception e) {
 		}
 		menu = new MenuScreen();

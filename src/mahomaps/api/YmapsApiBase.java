@@ -11,6 +11,9 @@ import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import org.json.me.JSONArray;
+import org.json.me.JSONObject;
+
 public abstract class YmapsApiBase {
 
 	private final String tokenMark = "token\":\"";
@@ -163,6 +166,18 @@ public abstract class YmapsApiBase {
 			buf.append(val);
 		}
 		hc.setRequestProperty("Cookie", buf.toString());
+	}
+
+	protected void LoadCookies(JSONObject j) {
+		JSONArray names = j.names();
+		for (int i = 0; i < names.length(); i++) {
+			String key = names.getString(i);
+			cookies.put(key, j.getString(key));
+		}
+	}
+
+	protected JSONObject SaveCookies() {
+		return new JSONObject(cookies);
 	}
 
 	public static String EncodeUrl(String s) {

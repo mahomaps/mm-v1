@@ -3,6 +3,7 @@ package mahomaps.api;
 import java.io.IOException;
 
 import javax.microedition.io.ConnectionNotFoundException;
+import javax.microedition.rms.RecordStore;
 
 import org.json.me.JSONArray;
 import org.json.me.JSONException;
@@ -12,6 +13,8 @@ import mahomaps.map.Geopoint;
 
 public final class YmapsApi extends YmapsApiBase {
 
+	private static final String RMS_NAME = "mm_v1_api";
+
 	public final String key = "d81964d6-b80c-46ed-9b29-d980a45d32f9";
 
 	public String token = null;
@@ -19,6 +22,7 @@ public final class YmapsApi extends YmapsApiBase {
 	public final synchronized void RefreshToken() throws Exception {
 		token = null;
 		token = GetToken(key);
+		Save();
 	}
 
 	private final String GetSearchUrl(String text, Geopoint around, double zone) {
@@ -63,4 +67,49 @@ public final class YmapsApi extends YmapsApiBase {
 	public static final int ROUTE_BYFOOT = 1;
 	public static final int ROUTE_AUTO = 2;
 	public static final int ROUTE_TRANSPORT = 3;
+
+	public void Save() {
+		JSONObject j = new JSONObject();
+		if (token != null)
+			j.put("token", token);
+		JSONObject obj = SaveCookies();
+		if (obj != null && obj.length() != 0)
+			j.put("cookies", SaveCookies());
+
+		try {
+			byte[] d = j.toString().getBytes();
+			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
+
+			if (r.getNumRecords() == 0) {
+				r.addRecord(new byte[1], 0, 1);
+			}
+			r.setRecord(1, d, 0, d.length);
+			r.closeRecordStore();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public final synchronized void TryRead() {
+		try {
+			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
+			byte[] d = null;
+			if (r.getNumRecords() > 0) {
+				d = r.getRecord(1);
+			}
+			r.closeRecordStore();
+
+			// parse
+			if (d == null)
+				return;
+
+			JSONObject j = new JSONObject(new String(d));
+			token = j.optString("token", null);
+			JSONObject cs = j.optJSONObject("cookies");
+			if (cs != null && cs.length() != 0 && token != null)
+				LoadCookies(cs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

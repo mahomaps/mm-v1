@@ -5,13 +5,18 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Gauge;
+import javax.microedition.lcdui.Item;
+import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import mahomaps.MahoMapsApp;
 
-public class APIReconnectForm extends Form implements Runnable, CommandListener {
+public class APIReconnectForm extends Form implements Runnable, CommandListener, ItemCommandListener {
 
 	private Command back = new Command("Назад", Command.BACK, 0);
+
+	private Command reset = new Command("Сбросить", Command.ITEM, 1);
+	private Command exit = new Command("Выход", Command.OK, 0);
 
 	public APIReconnectForm() {
 		super("MahoMaps v1");
@@ -28,7 +33,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener 
 		Thread.yield();
 		try {
 			MahoMapsApp.api.RefreshToken();
-			ShowOk();
+			ShowSuc();
 		} catch (Exception e) {
 			ShowFail(e);
 		}
@@ -38,6 +43,18 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener 
 	private void ShowOk() {
 		deleteAll();
 		append(new StringItem("Статус", "Подключено"));
+		StringItem b = new StringItem("Токен сессии", "Сбросить");
+		b.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT);
+		b.addCommand(reset);
+		b.setDefaultCommand(reset);
+		b.setItemCommandListener(this);
+		append(b);
+		addCommand(back);
+	}
+
+	private void ShowSuc() {
+		deleteAll();
+		append(new StringItem("Статус", "Подключение успешно. "));
 		addCommand(back);
 	}
 
@@ -56,6 +73,19 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener 
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			MahoMapsApp.BringMenu();
+		} else if (c == exit) {
+			MahoMapsApp.Exit();
+		}
+	}
+
+	public void commandAction(Command c, Item item) {
+		if (c == reset) {
+			MahoMapsApp.api.token = null;
+			MahoMapsApp.api.Save();
+			Form f = new Form("MahoMaps v1");
+			f.append("Токен сессии был сброшен. Приложение должно быть перезапущено.");
+			f.addCommand(exit);
+			f.setCommandListener(this);
 		}
 	}
 
