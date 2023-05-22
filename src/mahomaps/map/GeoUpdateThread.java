@@ -7,6 +7,7 @@ import javax.microedition.location.Location;
 import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.screens.MapCanvas;
 
 public class GeoUpdateThread extends Thread {
@@ -256,6 +257,7 @@ public class GeoUpdateThread extends Thread {
 						positionPoint.color = Geopoint.COLOR_RED;
 						state = STATE_OK;
 						lastUpdateTime = System.currentTimeMillis();
+						MahoMapsApp.repaintGate.Reset();
 					} else {
 						state = STATE_UNAVAILABLE;
 					}

@@ -51,6 +51,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private boolean touch = hasPointerEvents();
 	private boolean mapFocused = true;
 	private final Image dummyBuffer = Image.createImage(1, 1);
+	private boolean repaintDebugTick = true;
 
 	private Command back = new Command("Назад", Command.BACK, 0);
 	private Command search = new Command("Поиск", Command.OK, 1);
@@ -346,9 +347,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		long time = System.currentTimeMillis();
 		repaint(getGraphics());
 		time = System.currentTimeMillis() - time;
-		getGraphics().setColor(0);
-		getGraphics().drawString(time + " ms", 5, 65, 0);
+		getGraphics().drawString("RT=" + time + "ms " + (repaintDebugTick ? "+" : "="), 5, 65, 0);
 		flushGraphics();
+		repaintDebugTick = !repaintDebugTick;
 	}
 
 	public void ShowGeo() {
@@ -365,6 +366,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	// INPUT
 
 	protected void keyPressed(int k) {
+		keyPressedInternal(k);
+		MahoMapsApp.repaintGate.Reset();
+	}
+
+	protected void keyPressedInternal(int k) {
 		touch = false;
 		if (k == -6) {
 			MahoMapsApp.BringMenu();
@@ -537,5 +543,15 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), sa));
 			}
 		}
+	}
+
+	protected void sizeChanged(int w, int h) {
+		super.sizeChanged(w, h);
+		MahoMapsApp.repaintGate.Reset();
+	}
+
+	protected void showNotify() {
+		super.showNotify();
+		MahoMapsApp.repaintGate.Reset();
 	}
 }

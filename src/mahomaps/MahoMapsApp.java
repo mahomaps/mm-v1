@@ -29,6 +29,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
 
+	public static final Gate repaintGate = new Gate(true);
+
 	private Command exit = new Command("Выход", Command.EXIT, 0);
 
 	public static String version;
@@ -103,7 +105,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		while (true) {
 			try {
 				canvas.update();
-				Thread.sleep(10);
+				repaintGate.Pass(2000);
 			} catch (InterruptedException e) {
 				thread = null;
 				return;
