@@ -71,6 +71,10 @@ public class Geopoint {
 		return MahoMapsApp.pow(base, (EL_CORR / 2));
 	}
 
+	public boolean IsValid() {
+		return Math.abs(lat) <= 85 && Math.abs(lon) < 180;
+	}
+
 	public void paint(Graphics g, MapState ms) {
 		int px = GetScreenX(ms);
 		int py = GetScreenY(ms);

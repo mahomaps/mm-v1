@@ -314,7 +314,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				switch (ga) {
 				case FIRE:
 					Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
-					if (Math.abs(s.lat) <= 85) {
+					if (s.IsValid() && MahoMapsApp.lastSearch == null) {
 						// немного костылей:
 						// сбрасываем ввод
 						UIElement.CommitInputQueue();
@@ -326,7 +326,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 						mapFocused = false;
 						// выбор кнопки
 						UIElement.SelectDown();
-						// после нажатия кнопки канва перерисует себя, вернув очередь ввода в адекватное состояние
+						// после нажатия кнопки канва перерисует себя, вернув очередь ввода в адекватное
+						// состояние
 					}
 					break handling;
 				case UP:
@@ -475,7 +476,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			// tap at map
 			if (MahoMapsApp.lastSearch == null) {
 				Geopoint s = Geopoint.GetAtCoords(state, x - getWidth() / 2, y - getHeight() / 2);
-				if (Math.abs(s.lat) <= 85 && Math.abs(s.lon) < 180) {
+				if (s.IsValid()) {
 					overlays.PushOverlay(new SelectOverlay(s));
 					break handling;
 				}
