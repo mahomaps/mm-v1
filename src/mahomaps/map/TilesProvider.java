@@ -309,29 +309,28 @@ public class TilesProvider implements Runnable {
 				} finally {
 					if (fc != null)
 						fc.close();
+					fc = null;
 				}
 			} else if (Settings.cacheMode == Settings.CACHE_RMS) {
 				// TODO
 			}
 			Image img = Image.createImage(blobc, 0, blobc.length);
 			return img;
+		} catch (SecurityException e) {
+			try {
+				MahoMapsApp.Overlays().PushOverlay(new TileDownloadForbiddenOverlay());
+				Settings.allowDownload = false;
+			} catch (RuntimeException e1) {
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} catch (OutOfMemoryError e) {
+		} finally {
 			if (hc != null) {
 				try {
 					hc.close();
 				} catch (IOException ex) {
 				}
-			}
-			if (fc != null) {
-				try {
-					fc.close();
-				} catch (IOException ex) {
-				}
-			}
-			if (e instanceof SecurityException) {
-				MahoMapsApp.Overlays().PushOverlay(new TileDownloadForbiddenOverlay());
-				Settings.allowDownload = false;
 			}
 		}
 		return null;
@@ -360,6 +359,7 @@ public class TilesProvider implements Runnable {
 			Settings.cacheMode = Settings.CACHE_DISABLED;
 		} catch (Exception e) {
 			e.printStackTrace();
+		} catch (OutOfMemoryError e) {
 		} finally {
 			if (fc != null) {
 				try {
