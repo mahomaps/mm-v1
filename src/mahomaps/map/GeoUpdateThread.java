@@ -23,9 +23,9 @@ public class GeoUpdateThread extends Thread {
 	private LocationAPI locationAPI;
 	public boolean loop = true;
 	public long lastUpdateTime = System.currentTimeMillis();
-	public int sattelites;
 	public String method = null;
-	public int totalSattelitesInView;
+	public int sattelites = -1;
+	public int totalSattelitesInView = -1;
 	private Object lock = new Object();
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
@@ -257,7 +257,7 @@ public class GeoUpdateThread extends Thread {
 						positionPoint.color = Geopoint.COLOR_RED;
 						state = STATE_OK;
 						lastUpdateTime = System.currentTimeMillis();
-						MahoMapsApp.repaintGate.Reset();
+						MahoMapsApp.GetCanvas().requestRepaint();
 					} else {
 						state = STATE_UNAVAILABLE;
 					}

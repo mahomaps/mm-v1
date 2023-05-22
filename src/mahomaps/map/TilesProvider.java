@@ -153,7 +153,7 @@ public class TilesProvider implements Runnable {
 						if (img != null) {
 							tc.img = img;
 							tc.state = TileCache.STATE_READY;
-							MahoMapsApp.repaintGate.Reset();
+							MahoMapsApp.GetCanvas().requestRepaint();
 						} else if (Settings.allowDownload) {
 							tc.state = TileCache.STATE_SERVER_PENDING;
 							synchronized (downloadLock) {
@@ -256,7 +256,7 @@ public class TilesProvider implements Runnable {
 						} else {
 							tc.img = img;
 							tc.state = TileCache.STATE_READY;
-							MahoMapsApp.repaintGate.Reset();
+							MahoMapsApp.GetCanvas().requestRepaint();
 						}
 					}
 

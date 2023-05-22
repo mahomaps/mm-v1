@@ -9,7 +9,6 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.midlet.MIDlet;
-import javax.microedition.midlet.MIDletStateChangeException;
 
 import mahomaps.api.YmapsApi;
 import mahomaps.map.TilesProvider;
@@ -20,7 +19,7 @@ import mahomaps.screens.Splash;
 
 public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
-	private static Display display;
+	public static Display display;
 	public static Thread thread;
 	public static TilesProvider tiles;
 	private static MapCanvas canvas;
@@ -29,25 +28,31 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
 
-	public static final Gate repaintGate = new Gate(true);
-
 	private Command exit = new Command("Выход", Command.EXIT, 0);
 
 	public static String version;
+	
+	public static boolean running;
+	public static boolean paused;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
 	}
 
-	protected void startApp() throws MIDletStateChangeException {
+	protected void startApp()  {
+		running = true;
+		paused = false;
 		if (thread == null) {
 			midlet = this;
 			thread = new Thread(this);
 			thread.start();
+		} else if(canvas != null) {
+			canvas.requestRepaint();
 		}
 	}
 
-	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
+	protected void destroyApp(boolean arg0) {
+		running = false;
 		if (thread != null)
 			thread.interrupt();
 		if (tiles != null)
@@ -57,6 +62,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	protected void pauseApp() {
+		paused = true;
 	}
 
 	public void run() {
@@ -102,15 +108,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		tiles.Start();
 		BringMap();
 		(new UpdateCheckThread()).start();
-		while (true) {
-			try {
-				canvas.update();
-				repaintGate.Pass(2000);
-			} catch (InterruptedException e) {
-				thread = null;
-				return;
-			}
-		}
+		canvas.run();
 	}
 
 	public static void BringSubScreen(Displayable screen) {
@@ -137,10 +135,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	public static void Exit() {
-		try {
-			midlet.destroyApp(true);
-		} catch (MIDletStateChangeException e) {
-		}
+		midlet.destroyApp(true);
 		midlet.notifyDestroyed();
 	}
 

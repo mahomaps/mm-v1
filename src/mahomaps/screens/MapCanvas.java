@@ -27,7 +27,7 @@ import mahomaps.overlays.TileDownloadForbiddenOverlay;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
 
-public class MapCanvas extends MultitouchCanvas implements CommandListener {
+public class MapCanvas extends MultitouchCanvas implements CommandListener, Runnable {
 
 	public final int buttonSize = 50;
 	public final int buttonMargin = 10;
@@ -60,6 +60,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private Command search = new Command("Поиск", Command.OK, 1);
 	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
 
+	private Object repaintLock = new Object();
+	private Object repaintResLock = new Object();
+	public boolean updateDynamically;
+	private boolean repaint;
+
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
 		setFullScreenMode(true);
@@ -77,6 +82,57 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			PushOverlay(new TileCacheForbiddenOverlay());
 		if (!Settings.allowDownload)
 			PushOverlay(new TileDownloadForbiddenOverlay());
+	}
+	
+	// repaint logic
+	
+	public void run() {
+		try {
+			while(MahoMapsApp.running) {
+				while(MahoMapsApp.paused || MahoMapsApp.display.getCurrent() != this) {
+					synchronized (repaintLock) {
+						repaintLock.wait(500);
+					}
+				}
+				if(!updateDynamically && !dragActive) { 
+					repaint = false;
+					_update();
+					synchronized (repaintResLock) {
+						repaintResLock.notify();
+					}
+					if(repaint) continue;
+					synchronized (repaintLock) {
+						repaintLock.wait(500);
+					}
+					continue;
+				}
+				long repaintTime = System.currentTimeMillis();
+				_update();
+				repaintTime = 30 - System.currentTimeMillis() - repaintTime;
+				if(repaintTime > 0) Thread.sleep(repaintTime);
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	public void repaint(boolean wait) {
+		if(updateDynamically) return;
+		repaint = true;
+		synchronized (repaintLock) {
+			repaintLock.notify();
+		}
+		if(wait) {
+			try {
+				synchronized (repaintResLock) {
+					repaintResLock.wait(1000);
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+	
+	public void requestRepaint() {
+		repaint(false);
 	}
 
 	/**
@@ -104,6 +160,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 			RecalcOverlaysHeight();
 		}
+		requestRepaint();
 	}
 
 	public void PushOverlay(MapOverlay o) {
@@ -132,6 +189,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			o.Paint(dummyBuffer.getGraphics(), 0, 0, getWidth(), getHeight());
 			RecalcOverlaysHeight();
 		}
+		requestRepaint();
 	}
 
 	public MapOverlay GetOverlay(String id) {
@@ -365,16 +423,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// LOGIC
 
-	public void update() throws InterruptedException {
-		if (hidden) {
-			// wait until canvas is visible
-			// will be reset by showNotify
-			MahoMapsApp.repaintGate.Pass();
-		}
+	private void _update() {
 		long time = System.currentTimeMillis();
-		repaint(getGraphics());
+		Graphics g = getGraphics();
+		repaint(g);
 		time = System.currentTimeMillis() - time;
-		getGraphics().drawString("RT=" + time + "ms " + (repaintDebugTick ? "+" : "="), 5, 65, 0);
+		g.setColor(0);
+		g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 5, 65, 0);
 		flushGraphics();
 		repaintDebugTick = !repaintDebugTick;
 	}
@@ -388,13 +443,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		} else if (geo.state == GeoUpdateThread.STATE_UNAVAILABLE) {
 			geo.restart();
 		}
+		
+		requestRepaint();
 	}
 
 	// INPUT
 
 	protected void keyPressed(int k) {
 		keyPressedInternal(k);
-		MahoMapsApp.repaintGate.Reset();
 	}
 
 	protected void keyPressedInternal(int k) {
@@ -418,7 +474,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 			return;
 		}
-		int ga = getGameAction(k);
+		handling: {
+		int ga = 0;
+		try {
+			ga = getGameAction(k);
+		} catch (IllegalArgumentException e) { // j2l moment
+		}
 		if (mapFocused) {
 			switch (ga) {
 			case FIRE:
@@ -426,53 +487,55 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				if (Math.abs(s.lat) <= 85) {
 					PushOverlay(new SelectOverlay(s));
 				}
-				return;
+				break handling;
 			case UP:
 				state.yOffset += 10;
 				state.ClampOffset();
-				return;
+				break handling;
 			case DOWN:
 				state.yOffset -= 10;
 				state.ClampOffset();
-				return;
+				break handling;
 			case LEFT:
 				state.xOffset += 10;
 				state.ClampOffset();
-				return;
+				break handling;
 			case RIGHT:
 				state.xOffset -= 10;
 				state.ClampOffset();
-				return;
+				break handling;
 			}
 			switch (k) {
 			case KEY_NUM1:
 				state = state.ZoomOut();
-				return;
+				break handling;
 			case KEY_NUM3:
 				state = state.ZoomIn();
-				return;
+				break handling;
 			case KEY_NUM7:
 				BeginTextSearch();
-				return;
+				break handling;
 			case KEY_NUM9:
 				ShowGeo();
-				return;
+				break handling;
 			}
 		} else {
 			switch (ga) {
 			case FIRE:
 				UIElement.TriggerSelected();
-				return;
+				break;
 			case UP:
 			case LEFT:
 				UIElement.SelectUp();
-				return;
+				break;
 			case DOWN:
 			case RIGHT:
 				UIElement.SelectDown();
-				return;
+				break;
 			}
 		}
+		}
+		requestRepaint();
 	}
 
 	protected void keyRepeated(int k) {
@@ -503,12 +566,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 			state.ClampOffset();
 			repeatCount++;
-			MahoMapsApp.repaintGate.Reset();
+			requestRepaint();
 		}
 	}
 
 	protected void keyReleased(int k) {
 		repeatCount = 0;
+		requestRepaint();
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
@@ -522,6 +586,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			lastPx = x;
 			lastPy = y;
 		}
+		requestRepaint();
 	}
 
 	protected void pointerDragged(int x, int y, int n) {
@@ -540,6 +605,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 			state.ClampOffset();
 		}
+		requestRepaint();
 	}
 
 	protected void pointerReleased(int x, int y, int n) {
@@ -565,8 +631,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				for (int j = 0; j < s; j++) {
 					Geopoint p = (Geopoint) points.elementAt(j);
 					if (p.isTouched(this, state, x, y)) {
-						if (mo.OnPointTap(p))
+						if (mo.OnPointTap(p)) {
+							requestRepaint();
 							return;
+						}
 					}
 				}
 			}
@@ -576,10 +644,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (MahoMapsApp.lastSearch == null) {
 			Geopoint s = GetAtCoords(x - getWidth() / 2, y - getHeight() / 2);
 			if (Math.abs(s.lat) > 85 || Math.abs(s.lon) >= 180) {
+				requestRepaint();
 				return;
 			}
 			PushOverlay(new SelectOverlay(s));
 		}
+		
+		requestRepaint();
 	}
 
 	public void dispose() {
@@ -609,7 +680,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	protected void sizeChanged(int w, int h) {
 		super.sizeChanged(w, h);
-		MahoMapsApp.repaintGate.Reset();
+		requestRepaint();
 	}
 
 	protected void hideNotify() {
@@ -619,6 +690,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	protected void showNotify() {
 		hidden = false;
 		super.showNotify();
-		MahoMapsApp.repaintGate.Reset();
+		requestRepaint();
 	}
 }

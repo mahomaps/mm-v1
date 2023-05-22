@@ -17,21 +17,18 @@ public abstract class MultitouchCanvas extends GameCanvas {
 		String pn = isKemulator ? null : System.getProperty("com.nokia.pointer.number");
 		int n = pn == null ? 0 : (pn.charAt(0) - '0');
 		pointerDragged(x, y, n);
-		MahoMapsApp.repaintGate.Reset();
 	}
 
 	protected final void pointerPressed(int x, int y) {
 		String pn = isKemulator ? null : System.getProperty("com.nokia.pointer.number");
 		int n = pn == null ? 0 : (pn.charAt(0) - '0');
 		pointerPressed(x, y, n);
-		MahoMapsApp.repaintGate.Reset();
 	}
 
 	protected final void pointerReleased(int x, int y) {
 		String pn = isKemulator ? null: System.getProperty("com.nokia.pointer.number");
 		int n = pn == null ? 0 : (pn.charAt(0) - '0');
 		pointerReleased(x, y, n);
-		MahoMapsApp.repaintGate.Reset();
 	}
 
 	protected abstract void pointerDragged(int x, int y, int n);
