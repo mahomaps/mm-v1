@@ -11,7 +11,7 @@ import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
-abstract class YmapsApiBase {
+public abstract class YmapsApiBase {
 
 	private final String tokenMark = "token\":\"";
 

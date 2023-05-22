@@ -95,6 +95,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		canvas = new MapCanvas(tiles);
 		tiles.Start();
 		BringMap();
+		(new UpdateCheckThread()).start();
 		while (true) {
 			canvas.update();
 			try {

@@ -7,6 +7,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
@@ -28,7 +29,9 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 
 		append(new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version));
 		try {
-			append(Image.createImage("/icon.png"));
+			ImageItem i = new ImageItem(null, Image.createImage("/icon.png"),
+					Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT, "logo");
+			append(i);
 		} catch (IOException e) {
 		}
 		append(new StringItem("Программирование", "Shinovon\nFeodor0090 (aka sym_ansel)"));
