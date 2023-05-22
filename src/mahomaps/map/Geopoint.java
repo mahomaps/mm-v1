@@ -162,6 +162,58 @@ public class Geopoint {
 		return r[0] + " " + r[1];
 	}
 
+	/**
+	 * Получает точку на экране по координатам экрана.
+	 *
+	 * @param ms Состояние карты.
+	 * @param x  X относительно центра (центр = 0)
+	 * @param y  Y относительно центра (центр = 0)
+	 * @return Точка.
+	 */
+	public static Geopoint GetAtCoords(MapState ms, int x, int y) {
+		ms = ms.Clone();
+		int tilesCount = 1 << ms.zoom;
+		double dx = x;
+		dx -= ms.xOffset;
+		dx /= 256;
+		dx += ms.tileX;
+		dx *= 360d;
+		dx /= tilesCount;
+		double lon = dx - 180d;
+
+		Geopoint g = new Geopoint(0, lon);
+		double step = 60d;
+		while (true) {
+			double or = g.lat;
+			if (Math.abs(or) > 91d) {
+				g.lat = or > 0 ? 90 : -90;
+				return g;
+			}
+			int zero = Math.abs(g.GetScreenY(ms) - y);
+			if (zero <= 2)
+				break;
+			g.lat = or + step;
+			int plus = Math.abs(g.GetScreenY(ms) - y);
+			g.lat = or - step;
+			int minus = Math.abs(g.GetScreenY(ms) - y);
+
+			if (zero < Math.min(minus, plus)) {
+				g.lat = or;
+			} else if (minus < plus) {
+				g.lat = or - step;
+			} else {
+				g.lat = or + step;
+			}
+			step /= 2d;
+			if (step < 0.000001d) {
+				System.out.println("Step too small, bumping");
+				step = 0.05d;
+			}
+		}
+
+		return g;
+	}
+
 	public static final int COLOR_RED = 0;
 	public static final int COLOR_GREEN = 1;
 	public static final int COLOR_GRAY = 2;

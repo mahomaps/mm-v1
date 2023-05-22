@@ -44,7 +44,7 @@ public final class OverlaysManager {
 		overlaysH = oh;
 	}
 
-	public boolean OnTap(int x, int y) {
+	public boolean OnGeopointTap(int x, int y) {
 		synchronized (overlays) {
 			for (int i = 0; i < overlays.size(); i++) {
 				MapOverlay mo = (MapOverlay) overlays.elementAt(i);

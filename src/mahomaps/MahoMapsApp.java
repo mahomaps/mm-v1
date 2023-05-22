@@ -45,8 +45,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			midlet = this;
 			thread = new Thread(this);
 			thread.start();
-		} else if (canvas != null) {
-			canvas.requestRepaint();
 		}
 	}
 
@@ -108,11 +106,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		(new UpdateCheckThread()).start();
 		try {
 			canvas.run();
-		} catch (RuntimeException e) {
-			if ("interrupt".equals(e.getMessage())) {
-				thread = null;
-			}
+		} catch (InterruptedException e) {
 		}
+		thread = null;
 	}
 
 	public static void BringSubScreen(Displayable screen) {

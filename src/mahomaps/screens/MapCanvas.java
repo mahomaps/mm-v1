@@ -9,6 +9,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
+import mahomaps.Gate;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
@@ -26,33 +27,37 @@ import mahomaps.overlays.TileDownloadForbiddenOverlay;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
 
-public class MapCanvas extends MultitouchCanvas implements CommandListener, Runnable {
+public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
-	private final TilesProvider tiles;
-
-	public GeoUpdateThread geo = null;
-
-	// STATE
 	public volatile MapState state = MapState.Default();
-	int startPx, startPy;
-	int lastPx, lastPy;
-	boolean dragActive;
-	public final OverlaysManager overlays = new OverlaysManager(this);
-	public Line line;
-	public final Geopoint geolocation;
-	public final ControlButtonsContainer controls;
-	private boolean touch = hasPointerEvents();
-	private boolean mapFocused = true;
-	private boolean repaintDebugTick = true;
-	private int repeatCount = 0;
-	public boolean hidden = false;
 
+	// search lcdui parts
 	private Command back = new Command("Назад", Command.BACK, 0);
 	private Command search = new Command("Поиск", Command.OK, 1);
 	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
 
-	private Object repaintLock = new Object();
-	private boolean repaint;
+	// geolocation stuff
+	public GeoUpdateThread geo = null;
+	public final Geopoint geolocation;
+
+	// input states
+	private boolean touch = hasPointerEvents();
+	private boolean mapFocused = true;
+	private int repeatCount = 0;
+	int startPx, startPy;
+	int lastPx, lastPy;
+
+	// tiles/overlays stuff
+	private final TilesProvider tiles;
+	public final ControlButtonsContainer controls;
+	public final OverlaysManager overlays = new OverlaysManager(this);
+	public Line line;
+
+	// misc
+	boolean dragActive;
+	private boolean repaintDebugTick = true;
+	public boolean hidden = false;
+	public final Gate repaintGate = new Gate(true);
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -73,44 +78,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 			overlays.PushOverlay(new TileDownloadForbiddenOverlay());
 	}
 
-	// repaint logic
-
-	public void run() {
-		try {
-			while (true) {
-				while (MahoMapsApp.paused || MahoMapsApp.display.getCurrent() != this) {
-					synchronized (repaintLock) {
-						repaintLock.wait(500);
-					}
-				}
-				if (!dragActive) {
-					repaint = false;
-					_update();
-					if (repaint)
-						continue;
-					synchronized (repaintLock) {
-						repaintLock.wait(500);
-					}
-					continue;
-				}
-				long repaintTime = System.currentTimeMillis();
-				_update();
-				repaintTime = 30 - System.currentTimeMillis() - repaintTime;
-				if (repaintTime > 0)
-					Thread.sleep(repaintTime);
-			}
-		} catch (InterruptedException e) {
-			throw new RuntimeException("interrupt");
-		}
-	}
-
-	public void requestRepaint() {
-		repaint = true;
-		synchronized (repaintLock) {
-			repaintLock.notify();
-		}
-	}
-
 	/**
 	 * Проверяет есть ли доступ к апи. Выводит окно предупреждения.
 	 * 
@@ -128,63 +95,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 		if (geo != null && geo.DrawPoint()) {
 			return geolocation;
 		}
-		Geopoint p = GetAtCoords(0, 0);
+		Geopoint p = Geopoint.GetAtCoords(state, 0, 0);
 		if (p.lat > 80d)
 			p.lat = 80d;
 		if (p.lat < -80d)
 			p.lat = -80d;
 		return p;
-	}
-
-	/**
-	 * Получает точку на экране по координатам экрана.
-	 *
-	 * @param x X относительно центра (центр = 0)
-	 * @param y Y относительно центра (центр = 0)
-	 * @return Точка.
-	 */
-	public Geopoint GetAtCoords(int x, int y) {
-		MapState ms = state.Clone();
-		int tilesCount = 1 << ms.zoom;
-		double dx = x;
-		dx -= ms.xOffset;
-		dx /= 256;
-		dx += ms.tileX;
-		dx *= 360d;
-		dx /= tilesCount;
-		double lon = dx - 180d;
-
-		Geopoint g = new Geopoint(0, lon);
-		double step = 60d;
-		while (true) {
-			double or = g.lat;
-			if (Math.abs(or) > 91d) {
-				g.lat = or > 0 ? 90 : -90;
-				return g;
-			}
-			int zero = Math.abs(g.GetScreenY(ms) - y);
-			if (zero <= 2)
-				break;
-			g.lat = or + step;
-			int plus = Math.abs(g.GetScreenY(ms) - y);
-			g.lat = or - step;
-			int minus = Math.abs(g.GetScreenY(ms) - y);
-
-			if (zero < Math.min(minus, plus)) {
-				g.lat = or;
-			} else if (minus < plus) {
-				g.lat = or - step;
-			} else {
-				g.lat = or + step;
-			}
-			step /= 2d;
-			if (step < 0.000001d) {
-				System.out.println("Step too small, bumping");
-				step = 0.05d;
-			}
-		}
-
-		return g;
 	}
 
 	// DRAW SECTION
@@ -200,7 +116,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 		if (UIElement.IsQueueEmpty() && !touch && !mapFocused) {
 			mapFocused = true;
 			UIElement.Deselect();
-			// TODO request repaint
+			requestRepaint();
 		}
 	}
 
@@ -328,17 +244,26 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 		return v;
 	}
 
-	// LOGIC
+	public void run() throws InterruptedException {
+		while (true) {
+			if (MahoMapsApp.paused || hidden)
+				repaintGate.Pass();
+			{
+				long time = System.currentTimeMillis();
+				Graphics g = getGraphics();
+				repaint(g);
+				time = System.currentTimeMillis() - time;
+				g.setColor(0);
+				g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 5, 65, 0);
+				flushGraphics();
+				repaintDebugTick = !repaintDebugTick;
+			}
+			repaintGate.Pass(2000);
+		}
+	}
 
-	private void _update() {
-		long time = System.currentTimeMillis();
-		Graphics g = getGraphics();
-		repaint(g);
-		time = System.currentTimeMillis() - time;
-		g.setColor(0);
-		g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 5, 65, 0);
-		flushGraphics();
-		repaintDebugTick = !repaintDebugTick;
+	public void requestRepaint() {
+		repaintGate.Reset();
 	}
 
 	public void ShowGeo() {
@@ -357,10 +282,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 	// INPUT
 
 	protected void keyPressed(int k) {
-		keyPressedInternal(k);
-	}
-
-	protected void keyPressedInternal(int k) {
 		// "home" button
 		if (k == -12)
 			return;
@@ -380,6 +301,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 				mapFocused = true;
 				UIElement.Deselect();
 			}
+			requestRepaint();
 			return;
 		}
 		handling: {
@@ -391,7 +313,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 			if (mapFocused) {
 				switch (ga) {
 				case FIRE:
-					Geopoint s = GetAtCoords(0, 0);
+					Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
 					if (Math.abs(s.lat) <= 85) {
 						overlays.PushOverlay(new SelectOverlay(s));
 					}
@@ -448,7 +370,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 
 	protected void keyRepeated(int k) {
 		touch = false;
-		int ga = getGameAction(k);
+		int ga = 0;
+		try {
+			ga = getGameAction(k);
+		} catch (IllegalArgumentException e) { // j2l moment
+		}
 		if (mapFocused) {
 			int val;
 			if (repeatCount < 25) {
@@ -519,32 +445,32 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 	protected void pointerReleased(int x, int y, int n) {
 		if (n != 0)
 			return;
-		if (dragActive) {
-			dragActive = false;
-			return;
-		}
-
-		UIElement.InvokeReleaseEvent();
-		if (UIElement.InvokeTouchEvent(x, y))
-			return;
-
-		if (y > getHeight() - overlays.overlaysH)
-			return;
-
-		// points
-		if (overlays.OnTap(x, y)) {
-			requestRepaint();
-			return;
-		}
-
-		// tap at map
-		if (MahoMapsApp.lastSearch == null) {
-			Geopoint s = GetAtCoords(x - getWidth() / 2, y - getHeight() / 2);
-			if (Math.abs(s.lat) <= 85 && Math.abs(s.lon) < 180) {
-				overlays.PushOverlay(new SelectOverlay(s));
+		handling: {
+			if (dragActive) {
+				dragActive = false;
+				break handling;
 			}
-		}
 
+			UIElement.InvokeReleaseEvent();
+			if (UIElement.InvokeTouchEvent(x, y))
+				break handling;
+
+			if (y > getHeight() - overlays.overlaysH)
+				break handling;
+
+			if (overlays.OnGeopointTap(x, y))
+				break handling;
+
+			// tap at map
+			if (MahoMapsApp.lastSearch == null) {
+				Geopoint s = Geopoint.GetAtCoords(state, x - getWidth() / 2, y - getHeight() / 2);
+				if (Math.abs(s.lat) <= 85 && Math.abs(s.lon) < 180) {
+					overlays.PushOverlay(new SelectOverlay(s));
+					break handling;
+				}
+			}
+
+		}
 		requestRepaint();
 	}
 
