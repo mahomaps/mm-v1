@@ -315,7 +315,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				case FIRE:
 					Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
 					if (Math.abs(s.lat) <= 85) {
+						// немного костылей:
+						// сбрасываем ввод
+						UIElement.CommitInputQueue();
+						// добавляем оверлей, он переотрисовывается заполняя очередь ввода
 						overlays.PushOverlay(new SelectOverlay(s));
+						// применяем очередь
+						UIElement.CommitInputQueue();
+						// снятие фокуса с карты
+						mapFocused = false;
+						// выбор кнопки
+						UIElement.SelectDown();
+						// после нажатия кнопки канва перерисует себя, вернув очередь ввода в адекватное состояние
 					}
 					break handling;
 				case UP:
