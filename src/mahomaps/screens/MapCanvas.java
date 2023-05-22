@@ -594,8 +594,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 	protected void pointerReleased(int x, int y, int n) {
 		if (n != 0)
 			return;
-		if (dragActive)
+		if (dragActive) {
+			dragActive = false;
 			return;
+		}
 
 		UIElement.InvokeReleaseEvent();
 		if (UIElement.InvokeTouchEvent(x, y))
