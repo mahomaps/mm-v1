@@ -21,13 +21,22 @@ public class Line {
 		forZoom = ms.zoom;
 		int xa = start.GetScreenX(ms);
 		int ya = start.GetScreenY(ms);
-		cache = new int[source.length * 2];
+		int[] temp = new int[source.length * 2];
+		int ti = -1;
 		for (int i = 0; i < source.length; i++) {
-			int px = source[i].GetScreenX(ms);
-			int py = source[i].GetScreenY(ms);
-			cache[i * 2] = px - xa;
-			cache[i * 2 + 1] = py - ya;
+			int px = source[i].GetScreenX(ms) - xa;
+			int py = source[i].GetScreenY(ms) - ya;
+			if (ti >= 0) {
+				if (temp[ti * 2] != px || temp[ti * 2 + 1] != py)
+					ti++;
+			} else {
+				ti++;
+			}
+			temp[ti * 2] = px;
+			temp[ti * 2 + 1] = py;
 		}
+		cache = new int[(ti + 1) * 2];
+		System.arraycopy(temp, 0, cache, 0, cache.length);
 	}
 
 	public synchronized void Draw(Graphics g, MapCanvas map) {
