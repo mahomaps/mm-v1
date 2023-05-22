@@ -31,6 +31,22 @@ public final class Gate {
 	}
 
 	/**
+	 * Проходит гейт. Если прохождение было разрешено вызовом {@link #Reset()},
+	 * метод возвращается. Если гейт заблокирован, ожидает ближайшего вызова
+	 * {@link #Reset()} до таймаута.
+	 *
+	 * @throws InterruptedException Ожидание прервано.
+	 */
+	public void Pass(int timeout) throws InterruptedException {
+		synchronized (lock) {
+			if (!pass) {
+				lock.wait(timeout);
+			}
+			pass = false;
+		}
+	}
+
+	/**
 	 * Запрещает потоку прохождение через гейт, если оно было разрешено вызовом
 	 * {@link #Reset()}.
 	 */
