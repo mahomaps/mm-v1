@@ -32,7 +32,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	public static String version;
 	
-	public static boolean running;
 	public static boolean paused;
 
 	public MahoMapsApp() {
@@ -40,7 +39,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	protected void startApp()  {
-		running = true;
 		paused = false;
 		if (thread == null) {
 			midlet = this;
@@ -52,7 +50,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	protected void destroyApp(boolean arg0) {
-		running = false;
 		if (thread != null)
 			thread.interrupt();
 		if (tiles != null)
@@ -108,7 +105,13 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		tiles.Start();
 		BringMap();
 		(new UpdateCheckThread()).start();
-		canvas.run();
+		try {
+			canvas.run();
+		} catch (RuntimeException e) {
+			if("interrupt".equals(e.getMessage())) {
+				thread = null;
+			}
+		}
 	}
 
 	public static void BringSubScreen(Displayable screen) {

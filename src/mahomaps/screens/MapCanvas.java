@@ -61,8 +61,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
 
 	private Object repaintLock = new Object();
-	private Object repaintResLock = new Object();
-	public boolean updateDynamically;
 	private boolean repaint;
 
 	public MapCanvas(TilesProvider tiles) {
@@ -88,18 +86,15 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 	
 	public void run() {
 		try {
-			while(MahoMapsApp.running) {
+			while(true) {
 				while(MahoMapsApp.paused || MahoMapsApp.display.getCurrent() != this) {
 					synchronized (repaintLock) {
 						repaintLock.wait(500);
 					}
 				}
-				if(!updateDynamically && !dragActive) { 
+				if(!dragActive) { 
 					repaint = false;
 					_update();
-					synchronized (repaintResLock) {
-						repaintResLock.notify();
-					}
 					if(repaint) continue;
 					synchronized (repaintLock) {
 						repaintLock.wait(500);
@@ -112,27 +107,15 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener, Runn
 				if(repaintTime > 0) Thread.sleep(repaintTime);
 			}
 		} catch (InterruptedException e) {
-		}
-	}
-
-	public void repaint(boolean wait) {
-		if(updateDynamically) return;
-		repaint = true;
-		synchronized (repaintLock) {
-			repaintLock.notify();
-		}
-		if(wait) {
-			try {
-				synchronized (repaintResLock) {
-					repaintResLock.wait(1000);
-				}
-			} catch (Exception e) {
-			}
+			throw new RuntimeException("interrupt");
 		}
 	}
 	
 	public void requestRepaint() {
-		repaint(false);
+		repaint = true;
+		synchronized (repaintLock) {
+			repaintLock.notify();
+		}
 	}
 
 	/**
