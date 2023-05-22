@@ -47,6 +47,12 @@ public class Settings {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			if(!MahoMapsApp.IsKemulator()) {
+				String platform = System.getProperty("microedition.platform");
+				proxyTiles = platform == null ||
+						platform.indexOf("platform_version=5.") == -1 ||
+						platform.indexOf("platform_version=5.0") != -1;
+			}
 			return false;
 		}
 	}
