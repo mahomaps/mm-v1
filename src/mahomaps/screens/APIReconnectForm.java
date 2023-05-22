@@ -43,7 +43,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 	private void ShowOk() {
 		deleteAll();
 		append(new StringItem("Статус", "Подключено"));
-		StringItem b = new StringItem("Токен сессии", "Сбросить");
+		StringItem b = new StringItem("Токен сессии", "Сбросить", Item.BUTTON);
 		b.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT);
 		b.addCommand(reset);
 		b.setDefaultCommand(reset);
