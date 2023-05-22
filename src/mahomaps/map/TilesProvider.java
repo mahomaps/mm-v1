@@ -8,6 +8,7 @@ import javax.microedition.lcdui.Image;
 import mahomaps.Gate;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
+import mahomaps.api.YmapsApiBase;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
 
@@ -471,8 +472,12 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		return "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
+		String url = "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
 				+ tileId.y + "&z=" + tileId.zoom;
+		if (Settings.proxyTiles) {
+			return "http://nnp.nnchan.ru/mahoproxy.php?u=" + YmapsApiBase.EncodeUrl(url);
+		}
+		return url;
 	}
 
 	private String getFileName(TileId id) {

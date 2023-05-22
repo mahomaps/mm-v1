@@ -28,6 +28,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Запрещено", "В файловую" }, null);
 	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.EXCLUSIVE,
 			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
+	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование тайлов", Choice.EXCLUSIVE,
+			new String[] { "Отключено", "nnchan.ru", }, null);
 
 	public SettingsScreen() {
 		super("Настройки");
@@ -58,6 +60,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		tileInfo.setSelectedIndex(Settings.drawTileInfo ? 1 : 0, true);
 		cache.setSelectedIndex(Settings.cacheMode, true);
 		download.setSelectedIndex(Settings.allowDownload ? 1 : 0, true);
+		proxyTiles.setSelectedIndex(Settings.proxyTiles ? 1 : 0, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -65,6 +68,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(tileInfo);
 		append(cache);
 		append(download);
+		append(proxyTiles);
 	}
 
 	private void Apply() {
@@ -74,6 +78,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.drawTileInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
 		Settings.allowDownload = download.getSelectedIndex() == 1;
+		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}

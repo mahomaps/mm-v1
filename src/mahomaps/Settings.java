@@ -17,6 +17,7 @@ public class Settings {
 	public static int showGeo = 2;
 	public static boolean allowDownload = true;
 	public static int cacheMode = 1;
+	public static boolean proxyTiles = false;
 
 	public static final int CACHE_FS = 1;
 	public static final int CACHE_RMS = 2;
@@ -42,6 +43,7 @@ public class Settings {
 			showGeo = j.optInt("show_geo", 2);
 			allowDownload = j.optBoolean("online", true);
 			cacheMode = j.optInt("cache", 1);
+			proxyTiles = j.optBoolean("proxy_tiles");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -57,6 +59,7 @@ public class Settings {
 		j.put("show_geo", showGeo);
 		j.put("online", allowDownload);
 		j.put("cache", cacheMode);
+		j.put("proxy_tiles", proxyTiles);
 		return j.toString();
 	}
 
