@@ -46,7 +46,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
-		thread.interrupt();
+		if (thread != null)
+			thread.interrupt();
 		if (tiles != null)
 			tiles.Stop();
 		if (canvas != null)
@@ -85,6 +86,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
+			thread = null;
 			return;
 		}
 		api.TryRead();
@@ -103,6 +105,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
+				thread = null;
 				return;
 			}
 		}
