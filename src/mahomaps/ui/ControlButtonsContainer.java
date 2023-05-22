@@ -27,7 +27,7 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 
 	public void PaintInfo(Graphics g, int x, int y, int w, int h) {
 		Vector s = info;
-		if (s != null) {
+		if (s != null && s.size() > 0) {
 			Font f = Font.getFont(0, 0, 8);
 			final int fh = f.getHeight();
 			final int ih = s.size() * fh;

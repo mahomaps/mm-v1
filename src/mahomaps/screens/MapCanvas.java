@@ -205,7 +205,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	private Vector GetGeoInfo() {
-		if (geo == null || !Settings.showGeo) {
+		if (geo == null || Settings.showGeo == 0) {
 			return null;
 		}
 
@@ -236,7 +236,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 
 		// координаты
-		if (geo.DrawPoint()) {
+		if (geo.DrawPoint() && Settings.showGeo == 2) {
 			String[] r = geolocation.GetRounded();
 			v.addElement(r[0]);
 			v.addElement(r[1]);

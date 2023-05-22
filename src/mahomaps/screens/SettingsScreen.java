@@ -20,8 +20,8 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup focusZoom = new ChoiceGroup("Масштаб при просмотре точек", Choice.POPUP,
 			new String[] { "15", "16", "17", "18" }, null);
 	private ChoiceGroup geoLook;
-	private ChoiceGroup geoStatus = new ChoiceGroup("Статус гео", Choice.EXCLUSIVE,
-			new String[] { "Скрывать", "Показывать" }, null);
+	private ChoiceGroup geoStatus = new ChoiceGroup("Показывать геопозицию", Choice.EXCLUSIVE,
+			new String[] { "Только метку на карте", "Статус", "Статус и координаты" }, null);
 	private ChoiceGroup tileInfo = new ChoiceGroup("Отладка тайлов", Choice.EXCLUSIVE,
 			new String[] { "Выключено", "Включено" }, null);
 	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.EXCLUSIVE,
@@ -54,7 +54,7 @@ public class SettingsScreen extends Form implements CommandListener {
 			Settings.focusZoom = 18;
 		focusZoom.setSelectedIndex(Settings.focusZoom - 15, true);
 		geoLook.setSelectedIndex(Settings.geoLook, true);
-		geoStatus.setSelectedIndex(Settings.showGeo ? 1 : 0, true);
+		geoStatus.setSelectedIndex(Settings.showGeo, true);
 		tileInfo.setSelectedIndex(Settings.drawTileInfo ? 1 : 0, true);
 		cache.setSelectedIndex(Settings.cacheMode, true);
 		download.setSelectedIndex(Settings.allowDownload ? 1 : 0, true);
@@ -70,7 +70,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	private void Apply() {
 		Settings.focusZoom = focusZoom.getSelectedIndex() + 15;
 		Settings.geoLook = geoLook.getSelectedIndex();
-		Settings.showGeo = geoStatus.getSelectedIndex() == 1;
+		Settings.showGeo = geoStatus.getSelectedIndex();
 		Settings.drawTileInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
 		Settings.allowDownload = download.getSelectedIndex() == 1;
