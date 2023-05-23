@@ -426,7 +426,16 @@ public class TilesProvider implements Runnable {
 
 		tileId = new TileId(x, tileId.y, tileId.zoom);
 
-		TileCache cached = tryGetExistingFromCache(tileId);
+		TileCache cached = null;
+
+		for (int i = 0; i < cache.size(); i++) {
+			TileCache tile = (TileCache) cache.elementAt(i);
+			if (tile.is(tileId)) {
+				cached = tile;
+				break;
+			}
+		}
+
 		if (cached != null) {
 			cached.unuseCount = 0;
 			return cached;
@@ -446,22 +455,6 @@ public class TilesProvider implements Runnable {
 		cacheGate.Reset();
 
 		return cached;
-	}
-
-	/**
-	 * Возвращает объект кэша плитки из {@link #cache}.
-	 * 
-	 * @param id Идентификатор требуемой плитки.
-	 * @return Объект, если существует, иначе null.
-	 */
-	private TileCache tryGetExistingFromCache(TileId id) {
-		for (int i = 0; i < cache.size(); i++) {
-			TileCache tile = (TileCache) cache.elementAt(i);
-			if (tile.is(id))
-				return tile;
-		}
-
-		return null;
 	}
 
 	private String getUrl(TileId tileId) {
