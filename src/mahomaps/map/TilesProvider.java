@@ -129,12 +129,7 @@ public class TilesProvider implements Runnable {
 						case TileCache.STATE_CACHE_PENDING:
 							// читаем кэш
 							break;
-						case TileCache.STATE_SERVER_PENDING:
-						case TileCache.STATE_LOADING:
-						case TileCache.STATE_READY:
-						case TileCache.STATE_ERROR:
-						case TileCache.STATE_UNLOADED:
-						case TileCache.STATE_MISSING:
+						default:
 							// к следующему тайлу
 							continue;
 						}
