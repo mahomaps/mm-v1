@@ -1,11 +1,15 @@
-Nokia-MIDlet-Scalable-Icon-1: /icon.svg
 Nokia-MIDlet-Background-Event: pause
-MIDlet-Vendor: nnproject
-MIDlet-Version: 0.9.12
-MIDlet-Icon: /icon.png
+MIDlet-Version: 0.9.13
+MIDlet-Info-URL: https://github.com/mahomaps
 MicroEdition-Configuration: CLDC-1.1
-MIDlet-1: MahoMaps,/icon.png,mahomaps.MahoMapsApp
 MIDlet-Name: MahoMaps v1
+Nokia-Scalable-Icon: /icon.svg
+Nokia-MIDlet-Scalable-Icon-1: /icon.svg
+MIDlet-Vendor: nnproject
+MIDlet-Permissions-Opt: javax.microedition.location.Orientation,javax.microedition.location.Location,javax.microedition.location.ProximityListener
+MIDlet-Icon: /icon.png
+MIDlet-1: MahoMaps,/icon.png,mahomaps.MahoMapsApp
+MIDlet-Description: Yandex.Maps client
 MicroEdition-Profile: MIDP-2.0
 MIDlet-Jar-URL: mm-v1.jar
-Nokia-Scalable-Icon: /icon.svg
+MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.Connector.file.write,javax.microedition.io.Connector.file.read

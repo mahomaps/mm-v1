@@ -21,6 +21,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 
 	StringItem website = new StringItem("Сайт", "nnp.nnchan.ru", Item.HYPERLINK);
 	StringItem chat = new StringItem("Чат", "t.me/nnmidletschat", Item.HYPERLINK);
+	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
 
 	public AboutScreen() {
 		super("О программе");
@@ -34,9 +35,16 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			append(i);
 		} catch (IOException e) {
 		}
-		append(new StringItem("Программирование", "Shinovon\nFeodor0090 (aka sym_ansel)"));
+		append(new StringItem("Попросил разработать", "GingerFox87"));
+		append(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
+		append(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
 		append(new StringItem("Дизайн", "MuseCat"));
-		append(new StringItem("Благодарности", "vipaoL\nGingerFox87\nCygames\nLantis"));
+		append(new StringItem("Прокси", "Shinovon\nrehdzi"));
+		append(new StringItem("CI/CD", "vipaoL"));
+		append(new StringItem("Тестеры", "MuseCat\nGingerFox87\nДмитрий Михно\nvipaoL"));
+		append(new StringItem("Группа поддержки", "stacorp"));
+		append(new StringItem("Поиграйте в игры от", "Cygames"));
+		append(new StringItem("Писалось под музыку от", "Lantis"));
 		website.addCommand(openLink);
 		website.setDefaultCommand(openLink);
 		website.setItemCommandListener(this);
@@ -45,6 +53,17 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		chat.setDefaultCommand(openLink);
 		chat.setItemCommandListener(this);
 		append(chat);
+		gh.addCommand(openLink);
+		gh.setDefaultCommand(openLink);
+		gh.setItemCommandListener(this);
+		append(gh);
+		append(new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)"));
+		append(new StringItem("Реклама", "Гитхаб Анселя:\ngithub.com/Feodor0090\n"
+				+ "Канал Анселя:\nt.me/sym_ansel_blog\n"
+				+ "Борда rehdzi:\nnnchan.ru\n"
+				+ "Канал Димы:\nt.me/blogprostodimonich\n"
+				+ "Канал Лиса:\nt.me/GingerFox87_blog\n"
+				+ "Игра Выполя:\nt.me/mobap_game\n"));
 	}
 
 	public void commandAction(Command c, Displayable d) {
