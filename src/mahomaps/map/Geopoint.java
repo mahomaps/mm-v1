@@ -21,13 +21,13 @@ public class Geopoint {
 	public Object object;
 
 	public static Image locationIcons;
-	public static Image search;
+	public static Image commonPs;
 	public static Image route;
 
 	static {
 		try {
 			locationIcons = Image.createImage("/geo40.png");
-			search = Image.createImage("/search40.png");
+			commonPs = Image.createImage("/points40.png");
 			route = Image.createImage("/route40.png");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -81,14 +81,16 @@ public class Geopoint {
 		int s;
 		switch (type) {
 		case POI_SELECT:
+			s = commonPs.getWidth() / 4;
+			g.drawRegion(commonPs, s * color, 80, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+			break;
 		case POI_MARK:
-			s = search.getWidth() / 8;
-			g.drawRegion(search, s * (color + 4), 0, s, search.getHeight(), 0, px, py,
-					Graphics.BOTTOM | Graphics.HCENTER);
+			s = commonPs.getWidth() / 4;
+			g.drawRegion(commonPs, s * color, 40, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
 			break;
 		case POI_SEARCH:
-			s = search.getWidth() / 8;
-			g.drawRegion(search, s * color, 0, s, search.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+			s = commonPs.getWidth() / 4;
+			g.drawRegion(commonPs, s * color, 0, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
 			break;
 		case LOCATION:
 			s = locationIcons.getWidth() / 4;
