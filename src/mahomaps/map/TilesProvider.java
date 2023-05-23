@@ -40,7 +40,7 @@ public class TilesProvider implements Runnable {
 	private Vector cache = new Vector();
 
 	private final Gate downloadGate = new Gate(false);
-	private final Gate cacheGate = new Gate(false);
+	private final Gate cacheGate = new Gate(true);
 
 	private boolean paintState = false;
 
@@ -87,15 +87,15 @@ public class TilesProvider implements Runnable {
 			for (int i = 0; i < cache.size(); i++) {
 				TileCache tc = (TileCache) cache.elementAt(i);
 				synchronized (tc) {
-					if (tc.state == TileCache.STATE_MISSING) {
+					if (tc.state == TileCache.STATE_MISSING || tc.state == TileCache.STATE_ERROR) {
 						tc.state = TileCache.STATE_CACHE_PENDING;
 					}
 				}
 			}
 		}
 
-		downloadGate.Reset();
 		cacheGate.Reset();
+		downloadGate.Reset();
 	}
 
 	public void run() {
@@ -112,7 +112,6 @@ public class TilesProvider implements Runnable {
 		try {
 			// цикл обработки
 			while (true) {
-				int idleCount = 0; // счётчик готовых тайлов (если равен длине кэша - ничего грузить не надо)
 				int i = -1;
 				// цикл перебора тайлов в очереди
 				while (true) {
@@ -136,7 +135,6 @@ public class TilesProvider implements Runnable {
 						case TileCache.STATE_ERROR:
 						case TileCache.STATE_UNLOADED:
 						case TileCache.STATE_MISSING:
-							idleCount++;
 							// к следующему тайлу
 							continue;
 						}
@@ -161,12 +159,8 @@ public class TilesProvider implements Runnable {
 							tc.state = TileCache.STATE_MISSING;
 						}
 					}
-				}
+				} // конец перебора очереди
 
-				// if (errCount != 0)
-				// continue;
-				if (idleCount != cache.size())
-					continue;
 				cacheGate.Pass();
 			}
 		} catch (InterruptedException e) {
@@ -179,7 +173,7 @@ public class TilesProvider implements Runnable {
 			while (true) {
 				if (!Settings.allowDownload) {
 					try {
-						downloadGate.wait();
+						downloadGate.Pass();
 					} catch (InterruptedException e) {
 						return;
 					}
