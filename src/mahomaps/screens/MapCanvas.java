@@ -381,6 +381,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void keyRepeated(int k) {
+		// "home" button
+		if (k == -12)
+			return;
+
 		touch = false;
 		int ga = 0;
 		try {
