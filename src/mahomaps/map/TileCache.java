@@ -59,10 +59,11 @@ public class TileCache extends TileId {
 			"Готово", "Ошибка загрузки", "Выгружен", "Загрузка невозможна" };
 
 	public static final int STATE_CACHE_PENDING = 0;
-	public static final int STATE_SERVER_PENDING = 1;
-	public static final int STATE_LOADING = 2;
-	public static final int STATE_READY = 3;
-	public static final int STATE_ERROR = 4;
-	public static final int STATE_UNLOADED = 5;
-	public static final int STATE_MISSING = 6;
+	public static final int STATE_CACHE_LOADING = 1;
+	public static final int STATE_SERVER_PENDING = 2;
+	public static final int STATE_SERVER_LOADING = 3;
+	public static final int STATE_READY = 4;
+	public static final int STATE_ERROR = 5;
+	public static final int STATE_UNLOADED = 6;
+	public static final int STATE_MISSING = 7;
 }

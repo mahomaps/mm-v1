@@ -127,8 +127,13 @@ public class TilesProvider implements Runnable {
 					synchronized (tc) {
 						switch (tc.state) {
 						case TileCache.STATE_CACHE_PENDING:
+							// состояние
+							tc.state = TileCache.STATE_CACHE_LOADING;
 							// читаем кэш
 							break;
+						case TileCache.STATE_CACHE_LOADING:
+							throw new IllegalStateException(
+									tc.toString() + " was in cache loading state before loading sequence!");
 						default:
 							// к следующему тайлу
 							continue;
@@ -196,24 +201,25 @@ public class TilesProvider implements Runnable {
 					synchronized (tc) {
 						switch (tc.state) {
 						case TileCache.STATE_CACHE_PENDING:
+						case TileCache.STATE_CACHE_LOADING:
 							// ждём чтения кэша
 							// к следующему тайлу
 							continue;
 						case TileCache.STATE_SERVER_PENDING:
 							// переключаем состояние
-							tc.state = TileCache.STATE_LOADING;
+							tc.state = TileCache.STATE_SERVER_LOADING;
 							// начинаем загрузку
 							break;
-						case TileCache.STATE_LOADING:
+						case TileCache.STATE_SERVER_LOADING:
 							throw new IllegalStateException(
-									tc.toString() + " was in loading state before loading sequence!");
+									tc.toString() + " was in server loading state before loading sequence!");
 						case TileCache.STATE_READY:
 							idleCount++;
 							// к следующему тайлу
 							continue;
 						case TileCache.STATE_ERROR:
 							// переключаем состояние
-							tc.state = TileCache.STATE_LOADING;
+							tc.state = TileCache.STATE_SERVER_LOADING;
 							// начинаем загрузку
 							break;
 						case TileCache.STATE_UNLOADED:
@@ -400,8 +406,8 @@ public class TilesProvider implements Runnable {
 				if (t.unuseCount > 20) {
 					synchronized (t) {
 						switch (t.state) {
-						case TileCache.STATE_CACHE_PENDING:
-						case TileCache.STATE_LOADING:
+						case TileCache.STATE_CACHE_LOADING:
+						case TileCache.STATE_SERVER_LOADING:
 							// we can't remove this tile
 							continue;
 						default:
