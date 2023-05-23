@@ -107,6 +107,11 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		try {
 			canvas.run();
 		} catch (InterruptedException e) {
+		} catch (Throwable t) {
+			Form f = new Form("Ошибка", new Item[] { new StringItem("Поток отрисовки", t.toString()) });
+			f.addCommand(exit);
+			f.setCommandListener(this);
+			BringSubScreen(f);
 		}
 		thread = null;
 	}
