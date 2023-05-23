@@ -176,6 +176,8 @@ public class TilesProvider implements Runnable {
 
 				int idleCount = 0; // счётчик готовых тайлов (если равен длине кэша - ничего грузить не надо)
 				int i = -1;
+				int l = -1;
+				boolean queueChanged = false;
 				// цикл перебора тайлов в очереди
 				while (true) {
 					TileCache tc = null;
@@ -183,6 +185,10 @@ public class TilesProvider implements Runnable {
 						// инкремент + проверки выхода за границы
 						i++;
 						int s = cache.size();
+						if (l == -1)
+							l = s;
+						else if (l != s)
+							queueChanged = true;
 						if (i >= s)
 							break;
 						tc = (TileCache) cache.elementAt(i);
@@ -244,7 +250,7 @@ public class TilesProvider implements Runnable {
 						Thread.sleep(4000);
 				}
 
-				if (idleCount != cache.size())
+				if (idleCount != cache.size() || queueChanged)
 					continue;
 				downloadGate.Pass();
 			}
@@ -387,21 +393,30 @@ public class TilesProvider implements Runnable {
 			throw new IllegalStateException("Paint was not performed.");
 		paintState = false;
 
+		boolean removed = false;
 		synchronized (cache) {
 			for (int i = cache.size() - 1; i > -1; i--) {
 				TileCache t = (TileCache) cache.elementAt(i);
 				if (t.unuseCount > 20) {
 					synchronized (t) {
-						if (t.state != TileCache.STATE_LOADING) {
+						switch (t.state) {
+						case TileCache.STATE_CACHE_PENDING:
+						case TileCache.STATE_LOADING:
+							// we can't remove this tile
+							continue;
+						default:
 							t.state = TileCache.STATE_UNLOADED;
 							cache.removeElementAt(i);
-							cacheGate.Reset();
-							downloadGate.Reset();
+							removed = true;
+							break;
 						}
 					}
 				}
 			}
 		}
+
+		if (removed)
+			cacheGate.Reset();
 	}
 
 	/**
