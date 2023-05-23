@@ -411,6 +411,8 @@ public class TilesProvider implements Runnable {
 			throw new IllegalStateException("Paint is already in progress.");
 		paintState = true;
 
+		// lock is not needed because it's modified only from tile get / tile cleanup,
+		// which happens in this thread.
 		for (int i = 0; i < cache.size(); i++) {
 			((TileCache) cache.elementAt(i)).unuseCount++;
 		}
@@ -461,6 +463,11 @@ public class TilesProvider implements Runnable {
 	 *         (например, Y отрицательный).
 	 */
 	public TileCache getTile(TileId tileId) {
+		if (!paintState)
+			throw new IllegalStateException("Paint was not performing now, can't get tile!");
+		if (Thread.currentThread() != MahoMapsApp.thread)
+			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
+
 		int max = 0x1 << tileId.zoom;
 		if (tileId.y < 0)
 			return null;
@@ -476,6 +483,7 @@ public class TilesProvider implements Runnable {
 
 		TileCache cached = null;
 
+		// modified only from cleanup - lock is not needed
 		for (int i = 0; i < cache.size(); i++) {
 			TileCache tile = (TileCache) cache.elementAt(i);
 			if (tile.is(tileId)) {
@@ -489,13 +497,9 @@ public class TilesProvider implements Runnable {
 			return cached;
 		}
 
-		if (Thread.currentThread() != MahoMapsApp.thread)
-			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
-		if (!paintState)
-			throw new IllegalStateException("Paint isn't performing now.");
-
 		cached = new TileCache(tileId);
 		cached.state = TileCache.STATE_CACHE_PENDING;
+		// avoid modifying vector during bounds checks
 		synchronized (cache) {
 			cache.addElement(cached);
 		}
