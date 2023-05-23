@@ -10,7 +10,7 @@ public class TileCache extends TileId {
 
 	public Image img;
 	public volatile int state = 0;
-	public int unuseCount;
+	public volatile int unuseCount;
 
 	public TileCache(int x, int y, int zoom) {
 		super(x, y, zoom);
