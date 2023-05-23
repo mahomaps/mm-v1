@@ -24,7 +24,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 		setCommandListener(this);
 		if (MahoMapsApp.api.token == null) {
 			append(new Gauge("Подключение", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
-			(new Thread(this)).start();
+			(new Thread(this, "API reconnect")).start();
 		} else {
 			ShowOk();
 		}
