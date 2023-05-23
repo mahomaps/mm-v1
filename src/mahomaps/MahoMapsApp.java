@@ -43,7 +43,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		paused = false;
 		if (thread == null) {
 			midlet = this;
-			thread = new Thread(this);
+			thread = new Thread(this, "Init & repaint thread");
 			thread.start();
 		}
 	}
