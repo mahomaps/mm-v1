@@ -57,8 +57,8 @@ public class TilesProvider implements Runnable {
 	public void Start() {
 		if (networkTh != null || cacheTh != null)
 			throw new IllegalStateException("Can't start already running tiles provider!");
-		networkTh = new Thread(this, "tiles_net");
-		cacheTh = new Thread(this, "tiles_cache");
+		networkTh = new Thread(this, "Tiles downloader");
+		cacheTh = new Thread(this, "Tiles cache reader");
 		networkTh.start();
 		cacheTh.start();
 	}
