@@ -124,6 +124,20 @@ public class TilesProvider implements Runnable {
 							break;
 						tc = (TileCache) cache.elementAt(i);
 					}
+					{
+						// attempt to check state without taking lock
+						int s = tc.state;
+						switch (s) {
+						case TileCache.STATE_CACHE_PENDING:
+						case TileCache.STATE_CACHE_LOADING:
+							// we need to take lock and recheck.
+							break;
+						default:
+							// we can't transit from any futher state to cache reads.
+							// next tile!
+							continue;
+						}
+					}
 					synchronized (tc) {
 						switch (tc.state) {
 						case TileCache.STATE_CACHE_PENDING:
@@ -135,8 +149,8 @@ public class TilesProvider implements Runnable {
 							throw new IllegalStateException(
 									tc.toString() + " was in cache loading state before loading sequence!");
 						default:
-							// к следующему тайлу
-							continue;
+							throw new IllegalStateException(tc.toString()
+									+ " changed its state from cache pending/wait to something else during monitor catch!");
 						}
 					}
 
@@ -197,6 +211,12 @@ public class TilesProvider implements Runnable {
 						if (i >= s)
 							break;
 						tc = (TileCache) cache.elementAt(i);
+					}
+					// if tile is ready already, it can't be downloaded again. Skipping without
+					// taking lock.
+					if (tc.state == TileCache.STATE_READY) {
+						idleCount++;
+						continue;
 					}
 					synchronized (tc) {
 						switch (tc.state) {
