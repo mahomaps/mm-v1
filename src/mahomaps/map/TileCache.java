@@ -55,7 +55,7 @@ public class TileCache extends TileId {
 		return STATE_DESCRIPTION[state];
 	}
 
-	public static final String[] STATE_DESCRIPTION = new String[] { "Ожидание кэша", "Ожидание скачивания", "Загрузка",
+	public static final String[] STATE_DESCRIPTION = new String[] { "Ожидание кэша", "Чтение кэша", "Ожидание скачивания", "Загрузка",
 			"Готово", "Ошибка загрузки", "Выгружен", "Загрузка невозможна" };
 
 	public static final int STATE_CACHE_PENDING = 0;
