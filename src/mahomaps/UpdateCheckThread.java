@@ -13,6 +13,10 @@ import mahomaps.screens.UpdateScreen;
 
 public class UpdateCheckThread extends Thread {
 
+	public UpdateCheckThread() {
+		super("Update check");
+	}
+
 	public void run() {
 		String dev = System.getProperty("microedition.platform");
 		String os = System.getProperty("os.name");
@@ -20,7 +24,7 @@ public class UpdateCheckThread extends Thread {
 		if (MahoMapsApp.IsKemulator()) {
 			dev += "|KEmulator";
 			String kemV = System.getProperty("kemulator.mod.version");
-			if(kemV != null)
+			if (kemV != null)
 				dev += "/nnmod" + kemV;
 		}
 		try {
