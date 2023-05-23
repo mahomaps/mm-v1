@@ -204,7 +204,6 @@ public class GeoUpdateThread extends Thread {
 								s1 = -1;
 							}
 							s2 = Math.max(s2, s1);
-							break;
 						} else if(sentence[0].endsWith("GSV")) {
 							try {
 								s2 = Math.max(s2, Integer.parseInt(sentence[3]));
