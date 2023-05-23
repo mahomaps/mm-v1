@@ -29,8 +29,8 @@ On symbian 9.x, it's recommended to install a patch to allow access to file syst
 ### How to make geolocation work?
 
 - On Symbian 9.x / ^3 disable **all location sources except unassisted GPS**.
-- **Disable A-GPS**. On non-symbian devices it may be called as "geolocation server", "internet support" or something like that.
-- Let your device perform a cold start: request geolocation on any app (MahoMaps, Google Maps, Ovi Maps, Sports tracker, anything else) and keep the device under clear sky. It is desirable that the horizon is visible. Wait until it catches sattelites. May take a while.
+- **Disable A-GPS**. On non-symbian devices it may be called as "geolocation server", "internet support", "supplement server" or something like that.
+- Let your device perform a cold start: request geolocation in any app (MahoMaps, Google Maps, Ovi Maps, Sports tracker, anything else) and keep the device under clear sky. It is desirable that the horizon is visible. Wait until it catches sattelites. May take a while.
 - Once you are sure that GPS receiver works okay, you may try to enable A-GPS to increase accuracy and startup time. We recommend using `supl.google.com` as supplement server. `supl.nokia.com` is dead!
 - If you experience issues, try disabling A-GPS.
 - If you device can't catch sattelites even in good weather, check that its GPS receiver is operable.
