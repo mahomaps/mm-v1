@@ -396,6 +396,7 @@ public class TilesProvider implements Runnable {
 							t.state = TileCache.STATE_UNLOADED;
 							cache.removeElementAt(i);
 							cacheGate.Reset();
+							downloadGate.Reset();
 						}
 					}
 				}
