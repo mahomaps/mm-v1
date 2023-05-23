@@ -163,7 +163,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		overlays.DrawMap(g, ms);
 
 		g.translate(-(w >> 1), -(h >> 1));
-		tiles.EndMapPaint();
+		tiles.EndMapPaint(state);
 	}
 
 	private void drawOverlay(Graphics g, int w, int h) {
