@@ -1,5 +1,11 @@
 package mahomaps.map;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Vector;
+
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.io.file.FileConnection;
@@ -11,12 +17,6 @@ import mahomaps.Settings;
 import mahomaps.api.YmapsApiBase;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.*;
 
 public class TilesProvider implements Runnable {
 
@@ -374,9 +374,16 @@ public class TilesProvider implements Runnable {
 				return null;
 			}
 			InputStream s = fc.openInputStream();
-			Image img = Image.createImage(s);
+			ByteArrayOutputStream o = new ByteArrayOutputStream();
+			byte[] buf = new byte[512];
+			int read;
+			while ((read = s.read(buf)) != -1) {
+				o.write(buf, 0, read);
+			}
 			s.close();
-			return img;
+			byte[] b = o.toByteArray();
+			o.close();
+			return Image.createImage(b, 0, b.length);
 		} catch (SecurityException e) {
 			MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
 			Settings.cacheMode = Settings.CACHE_DISABLED;
