@@ -390,7 +390,7 @@ public class TilesProvider implements Runnable {
 		synchronized (cache) {
 			for (int i = cache.size() - 1; i > -1; i--) {
 				TileCache t = (TileCache) cache.elementAt(i);
-				if (t.unuseCount > 100) {
+				if (t.unuseCount > 20) {
 					synchronized (t) {
 						if (t.state != TileCache.STATE_LOADING) {
 							t.state = TileCache.STATE_UNLOADED;
