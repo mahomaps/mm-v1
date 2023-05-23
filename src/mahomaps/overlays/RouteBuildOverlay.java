@@ -2,6 +2,9 @@ package mahomaps.overlays;
 
 import java.util.Vector;
 
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
+
 import mahomaps.MahoMapsApp;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
@@ -78,6 +81,13 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		return o;
 	}
 
+	private static void NotifyNoGeo() {
+		Alert a = new Alert("Маршрут", "Ваша геопозиция ещё не определена - её не получится использовать.", null,
+				AlertType.WARNING);
+		a.setTimeout(4000);
+		MahoMapsApp.BringSubScreen(a, MahoMapsApp.GetCanvas());
+	}
+
 	public String GetId() {
 		return ID;
 	}
@@ -99,12 +109,16 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		if (uid == 10) {
 			if (m.geo.DrawPoint()) {
 				SetB(m.geolocation);
+			} else {
+				NotifyNoGeo();
 			}
 			return;
 		}
 		if (uid == 11) {
 			if (m.geo.DrawPoint()) {
 				SetA(m.geolocation);
+			} else {
+				NotifyNoGeo();
 			}
 			return;
 		}

@@ -1,6 +1,7 @@
 package mahomaps;
 
 import javax.microedition.io.ConnectionNotFoundException;
+import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
@@ -118,6 +119,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	public static void BringSubScreen(Displayable screen) {
 		display.setCurrent(screen);
+	}
+
+	public static void BringSubScreen(Alert a, Displayable screen) {
+		display.setCurrent(a, screen);
 	}
 
 	public static void BringMap() {
