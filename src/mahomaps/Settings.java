@@ -11,7 +11,7 @@ public class Settings {
 	private Settings() {
 	}
 
-	public static boolean drawTileInfo = false;
+	public static boolean drawDebugInfo = false;
 	public static int focusZoom = 16;
 	public static int geoLook = 0;
 	public static int showGeo = 2;
@@ -40,7 +40,7 @@ public class Settings {
 			}
 
 			JSONObject j = new JSONObject(new String(d));
-			drawTileInfo = j.optBoolean("tile_info", false);
+			drawDebugInfo = j.optBoolean("tile_info", false);
 			focusZoom = j.optInt("focus_zoom", 16);
 			geoLook = j.optInt("geo_look", 0);
 			showGeo = j.optInt("show_geo", 2);
@@ -69,7 +69,7 @@ public class Settings {
 
 	public static String Serialize() {
 		JSONObject j = new JSONObject();
-		j.put("tile_info", drawTileInfo);
+		j.put("tile_info", drawDebugInfo);
 		j.put("focus_zoom", focusZoom);
 		j.put("geo_look", geoLook);
 		j.put("show_geo", showGeo);

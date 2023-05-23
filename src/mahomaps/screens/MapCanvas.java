@@ -171,8 +171,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		Font f = Font.getFont(0, 0, 8);
 		g.setColor(0);
 		g.setFont(f);
-		if (Settings.drawTileInfo)
-			g.drawString(state.toString(), 5, 5, 0);
+		if (Settings.drawDebugInfo)
+			g.drawString(state.toString(), 0, 0, 0);
 
 		controls.info = GetGeoInfo();
 
@@ -256,9 +256,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				if (g == null)
 					cachedGraphics = g = getGraphics();
 				repaint(g);
-				time = System.currentTimeMillis() - time;
-				g.setColor(0);
-				g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 5, 65, 0);
+				if (Settings.drawDebugInfo) {
+					time = System.currentTimeMillis() - time;
+					g.setColor(0);
+					g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 0, 20, 0);
+				}
 				flushGraphics();
 				repaintDebugTick = !repaintDebugTick;
 			}

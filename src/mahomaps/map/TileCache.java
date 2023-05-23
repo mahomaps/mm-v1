@@ -35,7 +35,7 @@ public class TileCache extends TileId {
 			g.setGrayScale(0);
 			g.drawString(GetState(), tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
 		}
-		if (Settings.drawTileInfo) {
+		if (Settings.drawDebugInfo) {
 			g.drawRect(tx, ty, 255, 255);
 			g.fillRect(tx + 125, ty + 63, 6, 2);
 			g.fillRect(tx + 127, ty + 61, 2, 6);
