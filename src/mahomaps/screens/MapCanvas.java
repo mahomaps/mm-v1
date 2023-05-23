@@ -58,6 +58,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private boolean repaintDebugTick = true;
 	public boolean hidden = false;
 	public final Gate repaintGate = new Gate(true);
+	private Graphics cachedGraphics;
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -246,11 +247,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public void run() throws InterruptedException {
 		while (true) {
-			if (MahoMapsApp.paused || hidden)
+			if (MahoMapsApp.paused || hidden) {
 				repaintGate.Pass();
+			}
 			{
 				long time = System.currentTimeMillis();
-				Graphics g = getGraphics();
+				Graphics g = cachedGraphics;
+				if (g == null)
+					cachedGraphics = g = getGraphics();
 				repaint(g);
 				time = System.currentTimeMillis() - time;
 				g.setColor(0);
@@ -516,6 +520,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void sizeChanged(int w, int h) {
+		cachedGraphics = null;
 		super.sizeChanged(w, h);
 		requestRepaint();
 	}
@@ -525,6 +530,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void showNotify() {
+		cachedGraphics = null;
 		hidden = false;
 		super.showNotify();
 		requestRepaint();
