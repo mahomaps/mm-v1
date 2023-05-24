@@ -192,7 +192,7 @@ public class GeoUpdateThread extends Thread {
 				// определение кол-ва спутников
 				String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
 				if(nmea != null) {
-					String[] sequence = split(nmea, '\n');
+					String[] sequence = split(nmea, '$');
 					int s1 = -1;
 					int s2 = -1;
 					for(int i = sequence.length-1; i >= 0; i--) {
