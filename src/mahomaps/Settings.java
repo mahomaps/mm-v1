@@ -61,9 +61,8 @@ public class Settings {
 			proxyApi = false;
 			proxyTiles = false;
 		} else {
-			String platform = System.getProperty("microedition.platform");
-			proxyTiles = proxyApi = platform == null || platform.indexOf("platform_version=5.") == -1
-					|| platform.indexOf("platform_version=5.0") != -1;
+			proxyTiles = proxyApi = MahoMapsApp.platform == null || MahoMapsApp.platform.indexOf("platform_version=5.") == -1
+					|| MahoMapsApp.platform.indexOf("platform_version=5.0") != -1;
 		}
 	}
 

@@ -18,7 +18,7 @@ public class UpdateCheckThread extends Thread {
 	}
 
 	public void run() {
-		String dev = System.getProperty("microedition.platform");
+		String dev = MahoMapsApp.platform;
 		String os = System.getProperty("os.name");
 		String osver = System.getProperty("os.version");
 		String sejp = System.getProperty("com.sonyericsson.java.platform");

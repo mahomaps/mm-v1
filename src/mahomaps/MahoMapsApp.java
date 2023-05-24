@@ -29,12 +29,11 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	private static MahoMapsApp midlet;
 	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
+	public static String platform = System.getProperty("microedition.platform");
+	public static String version;
+	public static boolean paused;
 
 	private Command exit = new Command("Выход", Command.EXIT, 0);
-
-	public static String version;
-
-	public static boolean paused;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);

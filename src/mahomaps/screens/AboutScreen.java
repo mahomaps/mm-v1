@@ -27,15 +27,22 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		super("О программе");
 		setCommandListener(this);
 		addCommand(back);
-
-		append(new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version));
 		try {
 			ImageItem i = new ImageItem(null, Image.createImage("/icon.png"),
-					Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT, "logo");
+					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_LEFT, "logo");
 			append(i);
 		} catch (IOException e) {
 		}
-		append(new StringItem("Попросил разработать", "GingerFox87"));
+		StringItem s;
+		append(s = new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version));
+		if(MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1 && MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
+			// фокус на начало экрана
+			try {
+				MahoMapsApp.display.setCurrentItem(s);
+			} catch (Throwable e) {
+			}
+		}
+		append(new StringItem("Предложил", "GingerFox87"));
 		append(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
 		append(new StringItem("Поддержать нас рублём", "5536 9141 0062 0677"));
 		append(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
