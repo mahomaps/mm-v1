@@ -37,6 +37,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		}
 		append(new StringItem("Попросил разработать", "GingerFox87"));
 		append(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
+		append(new StringItem("Поддержать нас рублём", "5536 9141 0062 0677"));
 		append(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
 		append(new StringItem("Дизайн", "MuseCat"));
 		append(new StringItem("Прокси", "Shinovon\nrehdzi"));
