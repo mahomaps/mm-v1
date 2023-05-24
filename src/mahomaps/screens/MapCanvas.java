@@ -161,6 +161,15 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			geolocation.paint(g, ms);
 		}
 
+		if (!touch) {
+			g.setColor(0xff0000);
+
+			g.drawLine(-6, 0, -2, 0);
+			g.drawLine(2, 0, 6, 0);
+			g.drawLine(0, -6, 0, -2);
+			g.drawLine(0, 2, 0, 6);
+		}
+
 		overlays.DrawMap(g, ms);
 
 		g.translate(-(w >> 1), -(h >> 1));
