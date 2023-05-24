@@ -28,7 +28,7 @@ public class UpdateCheckThread extends Thread {
 				dev += "/nnmod" + kemV;
 		}
 		try {
-			Class.forName("ru.playsoftware.j2meloader.EmulatorApplication");
+			Class.forName("javax.microedition.shell.MicroActivity");
 			dev += "|J2MELoader";
 		} catch (Exception e) {
 		}
