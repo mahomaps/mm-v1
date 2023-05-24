@@ -38,9 +38,8 @@ On symbian 9.x, it's recommended to install a patch to allow access to file syst
 ## Tested systems
 
 - Symbian ^3/Anna/Belle/Refresh/FP1/FP2
-- Symbian 9.4
-- Symbian 9.3
-- Symbian 9.2
+- Symbian 9.1-9.4
+- Bada 1.1
 
 ## Supported emulators
 
