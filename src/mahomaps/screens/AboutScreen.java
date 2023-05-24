@@ -28,13 +28,14 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		setCommandListener(this);
 		addCommand(back);
 		try {
-			ImageItem i = new ImageItem(null, Image.createImage("/icon.png"),
-					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_LEFT, "logo");
+			ImageItem i = new ImageItem(null, MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/splash.png") : Image.createImage("/icon.png"),
+					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
 			append(i);
 		} catch (IOException e) {
 		}
-		StringItem s;
-		append(s = new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version));
+		StringItem s = new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version);
+		s.setLayout(Item.LAYOUT_LEFT);
+		append(s);
 		if(MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1 && MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
 			// фокус на начало экрана
 			try {
@@ -65,7 +66,15 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		gh.setDefaultCommand(openLink);
 		gh.setItemCommandListener(this);
 		append(gh);
-		append(new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)"));
+		try {
+			ImageItem i = new ImageItem(null, Image.createImage("/stick.png"),
+					Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "торшер");
+			append(i);
+		} catch (IOException e) {
+		}
+		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
+		s.setLayout(Item.LAYOUT_LEFT);
+		append(s);
 		append(new StringItem("Реклама", "Гитхаб Анселя:\ngithub.com/Feodor0090\n"
 				+ "Канал Анселя:\nt.me/sym_ansel_blog\n"
 				+ "Борда rehdzi:\nnnchan.ru\n"
