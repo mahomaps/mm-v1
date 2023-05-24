@@ -40,7 +40,6 @@ On symbian 9.x, it's recommended to install a patch to allow access to file syst
 - Symbian ^3/Anna/Belle/Refresh/FP1/FP2
 - Symbian 9.2-9.4
 - Bada 1.1
-- 
 
 ## Supported emulators
 
