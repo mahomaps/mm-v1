@@ -21,6 +21,7 @@ public class UpdateCheckThread extends Thread {
 		String dev = System.getProperty("microedition.platform");
 		String os = System.getProperty("os.name");
 		String osver = System.getProperty("os.version");
+		String sejp = System.getProperty("com.sonyericsson.java.platform");
 		if (MahoMapsApp.IsKemulator()) {
 			dev += "|KEmulator";
 			String kemV = System.getProperty("kemulator.mod.version");
@@ -37,6 +38,9 @@ public class UpdateCheckThread extends Thread {
 		}
 		if (osver != null) {
 			dev += "|v:" + osver;
+		}
+		if (sejp != null) {
+			dev += "|s:" + sejp;
 		}
 		boolean hasGeo = false;
 		try {

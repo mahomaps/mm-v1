@@ -56,8 +56,6 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 		if (c == openLink) {
 			if (item == vk) {
 				MahoMapsApp.open("http://v4.crx.moe/");
-			} else if (item == ok) {
-				MahoMapsApp.open("http://nnp.nnchan.ru/okj/");
 			} else if (item == tg) {
 				MahoMapsApp.open("http://mp.nnchan.ru/");
 			} else if (item == jt) {
