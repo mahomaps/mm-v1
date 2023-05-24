@@ -88,6 +88,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 			f.append("Токен сессии был сброшен. Приложение должно быть перезапущено.");
 			f.addCommand(exit);
 			f.setCommandListener(this);
+			MahoMapsApp.BringSubScreen(f);
 		}
 	}
 
