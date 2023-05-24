@@ -14,8 +14,8 @@ import mahomaps.overlays.SearchOverlay;
 
 public class SearchResultScreen extends Form implements CommandListener {
 
-	private Command back = new Command("К списку", Command.BACK, 0);
-	private Command toMap = new Command("К карте", Command.OK, 0);
+	private Command back = new Command("Список", Command.BACK, 0);
+	private Command toMap = new Command("Карта", Command.OK, 0);
 	private final SearchOverlay o;
 
 	public SearchResultScreen(JSONObject obj, SearchOverlay o) {
