@@ -72,12 +72,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			if (kem) {
 				loc = "file:///root/ym/";
 			} else {
-				loc = System.getProperty("fileconn.dir.private");
+				loc = fixPath(System.getProperty("fileconn.dir.private"));
 				if (loc == null)
-					loc = System.getProperty("fileconn.dir.images");
-				if (loc.charAt(loc.length() - 1) != '/')
-					loc = loc + "/";
-				loc = loc + "ym/";
+					loc = fixPath(System.getProperty("fileconn.dir.images")) + "ym/";
 			}
 			tiles = new TilesProvider("ru_RU", loc);
 		}
@@ -114,6 +111,14 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			BringSubScreen(f);
 		}
 		thread = null;
+	}
+	
+	private static String fixPath(String loc) {
+		if (loc == null)
+			return null;
+		if (loc.charAt(loc.length() - 1) != '/')
+			loc = loc + "/";
+		return loc;
 	}
 
 	public static void BringSubScreen(Displayable screen) {
