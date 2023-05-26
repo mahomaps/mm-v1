@@ -28,7 +28,7 @@ public abstract class YmapsApiBase {
 		InputStreamReader stream = null;
 		String url = "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=" + key;
 		if (Settings.proxyApi) {
-			url = "http://nnp.nnchan.ru/mahoproxy.php?u=" + YmapsApiBase.EncodeUrl(url);
+			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		try {
 			hc = (HttpConnection) Connector.open(url);
@@ -99,7 +99,7 @@ public abstract class YmapsApiBase {
 
 	protected String GetUtf(String url) throws IOException {
 		if (Settings.proxyApi) {
-			url = "http://nnp.nnchan.ru/mahoproxy.php?u=" + YmapsApiBase.EncodeUrl(url);
+			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		System.out.println("GET " + url);
 		HttpConnection hc = (HttpConnection) Connector.open(url);
