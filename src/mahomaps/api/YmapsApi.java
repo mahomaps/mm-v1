@@ -62,7 +62,7 @@ public final class YmapsApi extends YmapsApiBase {
 		JSONArray j = (new JSONObject(GetUtf(GetRouteUrl(a, b, type)))).getJSONArray("features");
 		if (j.length() == 0)
 			throw new ConnectionNotFoundException();
-		JSONObject j1 = j.getJSONObject(0).getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+		JSONObject j1 = j.getJSONObject(0).getJSONArray("features").getJSONObject(0);
 		return j1;
 	}
 

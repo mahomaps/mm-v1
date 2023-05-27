@@ -8,7 +8,8 @@ public class Route {
 	public String time;
 	public String distance = "Неизвестно";
 
-	public Route(JSONObject props) {
+	public Route(JSONObject route) {
+		JSONObject props = route.getJSONObject("properties");
 		JSONObject meta = props.getJSONObject("PathMetaData");
 		time = meta.getJSONObject("Duration").getString("text");
 		JSONObject dist = meta.optJSONObject("Distance");
