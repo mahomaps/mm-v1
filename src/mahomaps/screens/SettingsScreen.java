@@ -25,7 +25,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup tileInfo = new ChoiceGroup("Отладочная информация", Choice.EXCLUSIVE,
 			new String[] { "Выключено", "Включено" }, null);
 	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.EXCLUSIVE,
-			new String[] { "Запрещено", "В файловую" }, null);
+			new String[] { "Запрещено", "В файловую", "RMS" }, null);
 	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.EXCLUSIVE,
 			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
 	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование", Choice.EXCLUSIVE,
