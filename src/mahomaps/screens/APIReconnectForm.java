@@ -17,14 +17,12 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 	private Command back = new Command("Назад", Command.BACK, 0);
 
 	private Command reset = new Command("Сбросить", Command.ITEM, 1);
-	private Command exit = new Command("Выход", Command.OK, 0);
 
 	public APIReconnectForm() {
 		super("MahoMaps v1");
 		setCommandListener(this);
 		if (MahoMapsApp.api.token == null) {
-			append(new Gauge("Подключение", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
-			(new Thread(this, "API reconnect")).start();
+			StartTokenRefresh();
 		} else {
 			ShowOk();
 		}
@@ -39,6 +37,13 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 			ShowFail(e);
 		}
 
+	}
+
+	private void StartTokenRefresh() {
+		removeCommand(back);
+		deleteAll();
+		append(new Gauge("Подключение", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+		(new Thread(this, "API reconnect")).start();
 	}
 
 	private void ShowOk() {
@@ -75,8 +80,6 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			MahoMapsApp.BringMenu();
-		} else if (c == exit) {
-			MahoMapsApp.Exit();
 		}
 	}
 
@@ -84,11 +87,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 		if (c == reset) {
 			MahoMapsApp.api.token = null;
 			MahoMapsApp.api.Save();
-			Form f = new Form("MahoMaps v1");
-			f.append("Токен сессии был сброшен. Приложение должно быть перезапущено.");
-			f.addCommand(exit);
-			f.setCommandListener(this);
-			MahoMapsApp.BringSubScreen(f);
+			StartTokenRefresh();
 		}
 	}
 

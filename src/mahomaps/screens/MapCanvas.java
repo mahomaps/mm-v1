@@ -525,7 +525,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			} else {
 				overlays.CloseOverlay(SelectOverlay.ID);
 				Geopoint sa = GetSearchAnchor();
-				MahoMapsApp.BringSubScreen(new SearchScreen(searchBox.getString(), sa));
+				MahoMapsApp.BringSubScreen(new SearchLoader(searchBox.getString(), sa));
 			}
 		}
 	}

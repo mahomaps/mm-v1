@@ -97,7 +97,7 @@ public abstract class YmapsApiBase {
 		}
 	}
 
-	protected String GetUtf(String url) throws IOException {
+	protected String GetUtf(String url) throws IOException, Http403Exception, SecurityException {
 		if (Settings.proxyApi) {
 			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
@@ -112,6 +112,8 @@ public abstract class YmapsApiBase {
 			SendCookies(hc);
 			int r = hc.getResponseCode();
 			AcceptCookies(hc);
+			if (r == 403 || r == 401)
+				throw new Http403Exception();
 			is = hc.openInputStream();
 			o = new ByteArrayOutputStream();
 			byte[] buf = new byte[256];
