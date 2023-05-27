@@ -39,12 +39,14 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 		} catch (IOException e) {
 			deleteAll();
 			append(new StringItem("Сетевая ошибка", "Проверьте подключение к интернету."));
+			e.printStackTrace();
 		} catch (Http403Exception e) {
 			deleteAll();
 			append(new StringItem("Отказ в доступе к API", "Попробуйте сбросить сессию в меню."));
 		} catch (Exception e) {
 			deleteAll();
 			append(new StringItem(e.getClass().getName(), e.getMessage()));
+			e.printStackTrace();
 		}
 		addCommand(back);
 	}
