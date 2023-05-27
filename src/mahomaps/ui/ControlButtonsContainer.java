@@ -10,19 +10,30 @@ import mahomaps.screens.MapCanvas;
 
 public class ControlButtonsContainer extends UIElement implements IButtonHandler {
 
-	private final FillFlowContainer flow;
 	private final MapCanvas map;
-
+	private final UIElement[] btns;
 	public Vector info;
 
 	public ControlButtonsContainer(MapCanvas map) {
 		this.map = map;
-		this.flow = new FillFlowContainer(new UIElement[] { new SearchButton(this), new ControlButton(1, this, 2),
-				new ControlButton(2, this, 3), new ControlButton(3, this, 4), new GeolocationButton(map) });
+		btns = new UIElement[] { new SearchButton(this), new ControlButton(1, this, 2), new ControlButton(2, this, 3),
+				new ControlButton(3, this, 4), new GeolocationButton(map) };
 	}
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
-		flow.Paint(g, w - flow.W, h - flow.H, flow.W, flow.H);
+		int cy = h;
+		int cx = w;
+		for (int i = 4; i >= 0; i--) {
+			UIElement elem = btns[i];
+			cy -= elem.H;
+			if (cy < 0) {
+				cy = h - elem.H;
+				cx -= elem.W;
+				if (cy < 0)
+					return;
+			}
+			elem.Paint(g, cx - elem.W, cy, elem.W, elem.H);
+		}
 	}
 
 	public void PaintInfo(Graphics g, int x, int y, int w, int h) {
