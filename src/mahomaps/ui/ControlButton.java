@@ -7,34 +7,42 @@ import javax.microedition.lcdui.Image;
 
 public class ControlButton extends UIElement implements ITouchAcceptor {
 
-	private static Image sheet;
+	/**
+	 * Do not access this directly! Use {@link #GetUiSheet()}.
+	 */
+	private static Image _sheet;
 	protected int n;
-	private final int size;
 	private final IButtonHandler handler;
 	private final int uid;
 	private boolean hold;
 	private int margin = 5;
 
-	static {
+	protected static Image GetUiSheet() {
+		if (_sheet != null)
+			return _sheet;
 		try {
-			sheet = Image.createImage("/ui50.png");
+			_sheet = Image.createImage("/ui50.png");
 		} catch (IOException e) {
-			sheet = Image.createImage(1, 1);
+			_sheet = Image.createImage(1, 1);
 			e.printStackTrace();
 		}
+
+		return _sheet;
 	}
 
 	public ControlButton(int n, IButtonHandler handler, int uid) {
 		this.n = n;
 		this.handler = handler;
 		this.uid = uid;
-		size = sheet.getWidth() >> 1;
-		W = size + margin;
-		H = size + margin;
+
 	}
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
-		g.drawRegion(sheet, hold ? size : 0, n * size, size, size, 0, x, y, 0);
+		Image s = GetUiSheet();
+		final int size = s.getWidth() >> 1;
+		W = size + margin;
+		H = size + margin;
+		g.drawRegion(s, hold ? size : 0, n * size, size, size, 0, x, y, 0);
 		RegisterForInput(this, x, y, size, size);
 	}
 
