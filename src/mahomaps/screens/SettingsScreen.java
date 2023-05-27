@@ -20,15 +20,15 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup focusZoom = new ChoiceGroup("Масштаб при просмотре точек", Choice.POPUP,
 			new String[] { "15", "16", "17", "18" }, null);
 	private ChoiceGroup geoLook;
-	private ChoiceGroup geoStatus = new ChoiceGroup("Показывать геопозицию", Choice.EXCLUSIVE,
+	private ChoiceGroup geoStatus = new ChoiceGroup("Показывать геопозицию", Choice.POPUP,
 			new String[] { "Только метку на карте", "Статус", "Статус и координаты" }, null);
-	private ChoiceGroup tileInfo = new ChoiceGroup("Отладочная информация", Choice.EXCLUSIVE,
+	private ChoiceGroup tileInfo = new ChoiceGroup("Отладочная информация", Choice.POPUP,
 			new String[] { "Выключено", "Включено" }, null);
-	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.EXCLUSIVE,
+	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.POPUP,
 			new String[] { "Запрещено", "В файловую", "RMS" }, null);
-	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.EXCLUSIVE,
+	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.POPUP,
 			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
-	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование", Choice.EXCLUSIVE,
+	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование", Choice.POPUP,
 			new String[] { "Отключено", "nnchan.ru", }, null);
 
 	public SettingsScreen() {
