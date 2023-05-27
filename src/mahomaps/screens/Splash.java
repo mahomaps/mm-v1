@@ -29,7 +29,7 @@ public class Splash extends Canvas {
 		final int c1 = 0xa74134;
 		final int c2 = 0xf8503c;
 		
-		for (int i = 1; i < h; i++) {
+		for (int i = 0; i < h; i++) {
 			g.setColor(ColorUtils.blend(c1, c2, i * 255 / h));
 			g.drawLine(0, i, w, i);
 		}
