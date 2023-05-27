@@ -14,7 +14,12 @@ public class Splash extends Canvas {
 		this.setFullScreenMode(true);
 
 		try {
-			this.image = Image.createImage("/splash.png");
+			if (getWidth() < 256 || getHeight() < 240) {
+				// 320x240 (horizontal 9.3) must show full image, so "H<240"
+				image = Image.createImage("/icon.png");
+			} else {
+				image = Image.createImage("/splash.png");
+			}
 		} catch (IOException e) {
 			System.out.println(e.toString());
 		}
