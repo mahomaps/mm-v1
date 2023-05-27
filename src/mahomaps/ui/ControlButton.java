@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 import tube42.lib.imagelib.ImageUtils;
 
 public class ControlButton extends UIElement implements ITouchAcceptor {
@@ -27,8 +28,13 @@ public class ControlButton extends UIElement implements ITouchAcceptor {
 		try {
 			_sheet = Image.createImage("/ui50.png");
 			Canvas c = MahoMapsApp.GetCanvas();
-			if (c.getWidth() <= 320 || c.getHeight() <= 320) {
-				_sheet = ImageUtils.resize(_sheet, 60, _sheet.getHeight() * 30 / 50, true, false);
+			if (Settings.uiSize == 1) {
+				// sheet is already 50x50
+			} else {
+				// 30x30 is forced, or automated due to small screen
+				if (c.getWidth() <= 320 || c.getHeight() <= 320 || Settings.uiSize == 2) {
+					_sheet = ImageUtils.resize(_sheet, 60, _sheet.getHeight() * 30 / 50, true, false);
+				}
 			}
 		} catch (IOException e) {
 			_sheet = Image.createImage(1, 1);
