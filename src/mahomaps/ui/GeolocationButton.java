@@ -9,9 +9,17 @@ public class GeolocationButton extends ControlButton {
 
 	private final MapCanvas map;
 
+	private boolean hasGeo;
+
 	public GeolocationButton(MapCanvas map) {
 		super(4, null, 0);
 		this.map = map;
+		try {
+			Class.forName("javax.microedition.location.LocationProvider");
+			hasGeo = true;
+		} catch (Throwable e) {
+			hasGeo = false;
+		}
 	}
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
@@ -31,7 +39,8 @@ public class GeolocationButton extends ControlButton {
 				break;
 			}
 		}
-		super.Paint(g, x, y, w, h);
+		if (hasGeo)
+			super.Paint(g, x, y, w, h);
 	}
 
 	public void OnTap() {

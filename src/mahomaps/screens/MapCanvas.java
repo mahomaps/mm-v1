@@ -221,13 +221,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		Vector v = new Vector();
 
+		if (geo.state == GeoUpdateThread.STATE_UNSUPPORTED) {
+			v.addElement(GeoUpdateThread.states[geo.state]);
+			return v;
+		}
+
 		// статус и время
 		int passed = (int) ((System.currentTimeMillis() - geo.lastUpdateTime) / 1000);
 		if (geo.state != GeoUpdateThread.STATE_OK) {
 			v.addElement(GeoUpdateThread.states[geo.state]);
 			v.addElement("Прошло " + passed + " с.");
 		} else if (passed >= 5) {
-			v.addElement("Не обновлялось: " + passed + " с.");
+			v.addElement("Сигнал потерян: " + passed + " с.");
 		}
 
 		// метод и спутники
