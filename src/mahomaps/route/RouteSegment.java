@@ -9,16 +9,6 @@ public abstract class RouteSegment {
 	 */
 	public abstract int GetDistance();
 
-	/**
-	 * Получает дистанцию в читабельном виде. Переопределите для изменения формата
-	 * вывода.
-	 *
-	 * @return Дистанция сегмента. Не null.
-	 */
-	public String GetDistanceString() {
-		return GetDistance() + "м";
-	}
-
 	public abstract String GetIcon();
 
 	public abstract String GetType();
@@ -38,14 +28,7 @@ public abstract class RouteSegment {
 	 * @return Элемент, представляющий сегмент.
 	 */
 	public Item ToLcduiSingle() {
-		String text = GetDescription();
-		if (GetDistance() != 0) {
-			if (text == null)
-				text = GetDistanceString();
-			else
-				text = text + "\n" + GetDistanceString();
-		}
-		return new StringItem(GetType(), text);
+		return new StringItem(GetType(), GetDescription());
 	}
 
 	/**
