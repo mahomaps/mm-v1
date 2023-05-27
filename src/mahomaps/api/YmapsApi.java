@@ -51,12 +51,12 @@ public final class YmapsApi extends YmapsApiBase {
 				+ a.lat + "~" + b.lon + "%2C" + b.lat + "&rtm=dtr&results=1&apikey=" + key + typeS;
 	}
 
-	public final JSONArray Search(String text, Geopoint around, double zone) throws JSONException, IOException {
+	public final JSONArray Search(String text, Geopoint around, double zone) throws JSONException, IOException, Http403Exception {
 		JSONArray j = (new JSONObject(GetUtf(GetSearchUrl(text, around, zone)))).getJSONArray("features");
 		return j;
 	}
 
-	public final JSONObject Route(Geopoint a, Geopoint b, int type) throws JSONException, IOException {
+	public final JSONObject Route(Geopoint a, Geopoint b, int type) throws JSONException, IOException, Http403Exception {
 		JSONArray j = (new JSONObject(GetUtf(GetRouteUrl(a, b, type)))).getJSONArray("features");
 		if (j.length() == 0)
 			throw new ConnectionNotFoundException();
