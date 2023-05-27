@@ -28,7 +28,7 @@ public final class YmapsApi extends YmapsApiBase {
 	private final String GetSearchUrl(String text, Geopoint around, double zone) {
 		String[] cs = around.GetRounded();
 		return "https://api-maps.yandex.ru/services/search/v2/?format=json&lang=ru_RU&token=" + token
-				+ "&rspn=0&results=100&origin=jsapi2SearchControl"
+				+ "&rspn=0&results=40&origin=jsapi2SearchControl"
 				+ "&snippets=businessrating%2F1.x%2Cmasstransit%2F1.x&ask_direct=1&experimental_maxadv=200&apikey="
 				+ key + "&text=" + EncodeUrl(text) + "&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
 	}
@@ -51,12 +51,14 @@ public final class YmapsApi extends YmapsApiBase {
 				+ a.lat + "~" + b.lon + "%2C" + b.lat + "&rtm=dtr&results=1&apikey=" + key + typeS;
 	}
 
-	public final JSONArray Search(String text, Geopoint around, double zone) throws JSONException, IOException, Http403Exception {
+	public final JSONArray Search(String text, Geopoint around, double zone)
+			throws JSONException, IOException, Http403Exception {
 		JSONArray j = (new JSONObject(GetUtf(GetSearchUrl(text, around, zone)))).getJSONArray("features");
 		return j;
 	}
 
-	public final JSONObject Route(Geopoint a, Geopoint b, int type) throws JSONException, IOException, Http403Exception {
+	public final JSONObject Route(Geopoint a, Geopoint b, int type)
+			throws JSONException, IOException, Http403Exception {
 		JSONArray j = (new JSONObject(GetUtf(GetRouteUrl(a, b, type)))).getJSONArray("features");
 		if (j.length() == 0)
 			throw new ConnectionNotFoundException();
