@@ -28,7 +28,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		setCommandListener(this);
 		addCommand(back);
 		try {
-			ImageItem i = new ImageItem(null, MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/splash.png") : Image.createImage("/icon.png"),
+			ImageItem i = new ImageItem(null, MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/icon256.png") : Image.createImage("/icon.png"),
 					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
 			append(i);
 		} catch (IOException e) {
