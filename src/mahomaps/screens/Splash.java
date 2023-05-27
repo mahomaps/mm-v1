@@ -3,6 +3,7 @@ package mahomaps.screens;
 import java.io.IOException;
 
 import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -28,7 +29,14 @@ public class Splash extends Canvas {
 		g.setColor(255, 255, 255);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		if (this.image != null) {
+		if (this.image == null) {
+			g.setColor(0xff0000);
+			g.setFont(Font.getFont(0, Font.STYLE_BOLD, Font.SIZE_LARGE));
+			int x = getWidth() >> 1;
+			int y = getHeight() >> 1;
+			g.drawString("Maho", x, y, Graphics.BOTTOM | Graphics.HCENTER);
+			g.drawString("Maps", x, y, Graphics.TOP | Graphics.HCENTER);
+		} else {
 			g.drawImage(image, getWidth() >> 1, getHeight() >> 1, Graphics.VCENTER | Graphics.HCENTER);
 		}
 	}
