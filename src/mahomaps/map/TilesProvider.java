@@ -515,7 +515,7 @@ public class TilesProvider implements Runnable {
 		String url = "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
 				+ tileId.y + "&z=" + tileId.zoom;
 		if (Settings.proxyTiles) {
-			return "http://nnp.nnchan.ru/mahoproxy.php?u=" + YmapsApiBase.EncodeUrl(url);
+			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		return url;
 	}

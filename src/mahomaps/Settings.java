@@ -19,6 +19,7 @@ public class Settings {
 	public static int cacheMode = 1;
 	public static boolean proxyTiles = false;
 	public static boolean proxyApi = false;
+	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
 	public static final int CACHE_FS = 1;
 	public static final int CACHE_RMS = 2;
