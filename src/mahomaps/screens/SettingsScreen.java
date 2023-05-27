@@ -30,6 +30,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
 	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование", Choice.POPUP,
 			new String[] { "Отключено", "nnchan.ru", }, null);
+	private ChoiceGroup uiSize = new ChoiceGroup("Размер кнопок управления (нужен перезапуск)", Choice.POPUP,
+			new String[] { "Автоматически", "50x50", "30x30" }, null);
 
 	public SettingsScreen() {
 		super("Настройки");
@@ -65,6 +67,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		proxyTiles.setSelectedIndex(Settings.proxyTiles ? 1 : 0, true);
 		// апи отслеживается отдельно, однако предполагается что оно включено вместе с
 		// тайлами.
+		uiSize.setSelectedIndex(Settings.uiSize, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -84,6 +87,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.allowDownload = download.getSelectedIndex() == 1;
 		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
+		Settings.uiSize = uiSize.getSelectedIndex();
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}
