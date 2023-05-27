@@ -110,7 +110,7 @@ public final class YmapsApi extends YmapsApiBase {
 			JSONObject cs = j.optJSONObject("cookies");
 			if (cs != null && cs.length() != 0 && token != null)
 				LoadCookies(cs);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}

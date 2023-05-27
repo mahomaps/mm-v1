@@ -33,7 +33,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static String version;
 	public static boolean paused;
 
-	private Command exit = new Command("Выход", Command.EXIT, 0);
+	private static Command exit = new Command("Выход", Command.EXIT, 0);
+	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
@@ -42,6 +43,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	protected void startApp() {
 		paused = false;
 		if (thread == null) {
+			version = getAppProperty("MIDlet-Version");
 			midlet = this;
 			thread = new Thread(this, "Init & repaint thread");
 			thread.start();
@@ -62,45 +64,42 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	public void run() {
-		BringSubScreen(new Splash());
-		Settings.Read();
-		version = getAppProperty("MIDlet-Version");
-		String loc = "";
-		{
-			boolean kem = IsKemulator();
-
-			if (kem) {
-				loc = "file:///root/ym/";
-			} else {
-				loc = fixPath(System.getProperty("fileconn.dir.private"));
-				if (loc == null)
-					loc = fixPath(System.getProperty("fileconn.dir.images")) + "ym/";
-			}
-			tiles = new TilesProvider("ru_RU", loc);
+		try {
+			BringSubScreen(new Splash());
+		} catch (Throwable t) {
+			// just in case
+		}
+		Settings.Read(); // catch(Throwable) inside
+		tiles = new TilesProvider("ru_RU"); // nothing to fail
+		if (!TryInitFSCache(true)) { // catch(Throwable) inside
+			thread = null;
+			return;
+		}
+		api.TryRead(); // catch(Throwable) inside
+		try {
+			if (api.token == null)
+				api.RefreshToken();
+		} catch (Throwable e) {
+			// network or OOM errors
 		}
 		try {
-			tiles.CheckCacheFolder();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Form f = new Form("Ошибка",
-					new Item[] { new StringItem("Не удалось подключить кэш", "Отказано в доступе по пути " + loc) });
+			menu = new MenuScreen(); // nothing to fail
+			canvas = new MapCanvas(tiles); // hz
+			tiles.Start(); // OOM
+			BringMap(); // jic
+		} catch (Throwable t) {
+			Form f = new Form("Ошибка", new Item[] { new StringItem("Инициализация", t.toString()) });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
 			thread = null;
 			return;
 		}
-		api.TryRead();
 		try {
-			if (api.token == null)
-				api.RefreshToken();
-		} catch (Exception e) {
+			(new UpdateCheckThread()).start();
+		} catch (Throwable t) {
+			// OOM
 		}
-		menu = new MenuScreen();
-		canvas = new MapCanvas(tiles);
-		tiles.Start();
-		BringMap();
-		(new UpdateCheckThread()).start();
 		try {
 			canvas.run();
 		} catch (InterruptedException e) {
@@ -112,13 +111,55 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 		thread = null;
 	}
-	
-	private static String fixPath(String loc) {
+
+	private static String getAppropCachePath() {
+		String loc = null;
+		if (IsKemulator()) {
+			loc = "file:///root/ym/";
+		} else if (IsJ2MEL()) {
+			loc = "file:///C:/MahoMaps/";
+		} else {
+			loc = fixPath(System.getProperty("fileconn.dir.private"), null);
+			if (loc == null)
+				loc = fixPath(System.getProperty("fileconn.dir.images"), "MahoMaps/");
+			if (loc == null)
+				loc = "file:///C:/MahoMaps/";
+		}
+		return loc;
+	}
+
+	private static String fixPath(String loc, String suf) {
 		if (loc == null)
 			return null;
 		if (loc.charAt(loc.length() - 1) != '/')
 			loc = loc + "/";
+		if (suf != null)
+			loc = loc + suf;
 		return loc;
+	}
+
+	/**
+	 * @return False, если инициализировать не удалось.
+	 */
+	public static boolean TryInitFSCache(boolean allowSwitch) {
+		try {
+			if (Settings.cacheMode == Settings.CACHE_FS)
+				tiles.InitFSCache(getAppropCachePath());
+			return true;
+		} catch (Throwable e) {
+			e.printStackTrace();
+			Form f = new Form("Ошибка",
+					new Item[] {
+							new StringItem("Не удалось подключить кэш на карте памяти",
+									"Отказано в доступе по пути " + getAppropCachePath()),
+							new StringItem(e.getClass().getName(), e.getMessage()) });
+			f.addCommand(exit);
+			if (allowSwitch)
+				f.addCommand(rms);
+			f.setCommandListener(midlet);
+			BringSubScreen(f);
+			return false;
+		}
 	}
 
 	public static void BringSubScreen(Displayable screen) {
@@ -192,6 +233,15 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 	}
 
+	public static boolean IsJ2MEL() {
+		try {
+			Class.forName("javax.microedition.shell.MicroActivity");
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public static double pow(double a, double b) {
 		boolean gt1 = (Math.sqrt((a - 1) * (a - 1)) <= 1) ? false : true;
 		int oc = -1, iter = 30;
@@ -239,6 +289,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		if (c == exit) {
 			Exit();
+		} else if (c == rms) {
+			Settings.cacheMode = Settings.CACHE_RMS;
+			Settings.Save();
+			startApp();
 		}
 	}
 }

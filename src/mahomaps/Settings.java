@@ -50,7 +50,7 @@ public class Settings {
 			proxyTiles = j.optBoolean("proxy_tiles");
 			proxyApi = j.optBoolean("proxy_api");
 			return true;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			ApplyOptimal();
 			return false;
