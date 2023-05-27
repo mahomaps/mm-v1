@@ -64,24 +64,42 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	public void run() {
-		BringSubScreen(new Splash());
-		Settings.Read();
-		tiles = new TilesProvider("ru_RU");
-		if (!TryInitFSCache(true)) {
+		try {
+			BringSubScreen(new Splash());
+		} catch (Throwable t) {
+			// just in case
+		}
+		Settings.Read(); // catch(Throwable) inside
+		tiles = new TilesProvider("ru_RU"); // nothing to fail
+		if (!TryInitFSCache(true)) { // catch(Throwable) inside
 			thread = null;
 			return;
 		}
-		api.TryRead();
+		api.TryRead(); // catch(Throwable) inside
 		try {
 			if (api.token == null)
 				api.RefreshToken();
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			// network or OOM errors
 		}
-		menu = new MenuScreen();
-		canvas = new MapCanvas(tiles);
-		tiles.Start();
-		BringMap();
-		(new UpdateCheckThread()).start();
+		try {
+			menu = new MenuScreen(); // nothing to fail
+			canvas = new MapCanvas(tiles); // hz
+			tiles.Start(); // OOM
+			BringMap(); // jic
+		} catch (Throwable t) {
+			Form f = new Form("Ошибка", new Item[] { new StringItem("Инициализация", t.toString()) });
+			f.addCommand(exit);
+			f.setCommandListener(this);
+			BringSubScreen(f);
+			thread = null;
+			return;
+		}
+		try {
+			(new UpdateCheckThread()).start();
+		} catch (Throwable t) {
+			// OOM
+		}
 		try {
 			canvas.run();
 		} catch (InterruptedException e) {
