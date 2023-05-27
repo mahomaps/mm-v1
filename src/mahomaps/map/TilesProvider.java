@@ -30,7 +30,7 @@ public class TilesProvider implements Runnable {
 	 * Path to the local folder with tiles. Must be with trailing slash and with
 	 * protocol, i.e. file:///E:/ym/
 	 */
-	public final String localPath;
+	private String localPath;
 
 	/**
 	 * Кэш всех загруженых плиток. Данный список должен изменяться ТОЛЬКО из потока
@@ -51,11 +51,10 @@ public class TilesProvider implements Runnable {
 	private Thread networkTh;
 	private Thread cacheTh;
 
-	public TilesProvider(String lang, String localPath) {
+	public TilesProvider(String lang) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
 		this.lang = lang;
-		this.localPath = localPath;
 	}
 
 	public void Start() {
@@ -76,11 +75,12 @@ public class TilesProvider implements Runnable {
 		cacheTh = null;
 	}
 
-	public void CheckCacheFolder() throws IOException, SecurityException {
-		FileConnection fc = (FileConnection) Connector.open(localPath);
+	public void InitFSCache(String path) throws IOException, SecurityException {
+		FileConnection fc = (FileConnection) Connector.open(path);
 		try {
 			if (!fc.exists())
 				fc.mkdir();
+			localPath = path;
 		} finally {
 			fc.close();
 		}
@@ -159,7 +159,7 @@ public class TilesProvider implements Runnable {
 					}
 
 					Image img = null;
-					if (Settings.cacheMode == Settings.CACHE_FS) {
+					if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
 						img = tryLoadFromFS(tc);
 					} else if (Settings.cacheMode == Settings.CACHE_RMS) {
 						img = tryLoadFromRMS(tc);
@@ -320,7 +320,7 @@ public class TilesProvider implements Runnable {
 			hc = null;
 			byte[] blobc = blob.toByteArray();
 			blob = null;
-			if (Settings.cacheMode == Settings.CACHE_FS) {
+			if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
 				try {
 					fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
 					fc.create();

@@ -50,8 +50,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			imgs = new Image[] { i1, i2, i3, i4 };
 		} catch (IOException e) {
 		}
-		geoLook = new ChoiceGroup("Вид метки геопозиции", Choice.EXCLUSIVE, new String[] { "Капля", "\"Я\"", "\"Ы\"", "\"Ъ\"" },
-				imgs);
+		geoLook = new ChoiceGroup("Вид метки геопозиции", Choice.EXCLUSIVE,
+				new String[] { "Капля", "\"Я\"", "\"Ы\"", "\"Ъ\"" }, imgs);
 		if (Settings.focusZoom < 15)
 			Settings.focusZoom = 15;
 		if (Settings.focusZoom > 18)
@@ -92,6 +92,8 @@ public class SettingsScreen extends Form implements CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			Apply();
+			if (!MahoMapsApp.TryInitFSCache())
+				return;
 			Settings.Save();
 			MahoMapsApp.BringMenu();
 		}
