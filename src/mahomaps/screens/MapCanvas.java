@@ -232,7 +232,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			v.addElement(GeoUpdateThread.states[geo.state]);
 			v.addElement("Прошло " + passed + " с.");
 		} else if (passed >= 5) {
-			v.addElement("Не обновлялось: " + passed + " с.");
+			v.addElement("Сигнал потерян: " + passed + " с.");
 		}
 
 		// метод и спутники
