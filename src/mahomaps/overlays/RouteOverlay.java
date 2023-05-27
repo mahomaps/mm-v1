@@ -1,5 +1,6 @@
 package mahomaps.overlays;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.microedition.lcdui.Alert;
@@ -9,6 +10,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.api.Http403Exception;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
 import mahomaps.map.Line;
@@ -60,6 +62,13 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 					new SimpleText(route.distance + ", " + route.time), new Button("Закрыть", 0, this) });
 			InvalidateSize();
 			MahoMapsApp.GetCanvas().line = new Line(a, route.points);
+		} catch (IOException e) {
+			content = new FillFlowContainer(new UIElement[] { new SimpleText("Сетевая ошибка."),
+					new Button("Ещё раз", 2, this), new Button("Закрыть", 0, this) });
+		} catch (Http403Exception e) {
+			content = new FillFlowContainer(new UIElement[] { new SimpleText("Отказ в доступе к API."),
+					new SimpleText("Сбросьте сессию в меню"), new SimpleText("и повторите попытку."),
+					new Button("Ещё раз", 2, this), new Button("Закрыть", 0, this) });
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
@@ -69,16 +78,24 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	}
 
 	public void OnButtonTap(UIElement sender, int uid) {
-		if (uid == 0) {
+		switch (uid) {
+		case 0:
 			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
 			a1.setTimeout(Alert.FOREVER);
 			a1.addCommand(discard);
 			a1.addCommand(leave);
 			a1.setCommandListener(this);
 			MahoMapsApp.BringSubScreen(a1);
-		} else if (uid == 1) {
+			break;
+		case 1:
 			// close after error
 			Close();
+			break;
+		case 2:
+			RouteBuildOverlay rbo = RouteBuildOverlay.Get();
+			rbo.SetA(a);
+			rbo.SetB(b);
+			break;
 		}
 	}
 
