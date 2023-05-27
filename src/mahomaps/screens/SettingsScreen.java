@@ -92,7 +92,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			Apply();
-			if (!MahoMapsApp.TryInitFSCache())
+			if (!MahoMapsApp.TryInitFSCache(false))
 				return;
 			Settings.Save();
 			MahoMapsApp.BringMenu();

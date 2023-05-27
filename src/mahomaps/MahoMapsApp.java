@@ -33,7 +33,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static String version;
 	public static boolean paused;
 
-	private Command exit = new Command("Выход", Command.EXIT, 0);
+	private static Command exit = new Command("Выход", Command.EXIT, 0);
+	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
@@ -66,7 +67,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		BringSubScreen(new Splash());
 		Settings.Read();
 		tiles = new TilesProvider("ru_RU");
-		if (!TryInitFSCache()) {
+		if (!TryInitFSCache(true)) {
 			thread = null;
 			return;
 		}
@@ -122,7 +123,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	/**
 	 * @return False, если инициализировать не удалось.
 	 */
-	public static boolean TryInitFSCache() {
+	public static boolean TryInitFSCache(boolean allowSwitch) {
 		try {
 			if (Settings.cacheMode == Settings.CACHE_FS)
 				tiles.InitFSCache(getAppropCachePath());
@@ -131,10 +132,12 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			e.printStackTrace();
 			Form f = new Form("Ошибка",
 					new Item[] {
-							new StringItem("Не удалось подключить кэш",
+							new StringItem("Не удалось подключить кэш на карте памяти",
 									"Отказано в доступе по пути " + getAppropCachePath()),
 							new StringItem(e.getClass().getName(), e.getMessage()) });
-			f.addCommand(midlet.exit);
+			f.addCommand(exit);
+			if (allowSwitch)
+				f.addCommand(rms);
 			f.setCommandListener(midlet);
 			BringSubScreen(f);
 			return false;
@@ -268,6 +271,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		if (c == exit) {
 			Exit();
+		} else if (c == rms) {
+			Settings.cacheMode = Settings.CACHE_RMS;
+			Settings.Save();
+			startApp();
 		}
 	}
 }
