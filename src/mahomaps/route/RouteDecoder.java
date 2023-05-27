@@ -2,6 +2,9 @@ package mahomaps.route;
 
 import java.util.Stack;
 
+import org.json.me.JSONArray;
+import org.json.me.JSONObject;
+
 import mahomaps.map.Geopoint;
 
 public class RouteDecoder {
@@ -109,6 +112,25 @@ public class RouteDecoder {
 		Geopoint[] arr = new Geopoint[stack.size()];
 		stack.copyInto(arr);
 		System.out.println("Route points count: " + arr.length);
+		return arr;
+	}
+
+	public static RouteSegment[] DecodeSegments(JSONArray j, Geopoint[] line) {
+		RouteSegment[] arr = new RouteSegment[j.length()];
+		for (int i = 0; i < arr.length; i++) {
+			JSONObject js = j.getJSONObject(i);
+			JSONObject props = js.getJSONObject("properties");
+			JSONObject segmd = props.getJSONObject("SegmentMetaData");
+			String descr = segmd.getString("text");
+			JSONObject dist = segmd.optJSONObject("Distance");
+			if (segmd.optBoolean("Walk", false)) {
+				arr[i] = new WalkingSegment(descr, dist.optInt("value"));
+				continue;
+			}
+
+			arr[i] = new UnknownSegment();
+		}
+
 		return arr;
 	}
 }
