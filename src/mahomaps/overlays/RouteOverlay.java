@@ -60,7 +60,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			route = new Route(MahoMapsApp.api.Route(a, b, method));
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
 					new SimpleText(route.distance + ", " + route.time), new Button("Закрыть", 0, this) });
-			InvalidateSize();
 			MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 		} catch (IOException e) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Сетевая ошибка."),
@@ -73,6 +72,10 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
 					new Button("Закрыть", 1, this) });
+		} catch (OutOfMemoryError e) {
+			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не хватило памяти."),
+					new Button("Закрыть", 1, this) });
+		} finally {
 			InvalidateSize();
 		}
 	}

@@ -47,6 +47,9 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 			deleteAll();
 			append(new StringItem(e.getClass().getName(), e.getMessage()));
 			e.printStackTrace();
+		} catch (OutOfMemoryError e) {
+			deleteAll();
+			append(new StringItem("Не хватило памяти", "Попробуйте закрыть другие приложения или перезапустить это."));
 		}
 		addCommand(back);
 	}
