@@ -56,7 +56,7 @@ public class ControlButton extends UIElement implements ITouchAcceptor {
 		W = size + margin;
 		H = size + margin;
 		g.drawRegion(s, hold ? size : 0, n * size, size, size, 0, x, y, 0);
-		RegisterForInput(this, x, y, size, size);
+		RegisterForInput(this, x, y, W, H);
 	}
 
 	public void OnPress() {
