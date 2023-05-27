@@ -14,7 +14,7 @@ import mahomaps.api.Http403Exception;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
 import mahomaps.map.Line;
-import mahomaps.map.Route;
+import mahomaps.route.Route;
 import mahomaps.ui.Button;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;

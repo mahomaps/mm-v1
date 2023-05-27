@@ -1,6 +1,8 @@
-package mahomaps.map;
+package mahomaps.route;
 
 import java.util.Stack;
+
+import mahomaps.map.Geopoint;
 
 public class RouteDecoder {
 	private static final byte[] DECODE_ALPHABET = { -9, -9, -9, -9, -9, -9, -9, -9, -9, -5, -5, -9, -9, -5, -9, -9, -9,

@@ -1,6 +1,8 @@
-package mahomaps.map;
+package mahomaps.route;
 
 import org.json.me.JSONObject;
+
+import mahomaps.map.Geopoint;
 
 public class Route {
 
