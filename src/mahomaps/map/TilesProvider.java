@@ -12,6 +12,7 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Image;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
+import javax.microedition.rms.RecordStoreFullException;
 import javax.microedition.rms.RecordStoreNotOpenException;
 
 import mahomaps.Gate;
@@ -338,7 +339,18 @@ public class TilesProvider implements Runnable {
 					fc = null;
 				}
 			} else if (Settings.cacheMode == Settings.CACHE_RMS) {
-				// TODO
+				try {
+					RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
+					if (r.getNumRecords() == 0)
+						r.addRecord(new byte[1], 0, 1);
+					r.setRecord(1, blobc, 0, blobc.length);
+					r.closeRecordStore();
+				} catch (RecordStoreFullException e) {
+					// TODO: Выводить алерт что место закончилось
+				} catch (Exception e) {
+					// TODO: Выводить на экран алерт что закэшить не удалось
+					e.printStackTrace();
+				}
 			}
 			Image img = Image.createImage(blobc, 0, blobc.length);
 			return img;
