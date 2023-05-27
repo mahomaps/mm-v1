@@ -302,11 +302,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			return;
 
 		touch = false;
-		if (k == -6) {
+		if (k == -6 || k == -21) { // -21 и -22 для моторол
 			MahoMapsApp.BringMenu();
 			return;
 		}
-		if (k == -7) {
+		if (k == -7 || k == -22) {
 			if (mapFocused) {
 				if (!UIElement.IsQueueEmpty()) {
 					mapFocused = false;
