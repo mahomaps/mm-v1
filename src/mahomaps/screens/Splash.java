@@ -21,7 +21,6 @@ public class Splash extends Canvas {
 				image = Image.createImage("/splash.png");
 			}
 		} catch (IOException e) {
-			System.out.println(e.toString());
 		}
 	}
 
