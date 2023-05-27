@@ -2,8 +2,12 @@ package mahomaps.ui;
 
 import java.io.IOException;
 
+import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+
+import mahomaps.MahoMapsApp;
+import tube42.lib.imagelib.ImageUtils;
 
 public class ControlButton extends UIElement implements ITouchAcceptor {
 
@@ -22,6 +26,10 @@ public class ControlButton extends UIElement implements ITouchAcceptor {
 			return _sheet;
 		try {
 			_sheet = Image.createImage("/ui50.png");
+			Canvas c = MahoMapsApp.GetCanvas();
+			if (c.getWidth() <= 320 || c.getHeight() <= 320) {
+				_sheet = ImageUtils.resize(_sheet, 60, _sheet.getHeight() * 30 / 50, true, false);
+			}
 		} catch (IOException e) {
 			_sheet = Image.createImage(1, 1);
 			e.printStackTrace();
@@ -34,7 +42,6 @@ public class ControlButton extends UIElement implements ITouchAcceptor {
 		this.n = n;
 		this.handler = handler;
 		this.uid = uid;
-
 	}
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
