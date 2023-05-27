@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
-import mahomaps.screens.SearchScreen;
+import mahomaps.screens.SearchLoader;
 import mahomaps.ui.Button;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
@@ -53,7 +53,7 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 		case 1:
 			if (MahoMapsApp.GetCanvas().CheckApiAcsess()) {
 				Close();
-				MahoMapsApp.BringSubScreen(new SearchScreen(selection.toString(), selection));
+				MahoMapsApp.BringSubScreen(new SearchLoader(selection.toString(), selection));
 			}
 			break;
 		case 2:

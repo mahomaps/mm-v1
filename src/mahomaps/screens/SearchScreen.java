@@ -13,11 +13,9 @@ import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.overlays.SearchOverlay;
 
-public class SearchScreen extends List implements Runnable, CommandListener {
+public class SearchScreen extends List implements CommandListener {
 
-	private Thread th;
 	public final String query;
-	private Geopoint point;
 	public JSONArray results;
 	private SearchOverlay overlay;
 
@@ -26,37 +24,21 @@ public class SearchScreen extends List implements Runnable, CommandListener {
 	private Command reset = new Command("Сброс", Command.BACK, 0);
 	private Command toMap = new Command("К карте", Command.SCREEN, 0);
 
-	public SearchScreen(String query, Geopoint point) {
-		super("Результаты поиска", Choice.IMPLICIT);
+	public SearchScreen(String query, Geopoint point, JSONArray results) {
+		super(query, Choice.IMPLICIT);
 		this.query = query;
-		this.point = point;
-		th = new Thread(this, "search");
-		th.start();
-	}
-
-	public void run() {
-		try {
-			setTitle("Загрузка...");
-			JSONArray arr = MahoMapsApp.api.Search(query, point, 0.1d);
-			for (int i = 0; i < arr.length(); i++) {
-				JSONObject obj = arr.getJSONObject(i);
-				JSONObject props = obj.getJSONObject("properties");
-				append(props.getString("name") + "\n" + props.optString("description", ""), null);
-			}
-			results = arr;
-			MahoMapsApp.lastSearch = this;
-			overlay = new SearchOverlay(point, query, results, this);
-			MahoMapsApp.Overlays().PushOverlay(overlay);
-			setTitle(query);
-			addCommand(reset);
-			addCommand(toMap);
-			setCommandListener(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			setTitle("Ошибка");
-			addCommand(reset);
-			setCommandListener(this);
+		this.results = results;
+		for (int i = 0; i < results.length(); i++) {
+			JSONObject obj = results.getJSONObject(i);
+			JSONObject props = obj.getJSONObject("properties");
+			append(props.getString("name") + "\n" + props.optString("description", ""), null);
 		}
+		MahoMapsApp.lastSearch = this;
+		overlay = new SearchOverlay(point, query, results, this);
+		MahoMapsApp.Overlays().PushOverlay(overlay);
+		addCommand(reset);
+		addCommand(toMap);
+		setCommandListener(this);
 	}
 
 	public static void ResetSearch() {
