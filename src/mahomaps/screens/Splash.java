@@ -38,7 +38,7 @@ public class Splash extends Canvas {
 		
 		
 		if (this.image == null) {
-			g.setColor(0xff0000);
+			g.setColor(-1);
 			g.setFont(Font.getFont(0, Font.STYLE_BOLD, Font.SIZE_LARGE));
 			int x = w >> 1;
 			int y = h >> 1;
