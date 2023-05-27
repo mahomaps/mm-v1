@@ -93,8 +93,8 @@ public class Geopoint {
 			g.drawRegion(commonPs, s * color, 0, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
 			break;
 		case LOCATION:
-			s = locationIcons.getWidth() / 4;
-			g.drawRegion(locationIcons, s * color, s * Settings.geoLook, s, s, 0, px, py,
+			s = locationIcons.getWidth() / 2;
+			g.drawRegion(locationIcons, color == 0 ? 0 : s, s * Settings.geoLook, s, s, 0, px, py,
 					Graphics.VCENTER | Graphics.HCENTER);
 			break;
 		case ROUTE_A:
