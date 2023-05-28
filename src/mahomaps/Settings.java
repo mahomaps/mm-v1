@@ -20,6 +20,7 @@ public class Settings {
 	public static boolean proxyTiles = false;
 	public static boolean proxyApi = false;
 	public static int uiSize = 0;
+	public static int lang = 0;
 
 	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
@@ -52,6 +53,7 @@ public class Settings {
 			proxyTiles = j.optBoolean("proxy_tiles");
 			proxyApi = j.optBoolean("proxy_api");
 			uiSize = j.optInt("ui_size", 0);
+			lang = j.optInt("lang", 0);
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -82,6 +84,7 @@ public class Settings {
 		j.put("proxy_tiles", proxyTiles);
 		j.put("proxy_api", proxyApi);
 		j.put("ui_size", uiSize);
+		j.put("lang", lang);
 		return j.toString();
 	}
 
@@ -97,6 +100,19 @@ public class Settings {
 			r.closeRecordStore();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static String GetLangString() {
+		switch (lang) {
+		case 0:
+			return "ru_RU";
+		case 1:
+			return "en_US";
+		case 2:
+			return "tr_TR";
+		default:
+			throw new IndexOutOfBoundsException("Unknown language code!");
 		}
 	}
 }
