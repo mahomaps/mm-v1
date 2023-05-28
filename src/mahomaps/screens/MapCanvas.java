@@ -24,6 +24,7 @@ import mahomaps.overlays.OverlaysManager;
 import mahomaps.overlays.SelectOverlay;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import mahomaps.route.RouteTracker;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
 
@@ -201,6 +202,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			controls.Paint(g, 0, 0, w, ch);
 		}
 		controls.PaintInfo(g, 0, 0, w, h - overlays.overlaysH);
+
+		{
+			RouteTracker rt = MahoMapsApp.route;
+			if (rt != null) {
+				rt.Update();
+				rt.Draw(g, w);
+			}
+		}
 
 		if (!t) {
 			g.setColor(0);

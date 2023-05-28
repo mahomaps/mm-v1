@@ -5,6 +5,7 @@ import javax.microedition.lcdui.Graphics;
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.overlays.MapOverlay;
+import mahomaps.overlays.RouteFollowOverlay;
 import mahomaps.screens.MapCanvas;
 
 public class RouteTracker {
@@ -19,8 +20,10 @@ public class RouteTracker {
 	// drawing temps
 	String next;
 	String distLeft;
+	private RouteFollowOverlay o;
 
-	public RouteTracker(Route r) {
+	public RouteTracker(Route r, RouteFollowOverlay o) {
+		this.o = o;
 		vertex = r.points;
 		segments = r.segments;
 		currentSegment = -2;
@@ -50,8 +53,15 @@ public class RouteTracker {
 	public void Update() {
 		extrapolatedGeolocation.lat = trueGeolocation.lat;
 		extrapolatedGeolocation.lon = trueGeolocation.lon;
+		if (currentSegment == -2) {
+			// first update
+		} else if (currentSegment == -1) {
+			// route start is not reached
+		} else {
+			// route is follown
+		}
 		next = "Вернитесь на старт";
-		distLeft = "Осталось " + ((int) (Distance(trueGeolocation, vertex[0]))) + "м";
+		distLeft = "Осталось " + ((Distance(trueGeolocation, vertex[0]))) + "м";
 	}
 
 	/**
@@ -68,15 +78,17 @@ public class RouteTracker {
 
 	}
 
-	public float Distance(Geopoint a, Geopoint b) {
+	public static float Distance(Geopoint a, Geopoint b) {
 		double alat = Math.toRadians(a.lat);
 		double alon = Math.toRadians(a.lon);
 		double blat = Math.toRadians(b.lat);
 		double blon = Math.toRadians(b.lon);
-		double cosd = Math.sin(alat) * Math.sin(-blat) + Math.cos(alat) * Math.cos(-blat) * Math.cos(alon - blon);
+		double cosd = Math.sin(alat) * Math.sin(blat) + Math.cos(alat) * Math.cos(blat) * Math.cos(alon - blon);
 
 		double d = MahoMapsApp.acos(cosd);
-		return (float) (d * 6371000);
+		// return d;
+
+		return (float) (d * 6371000D);
 	}
 
 }

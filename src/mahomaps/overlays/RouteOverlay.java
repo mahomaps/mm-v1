@@ -18,6 +18,7 @@ import mahomaps.map.Geopoint;
 import mahomaps.map.Line;
 import mahomaps.route.Route;
 import mahomaps.route.RouteSegment;
+import mahomaps.route.RouteTracker;
 import mahomaps.ui.Button;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -154,6 +155,11 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			anchorsShown = !anchorsShown;
 			break;
 		case 5:
+			RouteFollowOverlay rfo = new RouteFollowOverlay(a, b, method, route);
+			MahoMapsApp.GetCanvas().overlays.PushOverlay(rfo);
+			RouteTracker rt = new RouteTracker(route, rfo);
+			rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
+			MahoMapsApp.route = rt;
 			break;
 		}
 	}
