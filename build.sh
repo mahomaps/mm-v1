@@ -106,6 +106,5 @@ echo "-outjar ./${APP}_obf.jar" >> cf.cfg
 echo "-printseeds ./${APP}_obf_seeds.txt" >> cf.cfg
 echo "-printmapping ./${APP}_obf_map.txt" >> cf.cfg
 echo "-libraryjars ${CLASSPATH}" >> cf.cfg
-echo "-dontoptimize" >> cf.cfg
 
 ${PROGUARD} @cf.cfg
