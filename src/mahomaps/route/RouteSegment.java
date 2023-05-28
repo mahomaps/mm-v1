@@ -11,6 +11,10 @@ public abstract class RouteSegment {
 		return null;
 	}
 
+	public int GetSegmentStartVertex() {
+		return 0;
+	}
+
 	/**
 	 * @return Дистанция сегмента в метрах. Для действий верните 0.
 	 */

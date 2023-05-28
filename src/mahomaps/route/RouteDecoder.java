@@ -152,8 +152,8 @@ public class RouteDecoder {
 				int angle = (int) segmd.optDouble("angle", 0);
 				JSONObject durObj = segmd.optJSONObject("Duration");
 				int dur = durObj == null ? 0 : (int) durObj.optDouble("value", 0);
-				// TODO pass anchor geopoint
-				arr[i] = new AutoSegment(descr, dist, angle, dur, actionKey, line[geoms.getJSONObject(0).getInt("lodIndex")]);
+				int av = geoms.getJSONObject(0).getInt("lodIndex");
+				arr[i] = new AutoSegment(descr, dist, angle, dur, actionKey, av, line[av]);
 				continue;
 			}
 
