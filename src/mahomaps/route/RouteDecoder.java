@@ -122,9 +122,17 @@ public class RouteDecoder {
 			JSONObject props = js.getJSONObject("properties");
 			JSONObject segmd = props.getJSONObject("SegmentMetaData");
 			String descr = segmd.getString("text");
-			JSONObject dist = segmd.optJSONObject("Distance");
+			int dist = 0;
+			{
+				JSONObject dj = segmd.optJSONObject("Distance");
+				String v = null;
+				if (dj != null)
+					v = dj.optString("value");
+				if (v != null)
+					dist = (int) Double.parseDouble(v);
+			}
 			if (segmd.optBoolean("Walk", false)) {
-				arr[i] = new WalkingSegment(descr, dist.optInt("value"));
+				arr[i] = new WalkingSegment(descr, dist);
 				continue;
 			}
 			JSONArray tr = segmd.optJSONArray("Transports");
