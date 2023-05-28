@@ -301,7 +301,7 @@ public class TilesProvider implements Runnable {
 		HttpConnection hc = null;
 		FileConnection fc = null;
 		try {
-			hc = (HttpConnection) Connector.open(getUrl(id));
+			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
 			int len = (int) hc.getLength();
 			if (len <= 0)
 				throw new IOException("Empty responce");

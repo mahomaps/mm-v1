@@ -55,7 +55,7 @@ public class UpdateCheckThread extends Thread {
 		InputStream is = null;
 		ByteArrayOutputStream o = new ByteArrayOutputStream();
 		try {
-			hc = (HttpConnection) Connector.open(url);
+			hc = (HttpConnection) Connector.open(url + MahoMapsApp.getConnectionParams());
 			hc.setRequestMethod("GET");
 			int r = hc.getResponseCode();
 			is = hc.openInputStream();

@@ -295,4 +295,12 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			startApp();
 		}
 	}
+	
+	public static String getConnectionParams() {
+		if (platform.toLowerCase().indexOf("blackberry") == -1) {
+			return "";
+		}
+		// сделать поддержку 3г когда-нибудь
+		return ";deviceside=true;interface=wifi";
+	}
 }
