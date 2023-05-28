@@ -7,6 +7,7 @@ import mahomaps.map.Geopoint;
 public class Route {
 
 	public Geopoint[] points;
+	public RouteSegment[] segments;
 	public String time;
 	public String distance = "Неизвестно";
 
@@ -20,6 +21,7 @@ public class Route {
 		if (dist != null)
 			distance = dist.getString("text");
 		points = RouteDecoder.DecodeRoutePath(props.getString("encodedCoordinates"));
+		segments = RouteDecoder.DecodeSegments(route.getJSONArray("features"), points);
 	}
 
 }
