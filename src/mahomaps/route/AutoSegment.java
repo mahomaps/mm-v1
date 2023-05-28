@@ -18,6 +18,8 @@ public class AutoSegment extends RouteSegment {
 		this.duration = duration;
 		this.actionKey = actionKey;
 		this.actionPoint = new Geopoint(actionPoint.lat, actionPoint.lon);
+		this.actionPoint.type = Geopoint.POI_MARK;
+		this.actionPoint.color = Geopoint.COLOR_BLUE;
 	}
 
 	public Geopoint GetAnchor() {
