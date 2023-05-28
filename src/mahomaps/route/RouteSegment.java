@@ -3,7 +3,14 @@ package mahomaps.route;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.StringItem;
 
+import mahomaps.map.Geopoint;
+
 public abstract class RouteSegment {
+
+	public Geopoint GetAnchor() {
+		return null;
+	}
+
 	/**
 	 * @return Дистанция сегмента в метрах. Для действий верните 0.
 	 */

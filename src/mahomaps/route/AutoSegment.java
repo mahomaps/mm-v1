@@ -20,6 +20,10 @@ public class AutoSegment extends RouteSegment {
 		this.actionPoint = new Geopoint(actionPoint.lat, actionPoint.lon);
 	}
 
+	public Geopoint GetAnchor() {
+		return actionPoint;
+	}
+
 	public int GetDistance() {
 		return dist;
 	}
