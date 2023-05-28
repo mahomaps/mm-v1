@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Graphics;
 
 public class Button extends UIElement implements ITouchAcceptor {
 
-	private String text;
+	public String text;
 	private int id;
 	private IButtonHandler handler;
 	public int margin = 3;
