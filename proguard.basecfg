@@ -1,0 +1,10 @@
+-dontusemixedcaseclassnames
+-dontnote
+-defaultpackage ''
+-microedition
+-optimizations !library/*,!code/simplification/object
+-overloadaggressively
+-dontwarn
+
+-keep public class * extends javax.microedition.midlet.MIDlet
+
