@@ -297,7 +297,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 	
 	public static String getConnectionParams() {
-		if	(platform.toLowerCase().indexOf("blackberry") == -1) {
+		if (platform.toLowerCase().indexOf("blackberry") == -1) {
 			return "";
 		}
 		// сделать поддержку 3г когда-нибудь
