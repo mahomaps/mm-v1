@@ -1,7 +1,10 @@
 package mahomaps.route;
 
+import javax.microedition.lcdui.Graphics;
+
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
+import mahomaps.overlays.MapOverlay;
 import mahomaps.screens.MapCanvas;
 
 public class RouteTracker {
@@ -12,6 +15,10 @@ public class RouteTracker {
 	final float[] lineLengths;
 	final RouteSegment[] segments;
 	int currentSegment;
+
+	// drawing temps
+	String next;
+	String distLeft;
 
 	public RouteTracker(Route r) {
 		vertex = r.points;
@@ -41,6 +48,23 @@ public class RouteTracker {
 	 * Call this every frame to make tracker work.
 	 */
 	public void Update() {
+		extrapolatedGeolocation.lat = trueGeolocation.lat;
+		extrapolatedGeolocation.lon = trueGeolocation.lon;
+		next = "Вернитесь на старт";
+		distLeft = "Осталось " + ((int) (Distance(trueGeolocation, vertex[0]))) + "м";
+	}
+
+	/**
+	 * Call this every frame after {@link #Update()} to draw tracker.
+	 */
+	public void Draw(Graphics g, int w) {
+		g.setColor(MapOverlay.OVERLAY_BG);
+		g.fillRoundRect(5, 5, w - 10, 50, 10, 10);
+		g.setColor(-1);
+		if (next != null)
+			g.drawString(next, 10, 10, 0);
+		if (distLeft != null)
+			g.drawString(distLeft, 10, 30, 0);
 
 	}
 
