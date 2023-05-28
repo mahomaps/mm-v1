@@ -76,6 +76,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(cache);
 		append(download);
 		append(proxyTiles);
+		append(uiSize);
 	}
 
 	private void Apply() {
