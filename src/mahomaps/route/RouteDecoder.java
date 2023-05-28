@@ -145,6 +145,16 @@ public class RouteDecoder {
 				arr[i] = new TransportSegment(descr);
 				continue;
 			}
+			JSONObject action = segmd.optJSONObject("Action");
+			if (action != null) {
+				String actionKey = action.getString("value");
+				int angle = (int) segmd.optDouble("angle", 0);
+				JSONObject durObj = segmd.optJSONObject("Duration");
+				int dur = durObj == null ? 0 : (int) durObj.optDouble("value", 0);
+				// TODO pass anchor geopoint
+				arr[i] = new AutoSegment(descr, dist, angle, dur, actionKey, new Geopoint(0, 0));
+				continue;
+			}
 
 			arr[i] = new UnknownSegment();
 		}
