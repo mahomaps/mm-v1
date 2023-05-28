@@ -19,6 +19,8 @@ public class Settings {
 	public static int cacheMode = 1;
 	public static boolean proxyTiles = false;
 	public static boolean proxyApi = false;
+	public static int uiSize = 0;
+
 	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
 	public static final int CACHE_FS = 1;
@@ -49,6 +51,7 @@ public class Settings {
 			cacheMode = j.optInt("cache", 1);
 			proxyTiles = j.optBoolean("proxy_tiles");
 			proxyApi = j.optBoolean("proxy_api");
+			uiSize = j.optInt("ui_size", 0);
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -62,7 +65,8 @@ public class Settings {
 			proxyApi = false;
 			proxyTiles = false;
 		} else {
-			proxyTiles = proxyApi = MahoMapsApp.platform == null || MahoMapsApp.platform.indexOf("platform_version=5.") == -1
+			proxyTiles = proxyApi = MahoMapsApp.platform == null
+					|| MahoMapsApp.platform.indexOf("platform_version=5.") == -1
 					|| MahoMapsApp.platform.indexOf("platform_version=5.0") != -1;
 		}
 	}
@@ -77,6 +81,7 @@ public class Settings {
 		j.put("cache", cacheMode);
 		j.put("proxy_tiles", proxyTiles);
 		j.put("proxy_api", proxyApi);
+		j.put("ui_size", uiSize);
 		return j.toString();
 	}
 
