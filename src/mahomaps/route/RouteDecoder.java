@@ -127,6 +127,16 @@ public class RouteDecoder {
 				arr[i] = new WalkingSegment(descr, dist.optInt("value"));
 				continue;
 			}
+			JSONArray tr = segmd.optJSONArray("Transports");
+			if (tr != null && tr.length() > 0) {
+				String trt = tr.getJSONObject(0).getString("type");
+				if (trt.equals("suburban")) {
+					arr[i] = new RailwaySegment(descr);
+					continue;
+				}
+				arr[i] = new TransportSegment(descr);
+				continue;
+			}
 
 			arr[i] = new UnknownSegment();
 		}
