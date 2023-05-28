@@ -288,8 +288,13 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		return sumY;
 	}
 
+	/**
+	 *
+	 * @param a Cos value [-1; 1]
+	 * @return Angle in radians.
+	 */
 	public static double acos(double a) {
-		final double epsilon = 1.0E-7;
+		final double epsilon = 1.0E-14;
 		double x = a;
 		do {
 			x -= (Math.sin(x) - a) / Math.cos(x);
