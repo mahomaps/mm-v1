@@ -17,15 +17,15 @@ jobs:
       - name: Upload jar
         uses: actions/upload-artifact@v2
         with:
-          name: debug
+          name: base.zip
           path: ${{ github.workspace }}/mm_v1.jar
       - name: Upload obf jar
         uses: actions/upload-artifact@v2
         with:
-          name: release
+          name: obf.zip
           path: ${{ github.workspace }}/mm_v1_obf.jar
       - name: Upload obf mappings
         uses: actions/upload-artifact@v2
         with:
-          name: mappings
+          name: mappings.zip
           path: ${{ github.workspace }}/mm_v1_obf_map.txt
