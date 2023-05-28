@@ -120,6 +120,7 @@ public class RouteDecoder {
 		for (int i = 0; i < arr.length; i++) {
 			JSONObject js = j.getJSONObject(i);
 			JSONObject props = js.getJSONObject("properties");
+			JSONArray geoms = js.getJSONObject("geometry").getJSONArray("geometries");
 			JSONObject segmd = props.getJSONObject("SegmentMetaData");
 			String descr = segmd.getString("text");
 			int dist = 0;
@@ -152,7 +153,7 @@ public class RouteDecoder {
 				JSONObject durObj = segmd.optJSONObject("Duration");
 				int dur = durObj == null ? 0 : (int) durObj.optDouble("value", 0);
 				// TODO pass anchor geopoint
-				arr[i] = new AutoSegment(descr, dist, angle, dur, actionKey, new Geopoint(0, 0));
+				arr[i] = new AutoSegment(descr, dist, angle, dur, actionKey, line[geoms.getJSONObject(0).getInt("lodIndex")]);
 				continue;
 			}
 
