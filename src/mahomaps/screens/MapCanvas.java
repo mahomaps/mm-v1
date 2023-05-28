@@ -38,7 +38,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// geolocation stuff
 	public GeoUpdateThread geo = null;
-	public final Geopoint geolocation;
+	public Geopoint geolocation;
 
 	// input states
 	private boolean touch = hasPointerEvents();
