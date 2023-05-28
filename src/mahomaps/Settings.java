@@ -106,11 +106,11 @@ public class Settings {
 	public static String GetLangString() {
 		switch (lang) {
 		case 0:
-			return "ru_RU";
+			return new String(new char[] {'r','u','_','R','U'});
 		case 1:
-			return "en_US";
+			return new String(new char[] {'e','n','_','U','S'});
 		case 2:
-			return "tr_TR";
+			return new String(new char[] {'t','r','_','T','R'});
 		default:
 			throw new IndexOutOfBoundsException("Unknown language code!");
 		}
