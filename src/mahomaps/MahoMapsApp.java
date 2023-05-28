@@ -14,6 +14,7 @@ import javax.microedition.midlet.MIDlet;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.TilesProvider;
 import mahomaps.overlays.OverlaysManager;
+import mahomaps.route.RouteTracker;
 import mahomaps.screens.MapCanvas;
 import mahomaps.screens.MenuScreen;
 import mahomaps.screens.SearchScreen;
@@ -28,6 +29,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	private static MenuScreen menu;
 	private static MahoMapsApp midlet;
 	public static SearchScreen lastSearch;
+	public static RouteTracker route;
 	public static final YmapsApi api = new YmapsApi();
 	public static String platform = System.getProperty("microedition.platform");
 	public static String version;
