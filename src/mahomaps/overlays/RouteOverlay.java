@@ -8,6 +8,8 @@ import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.Item;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.api.Http403Exception;
@@ -31,6 +33,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	private Command leave = new Command("Нет", Command.CANCEL, 0);
 	private Command discard = new Command("Да", Command.OK, 0);
+	private Command back = new Command("Назад", Command.BACK, 0);
 
 	public RouteOverlay(Geopoint a, Geopoint b, int method) {
 		this.a = a;
@@ -59,7 +62,8 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		try {
 			route = new Route(MahoMapsApp.api.Route(a, b, method));
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
-					new SimpleText(route.distance + ", " + route.time), new Button("Закрыть", 0, this) });
+					new SimpleText(route.distance + ", " + route.time), new Button("Подробнее", 3, this),
+					new Button("Закрыть", 0, this) });
 			MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 		} catch (IOException e) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Сетевая ошибка."),
@@ -73,8 +77,8 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
 					new Button("Закрыть", 1, this) });
 		} catch (OutOfMemoryError e) {
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не хватило памяти."),
-					new Button("Закрыть", 1, this) });
+			content = new FillFlowContainer(
+					new UIElement[] { new SimpleText("Не хватило памяти."), new Button("Закрыть", 1, this) });
 		} finally {
 			InvalidateSize();
 		}
@@ -98,6 +102,20 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			RouteBuildOverlay rbo = RouteBuildOverlay.Get();
 			rbo.SetA(a);
 			rbo.SetB(b);
+			break;
+		case 3:
+			if (route != null) {
+				Form f = new Form("Маршрут");
+				for (int i = 0; i < route.segments.length; i++) {
+					Item[] items = route.segments[i].ToLcdui();
+					for (int j = 0; j < items.length; j++) {
+						f.append(items[j]);
+					}
+				}
+				f.addCommand(back);
+				f.setCommandListener(this);
+				MahoMapsApp.BringSubScreen(f);
+			}
 			break;
 		}
 	}
