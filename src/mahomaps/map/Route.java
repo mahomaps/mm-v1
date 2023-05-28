@@ -1,6 +1,6 @@
 package mahomaps.map;
 
-import org.json.me.JSONObject;
+import cc.nnproject.json.JSONObject;
 
 public class Route {
 
@@ -9,11 +9,11 @@ public class Route {
 	public String distance = "Неизвестно";
 
 	public Route(JSONObject props) {
-		JSONObject meta = props.getJSONObject("PathMetaData");
-		time = meta.getJSONObject("Duration").getString("text");
-		JSONObject dist = meta.optJSONObject("Distance");
+		JSONObject meta = props.getObject("PathMetaData");
+		time = meta.getObject("Duration").getString("text");
+		JSONObject dist = meta.getNullableObject("Distance");
 		if (dist == null)
-			dist = meta.getJSONObject("WalkingDistance");
+			dist = meta.getObject("WalkingDistance");
 		if (dist != null)
 			distance = dist.getString("text");
 		points = RouteDecoder.DecodeRoutePath(props.getString("encodedCoordinates"));

@@ -9,7 +9,7 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.StringItem;
 
-import org.json.me.JSONArray;
+import cc.nnproject.json.JSONArray;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.api.Http403Exception;

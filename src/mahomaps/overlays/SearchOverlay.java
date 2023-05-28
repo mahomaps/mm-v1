@@ -2,8 +2,8 @@ package mahomaps.overlays;
 
 import java.util.Vector;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONObject;
+import cc.nnproject.json.JSONArray;
+import cc.nnproject.json.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
@@ -38,17 +38,17 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 	public void SetNullSelection() {
 		selected = null;
 		points = new Vector();
-		for (int i = 0; i < results.length(); i++) {
-			JSONArray point1 = results.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+		for (int i = 0; i < results.size(); i++) {
+			JSONArray point1 = results.getObject(i).getObject("geometry").getArray("coordinates");
 			Geopoint gp = new Geopoint(point1.getDouble(1), point1.getDouble(0));
 			gp.type = Geopoint.POI_SEARCH;
 			gp.color = Geopoint.COLOR_GREEN;
-			gp.object = results.getJSONObject(i);
+			gp.object = results.getObject(i);
 			points.addElement(gp);
 		}
 
 		content = new FillFlowContainer(
-				new UIElement[] { new SimpleText(query), new SimpleText("Найдено: " + results.length()),
+				new UIElement[] { new SimpleText(query), new SimpleText("Найдено: " + results.size()),
 						new SimpleText("Ничего не выбрано."), new ColumnsContainer(
 								new UIElement[] { new Button("Список", 1, this), new Button("Закрыть", 0, this) }) });
 		InvalidateSize();
@@ -68,10 +68,10 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		}
 		points.addElement(p);
 
-		JSONObject data = ((JSONObject) p.object).getJSONObject("properties");
+		JSONObject data = ((JSONObject) p.object).getObject("properties");
 
-		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.optString("name")),
-				new SimpleText(data.optString("description")),
+		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.getNullableString("name")),
+				new SimpleText(data.getNullableString("description")),
 				new ColumnsContainer(
 						new UIElement[] { new Button("Карточка", 2, this), new Button("Показать", 3, this) }),
 				new ColumnsContainer(new UIElement[] { new Button("Отсюда", 4, this), new Button("Сюда", 5, this) }),

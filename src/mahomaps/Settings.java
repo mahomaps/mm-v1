@@ -2,7 +2,8 @@ package mahomaps;
 
 import javax.microedition.rms.RecordStore;
 
-import org.json.me.JSONObject;
+import cc.nnproject.json.JSON;
+import cc.nnproject.json.JSONObject;
 
 public class Settings {
 
@@ -40,15 +41,15 @@ public class Settings {
 				return true;
 			}
 
-			JSONObject j = new JSONObject(new String(d));
-			drawDebugInfo = j.optBoolean("tile_info", false);
-			focusZoom = j.optInt("focus_zoom", 16);
-			geoLook = j.optInt("geo_look", 0);
-			showGeo = j.optInt("show_geo", 2);
-			allowDownload = j.optBoolean("online", true);
-			cacheMode = j.optInt("cache", 1);
-			proxyTiles = j.optBoolean("proxy_tiles");
-			proxyApi = j.optBoolean("proxy_api");
+			JSONObject j = JSON.getObject(new String(d));
+			drawDebugInfo = j.getBoolean("tile_info", false);
+			focusZoom = j.getInt("focus_zoom", 16);
+			geoLook = j.getInt("geo_look", 0);
+			showGeo = j.getInt("show_geo", 2);
+			allowDownload = j.getBoolean("online", true);
+			cacheMode = j.getInt("cache", 1);
+			proxyTiles = j.getBoolean("proxy_tiles");
+			proxyApi = j.getBoolean("proxy_api");
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();

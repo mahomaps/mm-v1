@@ -153,7 +153,7 @@ public class GeoUpdateThread extends Thread {
 
 	// для безопасных вызовов
 	class LocationAPI {
-		public LocationProvider locationProvider;
+		private LocationProvider locationProvider;
 
 		public LocationAPI() throws Exception {
 			locationProvider = LocationProvider.getInstance(null);

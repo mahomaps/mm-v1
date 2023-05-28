@@ -6,8 +6,8 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONObject;
+import cc.nnproject.json.JSONArray;
+import cc.nnproject.json.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
@@ -28,10 +28,10 @@ public class SearchScreen extends List implements CommandListener {
 		super(query, Choice.IMPLICIT);
 		this.query = query;
 		this.results = results;
-		for (int i = 0; i < results.length(); i++) {
-			JSONObject obj = results.getJSONObject(i);
-			JSONObject props = obj.getJSONObject("properties");
-			append(props.getString("name") + "\n" + props.optString("description", ""), null);
+		for (int i = 0; i < results.size(); i++) {
+			JSONObject obj = results.getObject(i);
+			JSONObject props = obj.getObject("properties");
+			append(props.getString("name") + "\n" + props.getString("description", ""), null);
 		}
 		MahoMapsApp.lastSearch = this;
 		overlay = new SearchOverlay(point, query, results, this);
@@ -53,8 +53,8 @@ public class SearchScreen extends List implements CommandListener {
 		} else if (c == toMap) {
 			MahoMapsApp.BringMap();
 		} else if (c == SELECT_COMMAND) {
-			overlay.SetSelection(results.getJSONObject(getSelectedIndex()));
-			MahoMapsApp.BringSubScreen(new SearchResultScreen(results.getJSONObject(getSelectedIndex()), overlay));
+			overlay.SetSelection(results.getObject(getSelectedIndex()));
+			MahoMapsApp.BringSubScreen(new SearchResultScreen(results.getObject(getSelectedIndex()), overlay));
 		}
 	}
 

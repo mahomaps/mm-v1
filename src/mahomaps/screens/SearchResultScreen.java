@@ -6,9 +6,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.StringItem;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONObject;
-
+import cc.nnproject.json.JSONArray;
+import cc.nnproject.json.JSONObject;
 import mahomaps.MahoMapsApp;
 import mahomaps.overlays.SearchOverlay;
 
@@ -21,24 +20,24 @@ public class SearchResultScreen extends Form implements CommandListener {
 	public SearchResultScreen(JSONObject obj, SearchOverlay o) {
 		super("Результат поиска");
 		this.o = o;
-		JSONObject props = obj.getJSONObject("properties");
-		JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
-		String name = props.optString("name");
+		JSONObject props = obj.getObject("properties");
+		JSONArray point = obj.getObject("geometry").getArray("coordinates");
+		String name = props.getNullableString("name");
 		append(new StringItem("Название", name));
-		String descr = props.optString("description", null);
+		String descr = props.getString("description", null);
 		if (descr != null)
 			append(new StringItem("Описание", descr));
 		append(new StringItem("Координаты", point.getDouble(1) + " " + point.getDouble(0)));
-		JSONObject org = props.optJSONObject("CompanyMetaData");
+		JSONObject org = props.getNullableObject("CompanyMetaData");
 		if (org != null) {
-			JSONObject hours = org.optJSONObject("Hours");
+			JSONObject hours = org.getNullableObject("Hours");
 			if (hours != null)
-				append(new StringItem("Режим работы", hours.optString("text")));
-			if (org.optString("url", null) != null)
-				append(new StringItem("Сайт", org.optString("url")));
-			JSONArray phones = org.optJSONArray("Phones");
-			if (phones != null && phones.length() != 0)
-				append(new StringItem("Телефон", phones.getJSONObject(0).optString("formatted")));
+				append(new StringItem("Режим работы", hours.getNullableString("text")));
+			if (org.getString("url", null) != null)
+				append(new StringItem("Сайт", org.getNullableString("url")));
+			JSONArray phones = org.getNullableArray("Phones");
+			if (phones != null && phones.size() != 0)
+				append(new StringItem("Телефон", phones.getObject(0).getNullableString("formatted")));
 		}
 
 		addCommand(back);
