@@ -19,6 +19,7 @@ import mahomaps.map.Line;
 import mahomaps.route.Route;
 import mahomaps.route.RouteSegment;
 import mahomaps.route.RouteTracker;
+import mahomaps.screens.MapCanvas;
 import mahomaps.ui.Button;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -113,7 +114,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
-		case 0:
+		case 0: {
 			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
 			a1.setTimeout(Alert.FOREVER);
 			a1.addCommand(discard);
@@ -121,6 +122,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			a1.setCommandListener(this);
 			MahoMapsApp.BringSubScreen(a1);
 			break;
+		}
 		case 1:
 			// close after error
 			Close();
@@ -155,12 +157,20 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			anchorsShown = !anchorsShown;
 			break;
 		case 5:
-			RouteFollowOverlay rfo = new RouteFollowOverlay(a, b, method, route);
-			MahoMapsApp.GetCanvas().overlays.PushOverlay(rfo);
-			RouteTracker rt = new RouteTracker(route, rfo);
-			rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
-			MahoMapsApp.route = rt;
-			UIElement.Deselect();
+			MapCanvas mc = MahoMapsApp.GetCanvas();
+			if (mc.geo != null && mc.geo.DrawPoint()) {
+				RouteFollowOverlay rfo = new RouteFollowOverlay(a, b, method, route);
+				MahoMapsApp.GetCanvas().overlays.PushOverlay(rfo);
+				RouteTracker rt = new RouteTracker(route, rfo);
+				rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
+				MahoMapsApp.route = rt;
+				UIElement.Deselect();
+			} else {
+				Alert a1 = new Alert("MahoMaps v1", "Для начала маршрута необходима геолокация.", null,
+						AlertType.WARNING);
+				a1.setTimeout(Alert.FOREVER);
+				MahoMapsApp.BringSubScreen(a1, mc);
+			}
 			break;
 		}
 	}
