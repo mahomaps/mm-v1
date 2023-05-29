@@ -130,13 +130,55 @@ public class RouteTracker {
 		g.setColor(MapOverlay.OVERLAY_BG);
 		g.fillRoundRect(5, 5, w - 10, fh * 3 + 10, 10, 10);
 		// text
+		int x = tos.icon == RouteSegment.NO_ICON ? 10 : (10 + 5 + 50);
 		g.setColor(-1);
-		g.drawString(tos.line1, 10, 10, 0);
-		g.drawString(tos.line2, 10, 10 + fh, 0);
-		g.drawString(tos.line3, 10, 10 + fh + fh, 0);
+		g.drawString(tos.line1, x, 10, 0);
+		g.drawString(tos.line2, x, 10 + fh, 0);
+		g.drawString(tos.line3, x, 10 + fh + fh, 0);
 		// icons
-		// TODO
+		if (tos.icon == RouteSegment.MANEUVER_ANGLE) {
+			g.setColor(-1);
+			int cx = 10 + 25;
+			int cy = 10 + fh + fh / 2;
+			final int THICK = 6;
+			final int ARROW = 9;
+			g.fillRoundRect(cx - THICK / 2, cy - THICK / 2, THICK, 25 + THICK / 2, THICK, THICK);
+			float sin = (float) Math.sin(Math.toRadians(tos.angle));
+			float cos = (float) Math.cos(Math.toRadians(tos.angle));
+			{
+				// якоря
+				int x25 = (int) (sin * 25);
+				int y25 = (int) (cos * 25);
+				final float x25t = (sin * (25 - ARROW));
+				final float y25t = (cos * (25 - ARROW));
 
+				// оффсеты для линии
+				float ldx = (cos * (THICK / 2));
+				float ldy = (-sin * (THICK / 2));
+				float adx = (cos * ARROW);
+				float ady = (-sin * ARROW);
+				// стрелка
+				int xAl = (int) (cx - x25t - adx);
+				int yAl = (int) (cy - y25t - ady);
+				int xAr = (int) (cx - x25t + adx);
+				int yAr = (int) (cy - y25t + ady);
+				// углы линии
+				int lfblx = (int) (cx - ldx);
+				int lfbly = (int) (cy - ldy);
+				int lfbrx = (int) (cx + ldx);
+				int lfbry = (int) (cy + ldy);
+				int lftlx = (int) (cx - x25t - ldx);
+				int lftly = (int) (cy - y25t - ldy);
+				int lftrx = (int) (cx - x25t + ldx);
+				int lftry = (int) (cy - y25t + ldy);
+
+				g.fillTriangle(lfblx, lfbly, lfbrx, lfbry, lftlx, lftly);
+				g.fillTriangle(lftrx, lftry, lfbrx, lfbry, lftlx, lftly);
+				g.fillTriangle(cx - x25, cy - y25, xAl, yAl, xAr, yAr);
+			}
+		} else if (tos.icon != RouteSegment.NO_ICON) {
+			// TODO
+		}
 	}
 
 	private static String getCurrentSegmentInfo(RouteSegment rs) {
