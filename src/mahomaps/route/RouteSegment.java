@@ -39,6 +39,8 @@ public abstract class RouteSegment {
 	 */
 	public abstract String GetDescription();
 
+	public abstract String GetAction();
+
 	/**
 	 * Получает один элемент LCDUI, которым можно отобразить сегмент. Этот метод не
 	 * вызывается напрямую, его использует {@link #ToLcdui()}, не переопределяйте

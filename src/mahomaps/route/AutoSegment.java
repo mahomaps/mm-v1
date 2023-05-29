@@ -22,7 +22,14 @@ public class AutoSegment extends RouteSegment {
 		this.angle = angle;
 		this.duration = duration;
 		this.actionKey = actionKey;
-		this.actionText = actionText;
+		if (actionText == null || actionText.length() == 0) {
+			this.actionText = "";
+		} else {
+			StringBuffer sb = new StringBuffer();
+			sb.append(Character.toUpperCase(actionText.charAt(0)));
+			sb.append(actionText.substring(1));
+			this.actionText = sb.toString();
+		}
 		this.actionPoint = new Geopoint(actionPoint.lat, actionPoint.lon);
 		this.actionPoint.type = Geopoint.POI_MARK;
 		this.actionPoint.color = Geopoint.COLOR_BLUE;
@@ -46,6 +53,10 @@ public class AutoSegment extends RouteSegment {
 
 	public String GetDescription() {
 		return descr + ", " + dist + " метров";
+	}
+
+	public String GetAction() {
+		return actionText;
 	}
 
 }

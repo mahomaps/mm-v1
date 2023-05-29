@@ -25,4 +25,8 @@ public class TransportSegment extends RouteSegment {
 		return descr;
 	}
 
+	public String GetAction() {
+		return "Сядьте на транспорт";
+	}
+
 }

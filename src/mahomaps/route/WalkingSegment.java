@@ -27,4 +27,8 @@ public class WalkingSegment extends RouteSegment {
 		return descr;
 	}
 
+	public String GetAction() {
+		return "Идите пешком";
+	}
+
 }

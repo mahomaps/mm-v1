@@ -22,4 +22,8 @@ public class UnknownSegment extends RouteSegment {
 		return "Неизвестный сегмент";
 	}
 
+	public String GetAction() {
+		return "Неизвестный сегмент";
+	}
+
 }
