@@ -59,6 +59,9 @@ public class RouteTracker {
 	public void Update() {
 		extrapolatedGeolocation.lat = trueGeolocation.lat;
 		extrapolatedGeolocation.lon = trueGeolocation.lon;
+		MapState ms = MapState.FocusAt(extrapolatedGeolocation);
+		ms.zoom = map.state.zoom;
+		map.state = ms;
 		if (currentSegment == -2) {
 			// first update
 			if (distTo(vertex[0]) < ACCEPTABLE_ERROR) {
