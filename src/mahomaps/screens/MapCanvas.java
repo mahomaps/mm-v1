@@ -317,7 +317,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void ShowGeo() {
-		if (MahoMapsApp.route == null)
+		if (MahoMapsApp.route != null)
 			return;
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
@@ -551,7 +551,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void BeginTextSearch() {
-		if (MahoMapsApp.route == null)
+		if (MahoMapsApp.route != null)
 			return;
 		if (CheckApiAcsess()) {
 			if (MahoMapsApp.lastSearch == null) {
