@@ -4,21 +4,25 @@ import mahomaps.map.Geopoint;
 
 public class AutoSegment extends RouteSegment {
 
-	private String descr;
-	private int dist;
-	private double angle;
-	private int duration;
-	private String actionKey;
-	private Geopoint actionPoint;
-	private int actionVertex;
+	public final String descr;
+	public final int dist;
+	public final double angle;
+	public final int duration;
+	public final String actionKey;
+	public final Geopoint actionPoint;
+	public final int actionVertex;
+	public final String street;
+	public final String actionText;
 
-	public AutoSegment(String descr, int dist, double angle, int duration, String actionKey, int actionVertex,
+	public AutoSegment(String descr, String street, int dist, double angle, int duration, String actionKey, String actionText, int actionVertex,
 			Geopoint actionPoint) {
 		this.descr = descr;
+		this.street = street;
 		this.dist = dist;
 		this.angle = angle;
 		this.duration = duration;
 		this.actionKey = actionKey;
+		this.actionText = actionText;
 		this.actionVertex = actionVertex;
 		this.actionPoint = new Geopoint(actionPoint.lat, actionPoint.lon);
 		this.actionPoint.type = Geopoint.POI_MARK;

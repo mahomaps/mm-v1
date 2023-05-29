@@ -149,11 +149,13 @@ public class RouteDecoder {
 			JSONObject action = segmd.optJSONObject("Action");
 			if (action != null) {
 				String actionKey = action.getString("value");
+				String actionText = action.getString("text");
+				String street = segmd.optString("street", "");
 				int angle = (int) segmd.optDouble("angle", 0);
 				JSONObject durObj = segmd.optJSONObject("Duration");
 				int dur = durObj == null ? 0 : (int) durObj.optDouble("value", 0);
 				int av = geoms.getJSONObject(0).getInt("lodIndex");
-				arr[i] = new AutoSegment(descr, dist, angle, dur, actionKey, av, line[av]);
+				arr[i] = new AutoSegment(descr, street, dist, angle, dur, actionKey, actionText, av, line[av]);
 				continue;
 			}
 
