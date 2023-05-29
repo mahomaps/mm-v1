@@ -10,11 +10,12 @@ import mahomaps.screens.MapCanvas;
 
 public class RouteTracker {
 
+	private final RouteFollowOverlay o;
 	Geopoint trueGeolocation = null;
 	Geopoint extrapolatedGeolocation = null;
-	final Geopoint[] vertex;
-	final float[] lineLengths;
-	final RouteSegment[] segments;
+	private final Geopoint[] vertex;
+	private final float[] lineLengths;
+	private final RouteSegment[] segments;
 	int currentSegment;
 
 	static final int ACCEPTABLE_ERROR = 20;
@@ -22,7 +23,6 @@ public class RouteTracker {
 	// drawing temps
 	String next;
 	String distLeft;
-	private RouteFollowOverlay o;
 
 	public RouteTracker(Route r, RouteFollowOverlay o) {
 		this.o = o;
@@ -70,6 +70,7 @@ public class RouteTracker {
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment = 0;
 			}
+			o.ShowPoint(segments[0].GetAnchor());
 		} else if (currentSegment == segments.length - 1) {
 			// last segment
 			Geopoint t = vertex[vertex.length - 1];
@@ -79,6 +80,7 @@ public class RouteTracker {
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
+			o.ShowPoint(null);
 		} else if (currentSegment < segments.length) {
 			// route is follown
 			RouteSegment s = segments[currentSegment];
@@ -91,10 +93,12 @@ public class RouteTracker {
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
+			o.ShowPoint(ns.GetAnchor());
 		} else {
 			// route ended
 			next = "Маршрут завершён.";
 			distLeft = null;
+			o.ShowPoint(null);
 		}
 
 	}
