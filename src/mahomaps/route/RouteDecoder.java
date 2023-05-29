@@ -163,6 +163,10 @@ public class RouteDecoder {
 					arr[i] = new RailwaySegment(descr, sv);
 					continue;
 				}
+				if (trt.equals("underground")) {
+					arr[i] = new MetroSegment(descr, sv);
+					continue;
+				}
 				arr[i] = new TransportSegment(descr, sv);
 				continue;
 			}
