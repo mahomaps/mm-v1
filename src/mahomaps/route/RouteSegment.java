@@ -7,16 +7,24 @@ import mahomaps.map.Geopoint;
 
 public abstract class RouteSegment {
 
+	protected RouteSegment(int sv) {
+		segmentStartVertex = sv;
+	}
+
+	/**
+	 * Index of line's vertex, where this segment starts.
+	 */
+	public final int segmentStartVertex;
+
+	/**
+	 * @return May return a geopoint to show it as maneuver on map.
+	 */
 	public Geopoint GetAnchor() {
 		return null;
 	}
 
-	public int GetSegmentStartVertex() {
-		return 0;
-	}
-
 	/**
-	 * @return Дистанция сегмента в метрах. Для действий верните 0.
+	 * @return Дистанция сегмента в метрах.
 	 */
 	public abstract int GetDistance();
 

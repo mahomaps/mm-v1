@@ -5,7 +5,8 @@ public class WalkingSegment extends RouteSegment {
 	private String descr;
 	private int dist;
 
-	public WalkingSegment(String descr, int dist) {
+	public WalkingSegment(String descr, int dist, int sv) {
+		super(sv);
 		this.descr = descr;
 		this.dist = dist;
 	}

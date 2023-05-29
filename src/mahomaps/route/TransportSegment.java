@@ -4,7 +4,8 @@ public class TransportSegment extends RouteSegment {
 
 	private String descr;
 
-	public TransportSegment(String descr) {
+	public TransportSegment(String descr, int sv) {
+		super(sv);
 		this.descr = descr;
 	}
 

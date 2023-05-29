@@ -2,6 +2,10 @@ package mahomaps.route;
 
 public class UnknownSegment extends RouteSegment {
 
+	protected UnknownSegment(int sv) {
+		super(sv);
+	}
+
 	public int GetDistance() {
 		return 0;
 	}

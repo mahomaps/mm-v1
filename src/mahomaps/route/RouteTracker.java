@@ -85,9 +85,9 @@ public class RouteTracker {
 			// route is follown
 			RouteSegment s = segments[currentSegment];
 			RouteSegment ns = segments[currentSegment + 1];
-			int sv = s.GetSegmentStartVertex();
-			int ev = ns.GetSegmentStartVertex();
 			next = ns.GetDescription();
+			int sv = s.segmentStartVertex;
+			int ev = ns.segmentStartVertex;
 			float d = ev == 0 ? 292 : distTo(vertex[ev]);
 			distLeft = "Осталось " + ((int) d) + "м";
 			if (d < ACCEPTABLE_ERROR) {

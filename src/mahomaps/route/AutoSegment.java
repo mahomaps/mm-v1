@@ -10,12 +10,12 @@ public class AutoSegment extends RouteSegment {
 	public final int duration;
 	public final String actionKey;
 	public final Geopoint actionPoint;
-	public final int actionVertex;
 	public final String street;
 	public final String actionText;
 
-	public AutoSegment(String descr, String street, int dist, double angle, int duration, String actionKey, String actionText, int actionVertex,
-			Geopoint actionPoint) {
+	public AutoSegment(String descr, String street, int dist, double angle, int duration, String actionKey,
+			String actionText, int actionVertex, Geopoint actionPoint) {
+		super(actionVertex);
 		this.descr = descr;
 		this.street = street;
 		this.dist = dist;
@@ -23,7 +23,6 @@ public class AutoSegment extends RouteSegment {
 		this.duration = duration;
 		this.actionKey = actionKey;
 		this.actionText = actionText;
-		this.actionVertex = actionVertex;
 		this.actionPoint = new Geopoint(actionPoint.lat, actionPoint.lon);
 		this.actionPoint.type = Geopoint.POI_MARK;
 		this.actionPoint.color = Geopoint.COLOR_BLUE;
@@ -31,10 +30,6 @@ public class AutoSegment extends RouteSegment {
 
 	public Geopoint GetAnchor() {
 		return actionPoint;
-	}
-
-	public int GetSegmentStartVertex() {
-		return actionVertex;
 	}
 
 	public int GetDistance() {

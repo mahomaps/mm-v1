@@ -118,11 +118,12 @@ public class RouteDecoder {
 	public static RouteSegment[] DecodeSegments(JSONArray j, Geopoint[] line) {
 		RouteSegment[] arr = new RouteSegment[j.length()];
 		for (int i = 0; i < arr.length; i++) {
-			JSONObject js = j.getJSONObject(i);
-			JSONObject props = js.getJSONObject("properties");
-			JSONArray geoms = js.getJSONObject("geometry").getJSONArray("geometries");
-			JSONObject segmd = props.getJSONObject("SegmentMetaData");
-			String descr = segmd.getString("text");
+			final JSONObject js = j.getJSONObject(i);
+			final JSONObject props = js.getJSONObject("properties");
+			final JSONArray geoms = js.getJSONObject("geometry").getJSONArray("geometries");
+			final int sv = geoms.getJSONObject(0).getInt("lodIndex");
+			final JSONObject segmd = props.getJSONObject("SegmentMetaData");
+			final String descr = segmd.getString("text");
 			int dist = 0;
 			{
 				JSONObject dj = segmd.optJSONObject("Distance");
@@ -133,17 +134,17 @@ public class RouteDecoder {
 					dist = (int) Double.parseDouble(v);
 			}
 			if (segmd.optBoolean("Walk", false)) {
-				arr[i] = new WalkingSegment(descr, dist);
+				arr[i] = new WalkingSegment(descr, dist, sv);
 				continue;
 			}
 			JSONArray tr = segmd.optJSONArray("Transports");
 			if (tr != null && tr.length() > 0) {
 				String trt = tr.getJSONObject(0).getString("type");
 				if (trt.equals("suburban")) {
-					arr[i] = new RailwaySegment(descr);
+					arr[i] = new RailwaySegment(descr, sv);
 					continue;
 				}
-				arr[i] = new TransportSegment(descr);
+				arr[i] = new TransportSegment(descr, sv);
 				continue;
 			}
 			JSONObject action = segmd.optJSONObject("Action");
@@ -154,12 +155,11 @@ public class RouteDecoder {
 				int angle = (int) segmd.optDouble("angle", 0);
 				JSONObject durObj = segmd.optJSONObject("Duration");
 				int dur = durObj == null ? 0 : (int) durObj.optDouble("value", 0);
-				int av = geoms.getJSONObject(0).getInt("lodIndex");
-				arr[i] = new AutoSegment(descr, street, dist, angle, dur, actionKey, actionText, av, line[av]);
+				arr[i] = new AutoSegment(descr, street, dist, angle, dur, actionKey, actionText, sv, line[sv]);
 				continue;
 			}
 
-			arr[i] = new UnknownSegment();
+			arr[i] = new UnknownSegment(sv);
 		}
 
 		return arr;
