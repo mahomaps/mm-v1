@@ -76,7 +76,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
-					new Button("Закрыть", 1, this) });
+					new SimpleText(e.getClass().getName()), new Button("Закрыть", 1, this) });
 		} catch (OutOfMemoryError e) {
 			content = new FillFlowContainer(
 					new UIElement[] { new SimpleText("Не хватило памяти."), new Button("Закрыть", 1, this) });
