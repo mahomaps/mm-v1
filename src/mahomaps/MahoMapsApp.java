@@ -123,7 +123,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		thread = null;
 	}
 
-	private static String getAppropCachePath() {
+	public static String getAppropCachePath() {
 		String loc = null;
 		if (IsKemulator()) {
 			loc = "file:///root/ym/";
