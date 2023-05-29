@@ -66,5 +66,6 @@ public abstract class RouteSegment {
 	public static final int ICON_BUS = 2;
 	public static final int ICON_METRO = 3;
 	public static final int ICON_SUBURBAN = 4;
+	public static final int ICON_FINISH = 5;
 
 }

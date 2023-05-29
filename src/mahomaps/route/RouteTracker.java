@@ -1,5 +1,6 @@
 package mahomaps.route;
 
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
 import mahomaps.MahoMapsApp;
@@ -21,8 +22,7 @@ public class RouteTracker {
 	static final int ACCEPTABLE_ERROR = 20;
 
 	// drawing temps
-	String next;
-	String distLeft;
+	private TrackerOverlayState tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Начинаем маршрут...", "");
 
 	public RouteTracker(Route r, RouteFollowOverlay o) {
 		this.o = o;
@@ -62,21 +62,23 @@ public class RouteTracker {
 			} else {
 				currentSegment = -1;
 			}
-		} else if (currentSegment == -1) {
+		}
+		if (currentSegment == -1) {
 			// route start is not reached
-			next = "Вернитесь на старт";
 			float d = distTo(vertex[0]);
-			distLeft = "Осталось " + ((int) d) + "м";
+			tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "Проследуйте к старту",
+					"Осталось " + ((int) d) + "м", segments[0].GetDescription());
+			o.ShowPoint(segments[0].GetAnchor());
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment = 0;
 			}
-			o.ShowPoint(segments[0].GetAnchor());
 		} else if (currentSegment == segments.length - 1) {
 			// last segment
 			Geopoint t = vertex[vertex.length - 1];
 			float d = distTo(t);
-			next = "Финиш";
-			distLeft = "Осталось " + ((int) d) + "м";
+			RouteSegment rs = segments[currentSegment];
+			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, getCurrentSegmentInfo(rs),
+					"Через " + ((int) d) + " метров", "Конец маршрута");
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
@@ -85,19 +87,18 @@ public class RouteTracker {
 			// route is follown
 			RouteSegment s = segments[currentSegment];
 			RouteSegment ns = segments[currentSegment + 1];
-			next = ns.GetDescription();
 			int sv = s.segmentStartVertex;
 			int ev = ns.segmentStartVertex;
+			// next = ns.GetDescription();
 			float d = ev == 0 ? 292 : distTo(vertex[ev]);
-			distLeft = "Осталось " + ((int) d) + "м";
+			// distLeft = "Осталось " + ((int) d) + "м";
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
 			o.ShowPoint(ns.GetAnchor());
 		} else {
 			// route ended
-			next = "Маршрут завершён.";
-			distLeft = null;
+			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, "", "Маршрут завершён.", "");
 			o.ShowPoint(null);
 		}
 
@@ -107,14 +108,31 @@ public class RouteTracker {
 	 * Call this every frame after {@link #Update()} to draw tracker.
 	 */
 	public void Draw(Graphics g, int w) {
+		Font f = Font.getFont(0, 0, 8);
+		int fh = f.getHeight();
+		g.setFont(f);
+		// bg
 		g.setColor(MapOverlay.OVERLAY_BG);
-		g.fillRoundRect(5, 5, w - 10, 50, 10, 10);
+		g.fillRoundRect(5, 5, w - 10, fh * 3 + 10, 10, 10);
+		// text
 		g.setColor(-1);
-		if (next != null)
-			g.drawString(next, 10, 10, 0);
-		if (distLeft != null)
-			g.drawString(distLeft, 10, 30, 0);
+		g.drawString(tos.line1, 10, 10, 0);
+		g.drawString(tos.line2, 10, 10 + fh, 0);
+		g.drawString(tos.line3, 10, 10 + fh + fh, 0);
+		// icons
+		// TODO
 
+	}
+
+	private static String getCurrentSegmentInfo(RouteSegment rs) {
+		if (rs instanceof AutoSegment) {
+			AutoSegment as = (AutoSegment) rs;
+			if (as.street.length() > 0) {
+				return as.street + "; " + as.dist + "м";
+			}
+			return "Дорога " + as.dist + "м";
+		}
+		return rs.GetDescription();
 	}
 
 	private float distTo(Geopoint p) {
