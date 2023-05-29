@@ -120,8 +120,27 @@ public class RouteDecoder {
 		for (int i = 0; i < arr.length; i++) {
 			final JSONObject js = j.getJSONObject(i);
 			final JSONObject props = js.getJSONObject("properties");
-			final JSONArray geoms = js.getJSONObject("geometry").getJSONArray("geometries");
-			final int sv = geoms.getJSONObject(0).getInt("lodIndex");
+			int sv = -1;
+			{
+				JSONObject gm = js.optJSONObject("geometry");
+				if (gm != null) {
+					JSONArray gms = gm.optJSONArray("geometries");
+					if (gms != null) {
+						sv = gms.getJSONObject(0).optInt("lodIndex", -1);
+					}
+				}
+				if (sv == -1) {
+					JSONArray ftrs = js.optJSONArray("features");
+					if (ftrs != null) {
+						gm = ftrs.getJSONObject(0).optJSONObject("geometry");
+						if (gm != null) {
+							sv = gm.optInt("lodIndex", -1);
+						}
+					}
+				}
+				if (sv == -1)
+					throw new IllegalArgumentException();
+			}
 			final JSONObject segmd = props.getJSONObject("SegmentMetaData");
 			final String descr = segmd.getString("text");
 			int dist = 0;
