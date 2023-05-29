@@ -217,7 +217,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			g.setColor(-1);
 			g.setFont(f);
 
-			g.drawString("Меню", 0, h, 0);
+			if (MahoMapsApp.route == null)
+				g.drawString("Меню", 0, h, 0);
 			g.drawString("Выбор", w / 2, h, Graphics.TOP | Graphics.HCENTER);
 			if (mapFocused) {
 				if (!UIElement.IsQueueEmpty())
@@ -316,6 +317,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void ShowGeo() {
+		if (MahoMapsApp.route == null)
+			return;
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
@@ -337,7 +340,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		touch = false;
 		if (k == -6 || k == -21) { // -21 и -22 для моторол
-			MahoMapsApp.BringMenu();
+			if (MahoMapsApp.route == null)
+				MahoMapsApp.BringMenu();
 			return;
 		}
 		if (k == -7 || k == -22) {
@@ -529,7 +533,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				break handling;
 
 			// tap at map
-			if (MahoMapsApp.lastSearch == null) {
+			if (MahoMapsApp.lastSearch == null && MahoMapsApp.route == null) {
 				Geopoint s = Geopoint.GetAtCoords(state, x - getWidth() / 2, y - getHeight() / 2);
 				if (s.IsValid()) {
 					overlays.PushOverlay(new SelectOverlay(s));
@@ -547,6 +551,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void BeginTextSearch() {
+		if (MahoMapsApp.route == null)
+			return;
 		if (CheckApiAcsess()) {
 			if (MahoMapsApp.lastSearch == null) {
 				MahoMapsApp.BringSubScreen(searchBox);
