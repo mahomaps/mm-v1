@@ -72,7 +72,16 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			// just in case
 		}
 		Settings.Read(); // catch(Throwable) inside
-		tiles = new TilesProvider("ru_RU"); // nothing to fail
+		try {
+			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
+		} catch (RuntimeException e) {
+			Form f = new Form("Ошибка", new Item[] { new StringItem("Настройки повреждены", "Переустановите приложение.") });
+			f.addCommand(exit);
+			f.setCommandListener(this);
+			BringSubScreen(f);
+			thread = null;
+			return;
+		}
 		if (!TryInitFSCache(true)) { // catch(Throwable) inside
 			thread = null;
 			return;
@@ -312,5 +321,13 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			Settings.Save();
 			startApp();
 		}
+	}
+	
+	public static String getConnectionParams() {
+		if (platform.toLowerCase().indexOf("blackberry") == -1) {
+			return "";
+		}
+		// сделать поддержку 3г когда-нибудь
+		return ";deviceside=true;interface=wifi";
 	}
 }

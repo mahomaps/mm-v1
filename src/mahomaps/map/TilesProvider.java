@@ -301,7 +301,7 @@ public class TilesProvider implements Runnable {
 		HttpConnection hc = null;
 		FileConnection fc = null;
 		try {
-			hc = (HttpConnection) Connector.open(getUrl(id));
+			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
 			int len = (int) hc.getLength();
 			if (len <= 0)
 				throw new IOException("Empty responce");
@@ -422,7 +422,7 @@ public class TilesProvider implements Runnable {
 	 * @param id Тайл для поиска.
 	 * @return Изображение, если тайл сохранён, иначе null.
 	 */
-	private static Image tryLoadFromRMS(TileId id) {
+	private Image tryLoadFromRMS(TileId id) {
 		byte[] b = null;
 		try {
 			RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
@@ -563,11 +563,11 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getFileName(TileId id) {
-		return localPath + "tile_" + id.x + "_" + id.y + "_" + id.zoom;
+		return localPath + "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
 	}
 
-	private static String getRmsName(TileId id) {
-		return "tile_" + id.x + "_" + id.y + "_" + id.zoom;
+	private String getRmsName(TileId id) {
+		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
 	}
 
 }

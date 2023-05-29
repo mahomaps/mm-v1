@@ -14,6 +14,7 @@ import javax.microedition.io.HttpConnection;
 import org.json.me.JSONArray;
 import org.json.me.JSONObject;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 
 public abstract class YmapsApiBase {
@@ -31,7 +32,7 @@ public abstract class YmapsApiBase {
 			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		try {
-			hc = (HttpConnection) Connector.open(url);
+			hc = (HttpConnection) Connector.open(url + MahoMapsApp.getConnectionParams());
 			hc.setRequestMethod("GET");
 			hc.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0");
@@ -102,7 +103,7 @@ public abstract class YmapsApiBase {
 			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		System.out.println("GET " + url);
-		HttpConnection hc = (HttpConnection) Connector.open(url);
+		HttpConnection hc = (HttpConnection) Connector.open(url + MahoMapsApp.getConnectionParams());
 		InputStream is = null;
 		ByteArrayOutputStream o = null;
 		try {

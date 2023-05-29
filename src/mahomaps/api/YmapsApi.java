@@ -9,6 +9,7 @@ import org.json.me.JSONArray;
 import org.json.me.JSONException;
 import org.json.me.JSONObject;
 
+import mahomaps.Settings;
 import mahomaps.map.Geopoint;
 
 public final class YmapsApi extends YmapsApiBase {
@@ -27,8 +28,8 @@ public final class YmapsApi extends YmapsApiBase {
 
 	private final String GetSearchUrl(String text, Geopoint around, double zone) {
 		String[] cs = around.GetRounded();
-		return "https://api-maps.yandex.ru/services/search/v2/?format=json&lang=ru_RU&token=" + token
-				+ "&rspn=0&results=40&origin=jsapi2SearchControl"
+		return "https://api-maps.yandex.ru/services/search/v2/?format=json&lang=" + Settings.GetLangString() + "&token="
+				+ token + "&rspn=0&results=40&origin=jsapi2SearchControl"
 				+ "&snippets=businessrating%2F1.x%2Cmasstransit%2F1.x&ask_direct=1&experimental_maxadv=200&apikey="
 				+ key + "&text=" + EncodeUrl(text) + "&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
 	}
@@ -47,8 +48,11 @@ public final class YmapsApi extends YmapsApiBase {
 		default:
 			throw new IllegalArgumentException();
 		}
-		return "https://api-maps.yandex.ru/services/route/2.0/?lang=ru_RU&token=" + token + "&rll=" + a.lon + "%2C"
-				+ a.lat + "~" + b.lon + "%2C" + b.lat + "&rtm=dtr&results=1&apikey=" + key + typeS;
+		String baseUrl = "https://api-maps.yandex.ru/services/route/2.0/?lang=";
+		String lang = new String(new char[] { baseUrl.charAt(29), baseUrl.charAt(38), '_',
+				Character.toUpperCase(baseUrl.charAt(29)), 'U' });
+		return baseUrl + lang + "&token=" + token + "&rll=" + a.lon + "%2C" + a.lat + "~" + b.lon + "%2C" + b.lat
+				+ "&rtm=dtr&results=1&apikey=" + key + typeS;
 	}
 
 	public final JSONArray Search(String text, Geopoint around, double zone)

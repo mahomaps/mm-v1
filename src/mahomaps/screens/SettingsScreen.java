@@ -32,6 +32,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Отключено", "nnchan.ru", }, null);
 	private ChoiceGroup uiSize = new ChoiceGroup("Размер кнопок управления (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Автоматически", "50x50", "30x30" }, null);
+	private ChoiceGroup lang = new ChoiceGroup("Язык тайлов и поиска (нужен перезапуск)", Choice.POPUP,
+			new String[] { "Русский", "Английский", "Турецкий" }, null);
 
 	public SettingsScreen() {
 		super("Настройки");
@@ -68,6 +70,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		// апи отслеживается отдельно, однако предполагается что оно включено вместе с
 		// тайлами.
 		uiSize.setSelectedIndex(Settings.uiSize, true);
+		lang.setSelectedIndex(Settings.lang, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -77,6 +80,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(download);
 		append(proxyTiles);
 		append(uiSize);
+		append(lang);
 	}
 
 	private void Apply() {
@@ -89,6 +93,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
 		Settings.uiSize = uiSize.getSelectedIndex();
+		Settings.lang = lang.getSelectedIndex();
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}
