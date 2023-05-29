@@ -32,7 +32,7 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 		this.b = b;
 		this.method = method;
 		this.r = r;
-		content = new FillFlowContainer(new UIElement[] { new Button("Закрыть", 0, this) });
+		content = new FillFlowContainer(new UIElement[] { new Button("Закрыть маршрут", 0, this) });
 		ShowPoint(null);
 	}
 
@@ -70,7 +70,7 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 	public void commandAction(Command c, Displayable d) {
 		if (c == discard) {
 			MahoMapsApp.GetCanvas().line = null;
-			MahoMapsApp.route.ReleaseGeolocation(MahoMapsApp.GetCanvas());
+			MahoMapsApp.route.ReleaseGeolocation();
 			MahoMapsApp.route = null;
 			Close();
 		}

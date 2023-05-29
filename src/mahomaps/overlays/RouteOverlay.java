@@ -160,6 +160,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			RouteTracker rt = new RouteTracker(route, rfo);
 			rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
 			MahoMapsApp.route = rt;
+			UIElement.Deselect();
 			break;
 		}
 	}

@@ -187,13 +187,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		controls.info = GetGeoInfo();
 
-		boolean t = touch;
+		final boolean t = touch;
+		final RouteTracker rt = MahoMapsApp.route;
+
 		int fh = f.getHeight();
 		if (!t)
 			h -= fh;
 
 		lastOverlaysW = getOverlaysW(w, h);
-		overlays.Draw(g, lastOverlaysW, h);
+
+		if (t || rt == null)
+			overlays.Draw(g, lastOverlaysW, h);
 
 		if (t) {
 			int ch = h;
@@ -203,12 +207,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 		controls.PaintInfo(g, 0, 0, w, h - overlays.overlaysH);
 
-		{
-			RouteTracker rt = MahoMapsApp.route;
-			if (rt != null) {
-				rt.Update();
-				rt.Draw(g, w);
-			}
+		if (rt != null) {
+			mapFocused = true;
+			rt.Update();
+			rt.Draw(g, w);
 		}
 
 		if (!t) {
@@ -217,14 +219,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			g.setColor(-1);
 			g.setFont(f);
 
-			if (MahoMapsApp.route == null)
+			if (rt == null) {
 				g.drawString("Меню", 0, h, 0);
-			g.drawString("Выбор", w / 2, h, Graphics.TOP | Graphics.HCENTER);
-			if (mapFocused) {
-				if (!UIElement.IsQueueEmpty())
-					g.drawString("К панелям", w, h, Graphics.TOP | Graphics.RIGHT);
+				g.drawString("Выбор", w / 2, h, Graphics.TOP | Graphics.HCENTER);
+
+				if (mapFocused) {
+					if (!UIElement.IsQueueEmpty())
+						g.drawString("К панелям", w, h, Graphics.TOP | Graphics.RIGHT);
+				} else {
+					g.drawString("К карте", w, h, Graphics.TOP | Graphics.RIGHT);
+				}
 			} else {
-				g.drawString("К карте", w, h, Graphics.TOP | Graphics.RIGHT);
+				g.drawString("Закр. маршрут", w, h, Graphics.TOP | Graphics.RIGHT);
 			}
 		}
 	}
@@ -339,9 +345,29 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			return;
 
 		touch = false;
+
+		if (MahoMapsApp.route != null) {
+			// когда маршрут ведётся, можно только изменять масштаб и закрывать маршрут.
+			switch (k) {
+			case -7:
+			case -22:
+				MahoMapsApp.route.overlay.OnButtonTap(null, 0);
+				break;
+			case KEY_NUM1:
+			case KEY_STAR:
+				state = state.ZoomOut();
+				break;
+			case KEY_NUM3:
+			case KEY_POUND:
+				state = state.ZoomIn();
+				break;
+			}
+			requestRepaint();
+			return;
+		}
+
 		if (k == -6 || k == -21) { // -21 и -22 для моторол
-			if (MahoMapsApp.route == null)
-				MahoMapsApp.BringMenu();
+			MahoMapsApp.BringMenu();
 			return;
 		}
 		if (k == -7 || k == -22) {

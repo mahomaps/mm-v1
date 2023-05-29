@@ -5,13 +5,14 @@ import javax.microedition.lcdui.Graphics;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
+import mahomaps.map.MapState;
 import mahomaps.overlays.MapOverlay;
 import mahomaps.overlays.RouteFollowOverlay;
 import mahomaps.screens.MapCanvas;
 
 public class RouteTracker {
 
-	private final RouteFollowOverlay o;
+	public final RouteFollowOverlay overlay;
 	Geopoint trueGeolocation = null;
 	Geopoint extrapolatedGeolocation = null;
 	private final Geopoint[] vertex;
@@ -23,9 +24,10 @@ public class RouteTracker {
 
 	// drawing temps
 	private TrackerOverlayState tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Начинаем маршрут...", "");
+	private MapCanvas map;
 
 	public RouteTracker(Route r, RouteFollowOverlay o) {
-		this.o = o;
+		this.overlay = o;
 		vertex = r.points;
 		segments = r.segments;
 		currentSegment = -2;
@@ -35,7 +37,8 @@ public class RouteTracker {
 		}
 	}
 
-	public void SpoofGeolocation(MapCanvas map) {
+	public void SpoofGeolocation(MapCanvas m) {
+		map = m;
 		trueGeolocation = map.geolocation;
 		extrapolatedGeolocation = new Geopoint(trueGeolocation.lat, trueGeolocation.lon);
 		extrapolatedGeolocation.type = Geopoint.LOCATION;
@@ -43,10 +46,11 @@ public class RouteTracker {
 		map.geolocation = extrapolatedGeolocation;
 	}
 
-	public void ReleaseGeolocation(MapCanvas map) {
+	public void ReleaseGeolocation() {
 		map.geolocation = trueGeolocation;
 		trueGeolocation = null;
 		extrapolatedGeolocation = null;
+		map = null;
 	}
 
 	/**
@@ -69,7 +73,7 @@ public class RouteTracker {
 			final RouteSegment rs = segments[0];
 			tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
 					"Осталось " + ((int) d) + "м", rs.GetDescription());
-			o.ShowPoint(rs.GetAnchor());
+			overlay.ShowPoint(rs.GetAnchor());
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment = 0;
 			}
@@ -83,7 +87,7 @@ public class RouteTracker {
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
-			o.ShowPoint(null);
+			overlay.ShowPoint(null);
 		} else if (currentSegment < segments.length) {
 			// route is follown
 			RouteSegment s = segments[currentSegment];
@@ -104,11 +108,11 @@ public class RouteTracker {
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
-			o.ShowPoint(ns.GetAnchor());
+			overlay.ShowPoint(ns.GetAnchor());
 		} else {
 			// route ended
 			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, "", "Маршрут завершён.", "");
-			o.ShowPoint(null);
+			overlay.ShowPoint(null);
 		}
 
 	}
