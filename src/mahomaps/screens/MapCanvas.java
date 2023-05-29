@@ -532,6 +532,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				} else
 					return;
 			}
+
+			if (MahoMapsApp.route != null)
+				return;
+
 			state.xOffset += x - lastPx;
 			state.yOffset += y - lastPy;
 			lastPx = x;
