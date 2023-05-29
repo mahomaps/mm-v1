@@ -17,6 +17,8 @@ public class RouteTracker {
 	final RouteSegment[] segments;
 	int currentSegment;
 
+	static final int ACCEPTABLE_ERROR = 20;
+
 	// drawing temps
 	String next;
 	String distLeft;
@@ -55,13 +57,46 @@ public class RouteTracker {
 		extrapolatedGeolocation.lon = trueGeolocation.lon;
 		if (currentSegment == -2) {
 			// first update
+			if (distTo(vertex[0]) < ACCEPTABLE_ERROR) {
+				currentSegment = 0;
+			} else {
+				currentSegment = -1;
+			}
 		} else if (currentSegment == -1) {
 			// route start is not reached
-		} else {
+			next = "Вернитесь на старт";
+			float d = distTo(vertex[0]);
+			distLeft = "Осталось " + ((int) d) + "м";
+			if (d < ACCEPTABLE_ERROR) {
+				currentSegment = 0;
+			}
+		} else if (currentSegment == segments.length - 1) {
+			// last segment
+			Geopoint t = vertex[vertex.length - 1];
+			float d = distTo(t);
+			next = "Финиш";
+			distLeft = "Осталось " + ((int) d) + "м";
+			if (d < ACCEPTABLE_ERROR) {
+				currentSegment++;
+			}
+		} else if (currentSegment < segments.length) {
 			// route is follown
+			RouteSegment s = segments[currentSegment];
+			RouteSegment ns = segments[currentSegment + 1];
+			int sv = s.GetSegmentStartVertex();
+			int ev = ns.GetSegmentStartVertex();
+			next = ns.GetDescription();
+			float d = ev == 0 ? 292 : distTo(vertex[ev]);
+			distLeft = "Осталось " + ((int) d) + "м";
+			if (d < ACCEPTABLE_ERROR) {
+				currentSegment++;
+			}
+		} else {
+			// route ended
+			next = "Маршрут завершён.";
+			distLeft = null;
 		}
-		next = "Вернитесь на старт";
-		distLeft = "Осталось " + ((Distance(trueGeolocation, vertex[0]))) + "м";
+
 	}
 
 	/**
@@ -76,6 +111,10 @@ public class RouteTracker {
 		if (distLeft != null)
 			g.drawString(distLeft, 10, 30, 0);
 
+	}
+
+	private float distTo(Geopoint p) {
+		return Distance(extrapolatedGeolocation, p);
 	}
 
 	public static float Distance(Geopoint a, Geopoint b) {
