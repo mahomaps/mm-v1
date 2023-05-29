@@ -66,9 +66,10 @@ public class RouteTracker {
 		if (currentSegment == -1) {
 			// route start is not reached
 			float d = distTo(vertex[0]);
-			tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "Проследуйте к старту",
-					"Осталось " + ((int) d) + "м", segments[0].GetDescription());
-			o.ShowPoint(segments[0].GetAnchor());
+			final RouteSegment rs = segments[0];
+			tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
+					"Осталось " + ((int) d) + "м", rs.GetDescription());
+			o.ShowPoint(rs.GetAnchor());
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment = 0;
 			}
@@ -87,11 +88,19 @@ public class RouteTracker {
 			// route is follown
 			RouteSegment s = segments[currentSegment];
 			RouteSegment ns = segments[currentSegment + 1];
-			int sv = s.segmentStartVertex;
 			int ev = ns.segmentStartVertex;
-			// next = ns.GetDescription();
-			float d = ev == 0 ? 292 : distTo(vertex[ev]);
-			// distLeft = "Осталось " + ((int) d) + "м";
+			float d = distTo(vertex[ev]);
+			if (d < 100) {
+				final String dist = "Через " + ((int) d) + "м";
+				final String a = ns.GetAction();
+				final String info = getCurrentSegmentInfo(ns);
+				tos = new TrackerOverlayState(ns.GetIcon(), getSegmentAngle(ns), dist, a, info);
+			} else {
+				final String info = getCurrentSegmentInfo(s);
+				final String dist = "Осталось " + ((int) d) + "м";
+				final String a = ns.GetAction();
+				tos = new TrackerOverlayState(ns.GetIcon(), getSegmentAngle(ns), info, dist, a);
+			}
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
 			}
@@ -133,6 +142,14 @@ public class RouteTracker {
 			return "Дорога " + as.dist + "м";
 		}
 		return rs.GetDescription();
+	}
+
+	private static float getSegmentAngle(RouteSegment rs) {
+		if (rs instanceof AutoSegment) {
+			AutoSegment as = (AutoSegment) rs;
+			return (float) as.angle;
+		}
+		return 0f;
 	}
 
 	private float distTo(Geopoint p) {
