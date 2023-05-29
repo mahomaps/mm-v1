@@ -41,8 +41,8 @@ public class AutoSegment extends RouteSegment {
 		return dist;
 	}
 
-	public String GetIcon() {
-		return null;
+	public int GetIcon() {
+		return MANEUVER_ANGLE;
 	}
 
 	public String GetType() {

@@ -20,7 +20,7 @@ public abstract class RouteSegment {
 	 */
 	public abstract int GetDistance();
 
-	public abstract String GetIcon();
+	public abstract int GetIcon();
 
 	public abstract String GetType();
 
@@ -51,5 +51,12 @@ public abstract class RouteSegment {
 	public Item[] ToLcdui() {
 		return new Item[] { ToLcduiSingle() };
 	}
+
+	public static final int MANEUVER_ANGLE = -1;
+	public static final int NO_ICON = 0;
+	public static final int ICON_WALK = 1;
+	public static final int ICON_BUS = 2;
+	public static final int ICON_METRO = 3;
+	public static final int ICON_SUBURBAN = 4;
 
 }

@@ -10,4 +10,8 @@ public class RailwaySegment extends TransportSegment {
 		return "На пригородном поезде";
 	}
 
+	public int GetIcon() {
+		return ICON_SUBURBAN;
+	}
+
 }

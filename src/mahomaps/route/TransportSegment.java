@@ -12,8 +12,8 @@ public class TransportSegment extends RouteSegment {
 		return 0;
 	}
 
-	public String GetIcon() {
-		return null;
+	public int GetIcon() {
+		return ICON_BUS;
 	}
 
 	public String GetType() {

@@ -14,8 +14,8 @@ public class WalkingSegment extends RouteSegment {
 		return dist;
 	}
 
-	public String GetIcon() {
-		return null;
+	public int GetIcon() {
+		return ICON_WALK;
 	}
 
 	public String GetType() {

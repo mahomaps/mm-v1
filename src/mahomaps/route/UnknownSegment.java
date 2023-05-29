@@ -6,8 +6,8 @@ public class UnknownSegment extends RouteSegment {
 		return 0;
 	}
 
-	public String GetIcon() {
-		return null;
+	public int GetIcon() {
+		return NO_ICON;
 	}
 
 	public String GetType() {
