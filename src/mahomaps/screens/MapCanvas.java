@@ -314,7 +314,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				flushGraphics();
 				repaintDebugTick = !repaintDebugTick;
 			}
-			repaintGate.Pass(2000);
+			if (MahoMapsApp.route == null)
+				repaintGate.Pass(2000);
+			else
+				repaintGate.Pass(20);
 		}
 	}
 
