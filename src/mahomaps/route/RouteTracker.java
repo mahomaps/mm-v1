@@ -1,7 +1,10 @@
 package mahomaps.route;
 
+import java.io.IOException;
+
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
@@ -12,6 +15,7 @@ import mahomaps.screens.MapCanvas;
 
 public class RouteTracker {
 
+	final Image icons;
 	public final RouteFollowOverlay overlay;
 	Geopoint trueGeolocation = null;
 	Geopoint extrapolatedGeolocation = null;
@@ -26,7 +30,7 @@ public class RouteTracker {
 	private TrackerOverlayState tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Начинаем маршрут...", "");
 	private MapCanvas map;
 
-	public RouteTracker(Route r, RouteFollowOverlay o) {
+	public RouteTracker(Route r, RouteFollowOverlay o) throws IOException {
 		this.overlay = o;
 		vertex = r.points;
 		segments = r.segments;
@@ -35,6 +39,7 @@ public class RouteTracker {
 		for (int i = 0; i < lineLengths.length; i++) {
 			lineLengths[i] = Distance(vertex[i], vertex[i + 1]);
 		}
+		icons = Image.createImage("/navigator50.png");
 	}
 
 	public void SpoofGeolocation(MapCanvas m) {
@@ -136,10 +141,10 @@ public class RouteTracker {
 		g.drawString(tos.line2, x, 10 + fh, 0);
 		g.drawString(tos.line3, x, 10 + fh + fh, 0);
 		// icons
+		int cx = 10 + 25;
+		int cy = 10 + fh + fh / 2;
 		if (tos.icon == RouteSegment.MANEUVER_ANGLE) {
 			g.setColor(-1);
-			int cx = 10 + 25;
-			int cy = 10 + fh + fh / 2;
 			final int THICK = 6;
 			final int ARROW = 9;
 			g.fillRoundRect(cx - THICK / 2, cy - THICK / 2, THICK, 25 + THICK / 2, THICK, THICK);
@@ -177,7 +182,7 @@ public class RouteTracker {
 				g.fillTriangle(cx - x25, cy - y25, xAl, yAl, xAr, yAr);
 			}
 		} else if (tos.icon != RouteSegment.NO_ICON) {
-			// TODO
+			g.drawRegion(icons, (tos.icon - 1) * 50, 0, 50, 50, 0, cx, cy, Graphics.VCENTER | Graphics.HCENTER);
 		}
 	}
 
