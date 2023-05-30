@@ -130,7 +130,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		} else {
 			loc = fixPath(System.getProperty("fileconn.dir.private"), null);
 			if (loc == null)
-				loc = fixPath(System.getProperty("fileconn.dir.images"), "MahoMaps/");
+				loc = fixPath(System.getProperty("fileconn.dir.photos"), "MahoMaps/");
 			if (loc == null)
 				loc = "file:///C:/MahoMaps/";
 		}
