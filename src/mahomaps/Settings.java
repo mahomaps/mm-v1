@@ -14,7 +14,7 @@ public class Settings {
 	public static boolean drawDebugInfo = false;
 	public static int focusZoom = 16;
 	public static int geoLook = 0;
-	public static int showGeo = 2;
+	public static int showGeo = 1;
 	public static boolean allowDownload = true;
 	public static int cacheMode = 1;
 	public static boolean proxyTiles = false;
@@ -47,7 +47,7 @@ public class Settings {
 			drawDebugInfo = j.optBoolean("tile_info", false);
 			focusZoom = j.optInt("focus_zoom", 16);
 			geoLook = j.optInt("geo_look", 0);
-			showGeo = j.optInt("show_geo", 2);
+			showGeo = j.optInt("show_geo", 1);
 			allowDownload = j.optBoolean("online", true);
 			cacheMode = j.optInt("cache", 1);
 			proxyTiles = j.optBoolean("proxy_tiles");
