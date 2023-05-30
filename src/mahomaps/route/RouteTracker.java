@@ -101,7 +101,7 @@ public class RouteTracker {
 			RouteSegment ns = segments[currentSegment + 1];
 			int ev = ns.segmentStartVertex;
 			float d = distTo(vertex[ev]);
-			if (d < 100) {
+			if (d < 200) {
 				final String dist = "Через " + ((int) d) + "м";
 				final String a = ns.GetAction();
 				final String info = getCurrentSegmentInfo(ns);
@@ -110,7 +110,7 @@ public class RouteTracker {
 				final String info = getCurrentSegmentInfo(s);
 				final String dist = "Осталось " + ((int) d) + "м";
 				final String a = ns.GetAction();
-				tos = new TrackerOverlayState(ns.GetIcon(), getSegmentAngle(ns), info, dist, a);
+				tos = new TrackerOverlayState(s.GetIcon(), 0f, info, dist, a);
 			}
 			if (d < ACCEPTABLE_ERROR) {
 				currentSegment++;
