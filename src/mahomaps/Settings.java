@@ -20,6 +20,9 @@ public class Settings {
 	public static int cacheMode = 1;
 	public static boolean proxyTiles = false;
 	public static boolean proxyApi = false;
+	public static int uiSize = 0;
+	public static int lang = 0;
+
 	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
 	public static final int CACHE_FS = 1;
@@ -48,8 +51,10 @@ public class Settings {
 			showGeo = j.getInt("show_geo", 2);
 			allowDownload = j.getBoolean("online", true);
 			cacheMode = j.getInt("cache", 1);
-			proxyTiles = j.getBoolean("proxy_tiles");
-			proxyApi = j.getBoolean("proxy_api");
+			proxyTiles = j.getBoolean("proxy_tiles", false);
+			proxyApi = j.getBoolean("proxy_api", false);
+			uiSize = j.getInt("ui_size", 0);
+			lang = j.getInt("lang", 0);
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -63,7 +68,8 @@ public class Settings {
 			proxyApi = false;
 			proxyTiles = false;
 		} else {
-			proxyTiles = proxyApi = MahoMapsApp.platform == null || MahoMapsApp.platform.indexOf("platform_version=5.") == -1
+			proxyTiles = proxyApi = MahoMapsApp.platform == null
+					|| MahoMapsApp.platform.indexOf("platform_version=5.") == -1
 					|| MahoMapsApp.platform.indexOf("platform_version=5.0") != -1;
 		}
 	}
@@ -78,6 +84,8 @@ public class Settings {
 		j.put("cache", cacheMode);
 		j.put("proxy_tiles", proxyTiles);
 		j.put("proxy_api", proxyApi);
+		j.put("ui_size", uiSize);
+		j.put("lang", lang);
 		return j.toString();
 	}
 
@@ -93,6 +101,19 @@ public class Settings {
 			r.closeRecordStore();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static String GetLangString() {
+		switch (lang) {
+		case 0:
+			return new String(new char[] {'r','u','_','R','U'});
+		case 1:
+			return new String(new char[] {'e','n','_','U','S'});
+		case 2:
+			return new String(new char[] {'t','r','_','T','R'});
+		default:
+			throw new IndexOutOfBoundsException("Unknown language code!");
 		}
 	}
 }

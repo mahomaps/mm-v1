@@ -53,10 +53,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public final OverlaysManager overlays = new OverlaysManager(this);
 	public Line line;
 
-	// misc
+	// draw/input states/temps/caches
 	boolean dragActive;
 	private boolean repaintDebugTick = true;
 	public boolean hidden = false;
+	private int lastOverlaysW;
 	public final Gate repaintGate = new Gate(true);
 	private Graphics cachedGraphics;
 
@@ -190,10 +191,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (!t)
 			h -= fh;
 
-		overlays.Draw(g, w, h);
+		lastOverlaysW = getOverlaysW(w, h);
+		overlays.Draw(g, lastOverlaysW, h);
 
 		if (t) {
-			controls.Paint(g, 0, 0, w, h - overlays.overlaysH);
+			int ch = h;
+			if (lastOverlaysW == w)
+				ch -= overlays.overlaysH;
+			controls.Paint(g, 0, 0, w, ch);
 		}
 		controls.PaintInfo(g, 0, 0, w, h - overlays.overlaysH);
 
@@ -257,6 +262,21 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			v.addElement(r[1]);
 		}
 		return v;
+	}
+
+	private static int getOverlaysW(int w, int h) {
+		if (w <= h) {
+			// portait
+			return w;
+		}
+
+		if (h + 100 > w) {
+			// album, but too square (less than 100 pixels free)
+			return w;
+		}
+
+		// album, wide enough
+		return h;
 	}
 
 	public void run() throws InterruptedException {
@@ -369,9 +389,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				}
 				switch (k) {
 				case KEY_NUM1:
+				case KEY_STAR:
 					state = state.ZoomOut();
 					break handling;
 				case KEY_NUM3:
+				case KEY_POUND:
 					state = state.ZoomIn();
 					break handling;
 				case KEY_NUM7:
@@ -491,7 +513,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			if (UIElement.InvokeTouchEvent(x, y))
 				break handling;
 
-			if (y > getHeight() - overlays.overlaysH)
+			if (y > getHeight() - overlays.overlaysH && x < lastOverlaysW)
 				break handling;
 
 			if (overlays.OnGeopointTap(x, y))

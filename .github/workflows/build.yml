@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: Build
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Setup
+        run: sudo dpkg --add-architecture i386 && sudo apt update && sudo apt-get install gcc-multilib libxt6:i386
+      - name: Build
+        run: cd ${{ github.workspace }} && chmod +x ./build.sh && ./build.sh
+      - name: Upload jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: base.zip
+          path: ${{ github.workspace }}/mm_v1.jar
+      - name: Upload obf jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: obf.zip
+          path: ${{ github.workspace }}/mm_v1_obf.jar
+      - name: Upload obf mappings
+        uses: actions/upload-artifact@v2
+        with:
+          name: mappings.zip
+          path: ${{ github.workspace }}/mm_v1_obf_map.txt
