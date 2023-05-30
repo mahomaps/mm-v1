@@ -1,9 +1,11 @@
 package mahomaps.route;
 
+import mahomaps.map.Geopoint;
+
 public class MetroSegment extends TransportSegment {
 
-	public MetroSegment(String descr, int sv) {
-		super(descr, sv);
+	public MetroSegment(String descr, int sv, Geopoint a) {
+		super(descr, sv, a);
 	}
 
 	public String GetType() {

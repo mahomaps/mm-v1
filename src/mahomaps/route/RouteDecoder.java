@@ -153,18 +153,18 @@ public class RouteDecoder {
 					dist = (int) Double.parseDouble(v);
 			}
 			if (segmd.optBoolean("Walk", false)) {
-				arr[i] = new WalkingSegment(descr, dist, sv);
+				arr[i] = new WalkingSegment(descr, dist, sv, line[sv]);
 				continue;
 			}
 			JSONArray tr = segmd.optJSONArray("Transports");
 			if (tr != null && tr.length() > 0) {
 				String trt = tr.getJSONObject(0).getString("type");
 				if (trt.equals("suburban")) {
-					arr[i] = new RailwaySegment(descr, sv);
+					arr[i] = new RailwaySegment(descr, sv, line[sv]);
 				} else if (trt.equals("underground")) {
-					arr[i] = new MetroSegment(descr, sv);
+					arr[i] = new MetroSegment(descr, sv, line[sv]);
 				} else {
-					arr[i] = new TransportSegment(descr, sv);
+					arr[i] = new TransportSegment(descr, sv, line[sv]);
 				}
 				continue;
 			}

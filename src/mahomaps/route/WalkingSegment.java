@@ -1,14 +1,20 @@
 package mahomaps.route;
 
+import mahomaps.map.Geopoint;
+
 public class WalkingSegment extends RouteSegment {
 
-	private String descr;
-	private int dist;
+	private final String descr;
+	private final int dist;
+	private final Geopoint anchor;
 
-	public WalkingSegment(String descr, int dist, int sv) {
+	public WalkingSegment(String descr, int dist, int sv, Geopoint anchor) {
 		super(sv);
 		this.descr = descr;
 		this.dist = dist;
+		this.anchor = new Geopoint(anchor.lat, anchor.lon);
+		this.anchor.type = Geopoint.POI_MARK;
+		this.anchor.color = Geopoint.COLOR_BLUE;
 	}
 
 	public int GetDistance() {
@@ -31,4 +37,7 @@ public class WalkingSegment extends RouteSegment {
 		return "Идите пешком";
 	}
 
+	public Geopoint GetAnchor() {
+		return anchor;
+	}
 }

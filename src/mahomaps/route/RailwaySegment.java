@@ -1,9 +1,11 @@
 package mahomaps.route;
 
+import mahomaps.map.Geopoint;
+
 public class RailwaySegment extends TransportSegment {
 
-	public RailwaySegment(String descr, int sv) {
-		super(descr, sv);
+	public RailwaySegment(String descr, int sv, Geopoint a) {
+		super(descr, sv, a);
 	}
 
 	public String GetType() {
