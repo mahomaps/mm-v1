@@ -210,7 +210,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		FileConnection fc = null;
 		try {
 			// String base = "file:///root/";
-			String base = System.getProperty("fileconn.dir.images");
+			String base = System.getProperty("fileconn.dir.photos");
 			fc = (FileConnection) Connector.open(base + "route" + System.currentTimeMillis() + ".json");
 			if (!fc.exists())
 				fc.create();
