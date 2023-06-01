@@ -82,111 +82,124 @@ public class RouteTracker {
 		}
 		if (currentSegment == -1) {
 			// route start is not reached
-			float d = distTo(vertex[0]);
-			final RouteSegment rs = segments[0];
-			tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
-					"Осталось " + ((int) d) + "м", rs.GetDescription());
-			overlay.ShowPoint(rs.GetAnchor());
-			if (d < ANCHOR_TRIGGER_DIST) {
-				currentSegment = 0;
-			}
+			ProcessRouteEntering();
 		} else if (currentSegment == segments.length - 1) {
 			// last segment
-			Geopoint t = vertex[vertex.length - 1];
-			float d = distTo(t);
-			RouteSegment rs = segments[currentSegment];
-			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, getCurrentSegmentInfo(rs),
-					"Через " + ((int) d) + " метров", "Конец маршрута");
-			if (d < ANCHOR_TRIGGER_DIST) {
-				currentSegment++;
-			}
-			overlay.ShowPoint(null);
+			ProcessLastSegment();
 		} else if (currentSegment < segments.length) {
 			// route is follown
-			RouteSegment s = segments[currentSegment];
-			RouteSegment ns = segments[currentSegment + 1];
-			int ev = ns.segmentStartVertex;
-			float d = distTo(vertex[ev]);
-			if (d < 200) {
-				final String dist = "Через " + ((int) d) + "м";
-				final String a = ns.GetAction();
-				final String info = getCurrentSegmentInfo(ns);
-				tos = new TrackerOverlayState(ns.GetIcon(), getSegmentAngle(ns), dist, a, info);
-			} else {
-				final String info = getCurrentSegmentInfo(s);
-				final String dist = "Осталось " + ((int) d) + "м";
-				final String a = ns.GetAction();
-				tos = new TrackerOverlayState(s.GetIcon(), 0f, info, dist, a);
-			}
-			{
-				double distToThis = GetDistanceToSegment(vertex[currentVertex], vertex[currentVertex + 1],
-						extrapolatedGeolocation);
-				double distToNext = GetDistanceToSegment(vertex[currentVertex + 1], vertex[currentVertex + 2],
-						extrapolatedGeolocation);
-				if (distToNext < ANCHOR_TRIGGER_DIST) {
-					// we are close enough to next line
-					currentVertex++;
-				} else if (distToThis < REATTACH_DIST) {
-					// everything is okay, we are moving along the line
-					// do nothing
-				} else {
-					// tracking is lost! Reattaching.
-					int found = -1;
-					for (int i = currentVertex + 1; i < vertex.length - 1; i++) {
-						double dist = GetDistanceToSegment(vertex[i], vertex[i + 1], extrapolatedGeolocation);
-						if (dist < REATTACH_DIST) {
-							found = i;
-							break;
-						}
-					}
-					// line found to attach
-					if (found != -1) {
-						if (trackingLost) {
-							// voice return
-							trackingLost = false;
-						}
-						currentVertex = found;
-						for (int i = currentSegment; i < segments.length; i++) {
-							if (currentVertex > segments[i].segmentStartVertex) {
-								currentSegment = i - 1;
-								tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
-								overlay.ShowPoint(null);
-								return;
-							}
-						}
-						currentSegment = segments.length - 1;
-						tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
-						overlay.ShowPoint(null);
-						return;
-					}
-					
-					// line not found
-
-					if (!trackingLost) {
-						// voice route lost
-						trackingLost = true;
-					}
-					tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Уход с маршрута", "");
-					overlay.ShowPoint(null);
-					return;
-				}
-			}
-			if (anchorTouched) {
-				if (GetDistanceToSegment(vertex[ev - 1], vertex[ev], extrapolatedGeolocation) > ANCHOR_TRIGGER_DIST) {
-					currentSegment++;
-					anchorTouched = false;
-				}
-			} else if (d < ANCHOR_TRIGGER_DIST) {
-				anchorTouched = true;
-				// voice the action
-			}
-			overlay.ShowPoint(ns.GetAnchor());
+			ProcessRegularSegment();
 		} else {
 			// route ended
 			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, "", "Маршрут завершён.", "");
 			overlay.ShowPoint(null);
 		}
 
+	}
+
+	private void ProcessRouteEntering() {
+		final double d = GetDistanceToSegment(vertex[0], vertex[1], extrapolatedGeolocation);
+		final RouteSegment rs = segments[0];
+		tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
+				"Осталось " + ((int) d) + "м", rs.GetDescription());
+		overlay.ShowPoint(rs.GetAnchor());
+		if (d < REATTACH_DIST) {
+			currentSegment = 0;
+			currentVertex = 0;
+		}
+	}
+
+	private void ProcessLastSegment() {
+		Geopoint t = vertex[vertex.length - 1];
+		float d = distTo(t);
+		RouteSegment rs = segments[currentSegment];
+		tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, getCurrentSegmentInfo(rs),
+				"Через " + ((int) d) + " метров", "Конец маршрута");
+		if (d < ANCHOR_TRIGGER_DIST) {
+			currentSegment++;
+		}
+		overlay.ShowPoint(null);
+	}
+
+	private void ProcessRegularSegment() {
+		RouteSegment s = segments[currentSegment];
+		RouteSegment ns = segments[currentSegment + 1];
+		int ev = ns.segmentStartVertex;
+		float d = distTo(vertex[ev]);
+		if (d < 200) {
+			final String dist = "Через " + ((int) d) + "м";
+			final String a = ns.GetAction();
+			final String info = getCurrentSegmentInfo(ns);
+			tos = new TrackerOverlayState(ns.GetIcon(), getSegmentAngle(ns), dist, a, info);
+		} else {
+			final String info = getCurrentSegmentInfo(s);
+			final String dist = "Осталось " + ((int) d) + "м";
+			final String a = ns.GetAction();
+			tos = new TrackerOverlayState(s.GetIcon(), 0f, info, dist, a);
+		}
+		{
+			double distToThis = GetDistanceToSegment(vertex[currentVertex], vertex[currentVertex + 1],
+					extrapolatedGeolocation);
+			double distToNext = GetDistanceToSegment(vertex[currentVertex + 1], vertex[currentVertex + 2],
+					extrapolatedGeolocation);
+			if (distToNext < ANCHOR_TRIGGER_DIST) {
+				// we are close enough to next line
+				currentVertex++;
+			} else if (distToThis < REATTACH_DIST) {
+				// everything is okay, we are moving along the line
+				// do nothing
+			} else {
+				// tracking is lost! Reattaching.
+				int found = -1;
+				for (int i = currentVertex + 1; i < vertex.length - 1; i++) {
+					double dist = GetDistanceToSegment(vertex[i], vertex[i + 1], extrapolatedGeolocation);
+					if (dist < REATTACH_DIST) {
+						found = i;
+						break;
+					}
+				}
+				// line found to attach
+				if (found != -1) {
+					if (trackingLost) {
+						// voice return
+						trackingLost = false;
+					}
+					currentVertex = found;
+					for (int i = currentSegment; i < segments.length; i++) {
+						if (currentVertex > segments[i].segmentStartVertex) {
+							currentSegment = i - 1;
+							tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
+							overlay.ShowPoint(null);
+							return;
+						}
+					}
+					currentSegment = segments.length - 1;
+					tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
+					overlay.ShowPoint(null);
+					return;
+				}
+
+				// line not found
+
+				if (!trackingLost) {
+					// voice route lost
+					trackingLost = true;
+				}
+				tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Уход с маршрута", "");
+				overlay.ShowPoint(null);
+				return;
+			}
+		}
+		if (anchorTouched) {
+			if (GetDistanceToSegment(vertex[ev - 1], vertex[ev], extrapolatedGeolocation) > ANCHOR_TRIGGER_DIST) {
+				currentSegment++;
+				anchorTouched = false;
+			}
+		} else if (d < ANCHOR_TRIGGER_DIST) {
+			anchorTouched = true;
+			// voice the action
+		}
+		overlay.ShowPoint(ns.GetAnchor());
 	}
 
 	/**
