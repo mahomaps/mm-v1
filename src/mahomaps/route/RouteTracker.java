@@ -195,7 +195,7 @@ public class RouteTracker {
 	 */
 	private boolean TryReattach() {
 		int found = -1;
-		for (int i = Math.max(currentVertex - 2, 0); i < vertex.length - 1; i++) {
+		for (int i = Math.max(currentVertex - 5, 0); i < vertex.length - 1; i++) {
 			double dist = GetDistanceToSegment(vertex[i], vertex[i + 1], extrapolatedGeolocation);
 			if (dist < REATTACH_DIST) {
 				found = i;
