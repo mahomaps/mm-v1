@@ -122,6 +122,22 @@ public class RouteTracker {
 	}
 
 	private void ProcessRegularSegment() {
+		if (trackingLost) {
+			if (!TryReattach()) {
+				// if could not reattach, we are off route and nothing to process
+				return;
+			}
+			trackingLost = false;
+			// voice returning to route
+
+			if (currentSegment == segments.length - 1) {
+				// last segment.
+				ProcessLastSegment();
+				return;
+			}
+
+			// processing our segment as usual
+		}
 		RouteSegment s = segments[currentSegment];
 		RouteSegment ns = segments[currentSegment + 1];
 		int ev = ns.segmentStartVertex;
@@ -150,44 +166,13 @@ public class RouteTracker {
 				// do nothing
 			} else {
 				// tracking is lost! Reattaching.
-				int found = -1;
-				for (int i = currentVertex + 1; i < vertex.length - 1; i++) {
-					double dist = GetDistanceToSegment(vertex[i], vertex[i + 1], extrapolatedGeolocation);
-					if (dist < REATTACH_DIST) {
-						found = i;
-						break;
-					}
-				}
-				// line found to attach
-				if (found != -1) {
-					if (trackingLost) {
-						// voice return
-						trackingLost = false;
-					}
-					currentVertex = found;
-					for (int i = currentSegment; i < segments.length; i++) {
-						if (currentVertex > segments[i].segmentStartVertex) {
-							currentSegment = i - 1;
-							tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
-							overlay.ShowPoint(null);
-							return;
-						}
-					}
-					currentSegment = segments.length - 1;
-					tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
-					overlay.ShowPoint(null);
-					return;
-				}
-
-				// line not found
-
-				if (!trackingLost) {
-					// voice route lost
+				if (TryReattach()) {
+					// sucseed.
+				} else {
 					trackingLost = true;
+					tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Уход с маршрута", "");
+					overlay.ShowPoint(null);
 				}
-				tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Уход с маршрута", "");
-				overlay.ShowPoint(null);
-				return;
 			}
 		}
 		if (anchorTouched) {
@@ -200,6 +185,37 @@ public class RouteTracker {
 			// voice the action
 		}
 		overlay.ShowPoint(ns.GetAnchor());
+	}
+
+	/**
+	 * Пытается присоединиться к сегменту линии маршрута. Текущий
+	 * сегмент/вершина/tos в случае успеха будут изменены на подходящие.
+	 * 
+	 * @return True, если удалось.
+	 */
+	private boolean TryReattach() {
+		int found = -1;
+		for (int i = Math.max(currentVertex - 2, 0); i < vertex.length - 1; i++) {
+			double dist = GetDistanceToSegment(vertex[i], vertex[i + 1], extrapolatedGeolocation);
+			if (dist < REATTACH_DIST) {
+				found = i;
+				break;
+			}
+		}
+		if (found == -1)
+			return false;
+
+		currentVertex = found;
+		for (int i = currentSegment; i < segments.length; i++) {
+			if (currentVertex > segments[i].segmentStartVertex) {
+				currentSegment = i - 1;
+				break;
+			}
+		}
+		currentSegment = segments.length - 1;
+		tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
+		overlay.ShowPoint(null);
+		return true;
 	}
 
 	/**
