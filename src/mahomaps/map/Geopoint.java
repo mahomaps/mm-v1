@@ -10,9 +10,13 @@ import mahomaps.Settings;
 import mahomaps.screens.MapCanvas;
 
 public class Geopoint {
-	// с севера на юг (вертикаль)
+	/**
+	 * Градусы от экватора на север (вертикаль)
+	 */
 	public double lat;
-	// по экватору (горизонталь)
+	/**
+	 * Градусы по экватору (горизонталь)
+	 */
 	public double lon;
 
 	public int type;
