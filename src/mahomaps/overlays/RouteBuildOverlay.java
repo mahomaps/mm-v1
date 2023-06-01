@@ -42,16 +42,15 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			String s;
 			Button bt;
 			if (b == null) {
-				s = "Точка А: " + a.toString();
+				s = "Выберите вторую точку.";
 				bt = new Button("До моей геолокации", 10, this);
 				v.addElement(a);
 			} else {
-				s = "Точка Б: " + b.toString();
+				s = "Выберите точку отправления.";
 				bt = new Button("От моей геолокации", 11, this);
 				v.addElement(b);
 			}
-			content = new FillFlowContainer(new UIElement[] { new SimpleText(s),
-					new SimpleText("Выберите вторую точку."), bt, new Button("Отмена", 0, this) });
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(s), bt, new Button("Отмена", 0, this) });
 		}
 	}
 
