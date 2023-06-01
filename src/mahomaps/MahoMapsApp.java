@@ -2,6 +2,8 @@ package mahomaps;
 
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.Choice;
+import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
@@ -35,13 +37,32 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	private static Command exit = new Command("Выход", Command.EXIT, 0);
 	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
+	private static boolean bbWifi;
+	
+	private static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
+	private Form bbForm;
+	private ChoiceGroup bbChoice;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
+		if (bb) {
+			bbForm = new Form("Выберите используемую сеть");
+			bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" }, null);
+			bbForm.addCommand(new Command("OK", Command.OK, 2));
+			bbForm.setCommandListener(this);
+			bbForm.append(bbChoice);
+		}
 	}
 
 	protected void startApp() {
 		paused = false;
+		if (bb) {
+			Settings.Read();
+			if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm)  {
+				BringSubScreen(bbForm);
+				return;
+			}
+		}
 		if (thread == null) {
 			version = getAppProperty("MIDlet-Version");
 			midlet = this;
@@ -302,14 +323,18 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			Settings.cacheMode = Settings.CACHE_RMS;
 			Settings.Save();
 			startApp();
+		} else if (c.getPriority() == 2) {
+			bbWifi = bbChoice.getSelectedIndex() == 1;
+			Settings.bbNetworkChoosen = true;
+			Settings.Save();
+			startApp();
 		}
 	}
 	
 	public static String getConnectionParams() {
-		if (platform.toLowerCase().indexOf("blackberry") == -1) {
+		if (!bb || !bbWifi) {
 			return "";
 		}
-		// сделать поддержку 3г когда-нибудь
 		return ";deviceside=true;interface=wifi";
 	}
 }
