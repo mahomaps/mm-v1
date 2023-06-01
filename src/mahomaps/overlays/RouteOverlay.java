@@ -26,6 +26,7 @@ import mahomaps.route.RouteSegment;
 import mahomaps.route.RouteTracker;
 import mahomaps.screens.MapCanvas;
 import mahomaps.ui.Button;
+import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
 import mahomaps.ui.SimpleText;
@@ -43,7 +44,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	private Command discard = new Command("Да", Command.OK, 0);
 	private Command back = new Command("Назад", Command.BACK, 0);
 
-	private final Button showHideAnchors = new Button("Показать манёвры", 4, this);
 	private boolean anchorsShown = false;
 
 	public RouteOverlay(Geopoint a, Geopoint b, int method) {
@@ -95,9 +95,11 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void LoadRoute() {
 		// route field must be non-null here!
+		ColumnsContainer cols = new ColumnsContainer(
+				new UIElement[] { new Button("Подробности", 3, this), new Button("Манёвры", 4, this) });
 		content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
-				new SimpleText(route.distance + ", " + route.time), new Button("Подробнее", 3, this), showHideAnchors,
-				new Button("Поехали!", 5, this), new Button("Закрыть", 0, this) });
+				new SimpleText(route.distance + ", " + route.time), new Button("Поехали!", 5, this), cols,
+				new Button("Закрыть", 0, this) });
 		MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 	}
 
@@ -156,10 +158,8 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		case 4:
 			if (anchorsShown) {
 				ShowAB();
-				showHideAnchors.text = "Показать манёвры";
 			} else {
 				ShowAnchors();
-				showHideAnchors.text = "Скрыть манёвры";
 			}
 			anchorsShown = !anchorsShown;
 			break;
