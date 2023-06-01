@@ -26,12 +26,13 @@ public class SearchScreen extends List implements CommandListener {
 
 	public SearchScreen(String query, Geopoint point, JSONArray results) {
 		super(query, Choice.IMPLICIT);
+		setFitPolicy(TEXT_WRAP_ON);
 		this.query = query;
 		this.results = results;
 		for (int i = 0; i < results.length(); i++) {
 			JSONObject obj = results.getJSONObject(i);
 			JSONObject props = obj.getJSONObject("properties");
-			append(props.getString("name") + "\n" + props.optString("description", ""), null);
+			append(props.getString("name") + " (" + props.optString("description", "") + ")", null);
 		}
 		MahoMapsApp.lastSearch = this;
 		overlay = new SearchOverlay(point, query, results, this);
