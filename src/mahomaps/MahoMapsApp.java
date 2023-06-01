@@ -32,13 +32,13 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static SearchScreen lastSearch;
 	public static final YmapsApi api = new YmapsApi();
 	public static String platform = System.getProperty("microedition.platform");
+	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	public static String version;
 	public static boolean paused;
 
 	private static Command exit = new Command("Выход", Command.EXIT, 0);
 	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
 	
-	private static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	private Form bbForm;
 	private ChoiceGroup bbChoice;
 

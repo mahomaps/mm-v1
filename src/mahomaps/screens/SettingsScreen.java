@@ -34,6 +34,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Автоматически", "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup("Язык тайлов и поиска (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Русский", "Английский", "Турецкий" }, null);
+	private ChoiceGroup bbNetwork = new ChoiceGroup("Сеть", Choice.EXCLUSIVE,
+			new String[] { "Сотовая", "Wi-Fi" }, null);
 
 	public SettingsScreen() {
 		super("Настройки");
@@ -81,6 +83,10 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(proxyTiles);
 		append(uiSize);
 		append(lang);
+		if (MahoMapsApp.bb) {
+			bbNetwork.setSelectedIndex(Settings.bbWifi ? 1 : 0, true);
+			append(bbNetwork);
+		}
 	}
 
 	private void Apply() {
@@ -94,6 +100,9 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
 		Settings.uiSize = uiSize.getSelectedIndex();
 		Settings.lang = lang.getSelectedIndex();
+		if (MahoMapsApp.bb) {
+			Settings.bbWifi = bbNetwork.getSelectedIndex() == 1;
+		}
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}
