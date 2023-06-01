@@ -55,14 +55,14 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	protected void startApp() {
 		paused = false;
-		if (bb) {
-			Settings.Read();
-			if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm)  {
-				BringSubScreen(bbForm);
-				return;
-			}
-		}
 		if (thread == null) {
+			if (bb) {
+				Settings.Read();
+				if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm)  {
+					BringSubScreen(bbForm);
+					return;
+				}
+			}
 			version = getAppProperty("MIDlet-Version");
 			midlet = this;
 			thread = new Thread(this, "Init & repaint thread");
