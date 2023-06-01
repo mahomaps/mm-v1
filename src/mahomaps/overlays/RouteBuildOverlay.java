@@ -32,7 +32,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			v.addElement(a);
 			v.addElement(b);
 			content = new FillFlowContainer(new UIElement[] { new ColumnsContainer(new UIElement[] {
-					new Button("Авто", 1, this), new Button("Пешком", 2, this), new Button("Общ. тр.", 3, this)
+					new Button("На авто", 1, this), new Button("Пешком", 2, this), new Button("На общ.тр", 3, this)
 
 					}), new Button("Отмена", 0, this) });
 		} else if (a == null && b == null) {
