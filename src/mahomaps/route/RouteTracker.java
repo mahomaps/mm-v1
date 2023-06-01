@@ -206,13 +206,16 @@ public class RouteTracker {
 			return false;
 
 		currentVertex = found;
-		for (int i = currentSegment; i < segments.length; i++) {
-			if (currentVertex > segments[i].segmentStartVertex) {
-				currentSegment = i - 1;
+
+		currentSegment = segments.length - 1;
+		for (int i = segments.length - 1; i >= 0; i--) {
+			int sv = segments[i].segmentStartVertex;
+			if (currentVertex > sv) {
+				currentSegment = i;
 				break;
 			}
 		}
-		currentSegment = segments.length - 1;
+
 		tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
 		overlay.ShowPoint(null);
 		return true;
