@@ -37,7 +37,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	private static Command exit = new Command("Выход", Command.EXIT, 0);
 	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
-	private static boolean bbWifi;
 	
 	private static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	private Form bbForm;
@@ -324,7 +323,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			Settings.Save();
 			startApp();
 		} else if (c.getPriority() == 2) {
-			bbWifi = bbChoice.getSelectedIndex() == 1;
+			Settings.bbWifi = bbChoice.getSelectedIndex() == 1;
 			Settings.bbNetworkChoosen = true;
 			Settings.Save();
 			startApp();
@@ -332,7 +331,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 	
 	public static String getConnectionParams() {
-		if (!bb || !bbWifi) {
+		if (!bb || !Settings.bbWifi) {
 			return "";
 		}
 		return ";deviceside=true;interface=wifi";
