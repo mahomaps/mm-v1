@@ -22,9 +22,14 @@ public class RouteTracker {
 	private final Geopoint[] vertex;
 	private final float[] lineLengths;
 	private final RouteSegment[] segments;
-	int currentSegment;
 
-	static final int ACCEPTABLE_ERROR = 20;
+	int currentSegment;
+	int currentVertex;
+	boolean anchorTouched;
+	boolean trackingLost;
+
+	static final int ANCHOR_TRIGGER_DIST = 20;
+	static final int REATTACH_DIST = 40;
 
 	// drawing temps
 	private TrackerOverlayState tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Начинаем маршрут...", "");
@@ -68,7 +73,8 @@ public class RouteTracker {
 		map.state = ms;
 		if (currentSegment == -2) {
 			// first update
-			if (distTo(vertex[0]) < ACCEPTABLE_ERROR) {
+			currentVertex = 0;
+			if (distTo(vertex[0]) < ANCHOR_TRIGGER_DIST) {
 				currentSegment = 0;
 			} else {
 				currentSegment = -1;
@@ -81,7 +87,7 @@ public class RouteTracker {
 			tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
 					"Осталось " + ((int) d) + "м", rs.GetDescription());
 			overlay.ShowPoint(rs.GetAnchor());
-			if (d < ACCEPTABLE_ERROR) {
+			if (d < ANCHOR_TRIGGER_DIST) {
 				currentSegment = 0;
 			}
 		} else if (currentSegment == segments.length - 1) {
@@ -91,7 +97,7 @@ public class RouteTracker {
 			RouteSegment rs = segments[currentSegment];
 			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, getCurrentSegmentInfo(rs),
 					"Через " + ((int) d) + " метров", "Конец маршрута");
-			if (d < ACCEPTABLE_ERROR) {
+			if (d < ANCHOR_TRIGGER_DIST) {
 				currentSegment++;
 			}
 			overlay.ShowPoint(null);
@@ -112,8 +118,67 @@ public class RouteTracker {
 				final String a = ns.GetAction();
 				tos = new TrackerOverlayState(s.GetIcon(), 0f, info, dist, a);
 			}
-			if (d < ACCEPTABLE_ERROR) {
-				currentSegment++;
+			{
+				double distToThis = GetDistanceToSegment(vertex[currentVertex], vertex[currentVertex + 1],
+						extrapolatedGeolocation);
+				double distToNext = GetDistanceToSegment(vertex[currentVertex + 1], vertex[currentVertex + 2],
+						extrapolatedGeolocation);
+				if (distToNext < ANCHOR_TRIGGER_DIST) {
+					// we are close enough to next line
+					currentVertex++;
+				} else if (distToThis < REATTACH_DIST) {
+					// everything is okay, we are moving along the line
+					// do nothing
+				} else {
+					// tracking is lost! Reattaching.
+					int found = -1;
+					for (int i = currentVertex + 1; i < vertex.length - 1; i++) {
+						double dist = GetDistanceToSegment(vertex[i], vertex[i + 1], extrapolatedGeolocation);
+						if (dist < REATTACH_DIST) {
+							found = i;
+							break;
+						}
+					}
+					// line found to attach
+					if (found != -1) {
+						if (trackingLost) {
+							// voice return
+							trackingLost = false;
+						}
+						currentVertex = found;
+						for (int i = currentSegment; i < segments.length; i++) {
+							if (currentVertex > segments[i].segmentStartVertex) {
+								currentSegment = i - 1;
+								tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
+								overlay.ShowPoint(null);
+								return;
+							}
+						}
+						currentSegment = segments.length - 1;
+						tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
+						overlay.ShowPoint(null);
+						return;
+					}
+					
+					// line not found
+
+					if (!trackingLost) {
+						// voice route lost
+						trackingLost = true;
+					}
+					tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Уход с маршрута", "");
+					overlay.ShowPoint(null);
+					return;
+				}
+			}
+			if (anchorTouched) {
+				if (GetDistanceToSegment(vertex[ev - 1], vertex[ev], extrapolatedGeolocation) > ANCHOR_TRIGGER_DIST) {
+					currentSegment++;
+					anchorTouched = false;
+				}
+			} else if (d < ANCHOR_TRIGGER_DIST) {
+				anchorTouched = true;
+				// voice the action
 			}
 			overlay.ShowPoint(ns.GetAnchor());
 		} else {
@@ -220,6 +285,41 @@ public class RouteTracker {
 		// return d;
 
 		return (float) (d * 6371000D);
+	}
+
+	public static double GetDistanceToSegment(Geopoint a, Geopoint b, Geopoint point) {
+		double degDist = GetDistanceToSegment(a.lon, a.lat, b.lon, b.lat, point.lon, point.lat);
+		Geopoint p = new Geopoint(point.lat + degDist, point.lon);
+		return Distance(point, p);
+	}
+
+	public static double GetDistanceToSegment(double ax, double ay, double bx, double by, double x, double y) {
+		double ak = Math.sqrt((x - ax) * (x - ax) + (y - ay) * (y - ay));
+		double kb = Math.sqrt((x - bx) * (x - bx) + (y - by) * (y - by));
+		double ab = Math.sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by));
+
+		// скалярное произведение векторов
+		double mulScalarAKAB = (x - ax) * (bx - ax) + (y - ay) * (by - ay);
+		double mulScalarBKAB = (x - bx) * (-bx + ax) + (y - by) * (-by + ay);
+
+		if (ab == 0)
+			return ak;
+
+		else if (mulScalarAKAB >= 0 && mulScalarBKAB >= 0) {
+
+			double p = (ak + kb + ab) / 2.0;
+			double s = Math.sqrt(Math.abs((p * (p - ak) * (p - kb) * (p - ab))));
+
+			return (2.0 * s) / ab;
+		}
+
+		else if (mulScalarAKAB < 0 || mulScalarBKAB < 0) {
+			return Math.min(ak, kb);
+		}
+
+		else
+			return 0;
+
 	}
 
 }
