@@ -388,12 +388,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					break handling;
 				}
 				switch (k) {
-				case KEY_NUM1:
-				case KEY_STAR:
-					state = state.ZoomOut();
-					break handling;
 				case KEY_NUM3:
 				case KEY_POUND:
+					state = state.ZoomOut();
+					break handling;
+				case KEY_NUM1:
+				case KEY_STAR:
 					state = state.ZoomIn();
 					break handling;
 				case KEY_NUM7:
