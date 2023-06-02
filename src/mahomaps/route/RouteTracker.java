@@ -212,10 +212,9 @@ public class RouteTracker {
 
 		currentVertex = found;
 
-		currentSegment = segments.length - 1;
 		for (int i = segments.length - 1; i >= 0; i--) {
 			int sv = segments[i].segmentStartVertex;
-			if (currentVertex > sv) {
+			if (currentVertex >= sv) {
 				currentSegment = i;
 				break;
 			}
