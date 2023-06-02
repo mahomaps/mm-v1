@@ -10,6 +10,7 @@ public class Line {
 
 	private int forZoom = -1;
 	private int[] cache = null;
+	public int drawFrom = 0;
 
 	public Line(Geopoint start, Geopoint[] source) {
 		this.start = start;
@@ -23,7 +24,7 @@ public class Line {
 		int ya = start.GetScreenY(ms);
 		int[] temp = new int[source.length * 2];
 		int ti = -1;
-		for (int i = 0; i < source.length; i++) {
+		for (int i = drawFrom; i < source.length; i++) {
 			int px = source[i].GetScreenX(ms) - xa;
 			int py = source[i].GetScreenY(ms) - ya;
 			if (ti >= 0) {
@@ -37,6 +38,10 @@ public class Line {
 		}
 		cache = new int[(ti + 1) * 2];
 		System.arraycopy(temp, 0, cache, 0, cache.length);
+	}
+
+	public void Invalidate() {
+		forZoom = -1;
 	}
 
 	public synchronized void Draw(Graphics g, MapCanvas map) {
