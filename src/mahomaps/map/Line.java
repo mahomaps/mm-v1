@@ -24,7 +24,7 @@ public class Line {
 		int ya = start.GetScreenY(ms);
 		int[] temp = new int[source.length * 2];
 		int ti = -1;
-		for (int i = drawFrom; i < source.length; i++) {
+		for (int i = Math.max(0, drawFrom); i < source.length; i++) {
 			int px = source[i].GetScreenX(ms) - xa;
 			int py = source[i].GetScreenY(ms) - ya;
 			if (ti >= 0) {

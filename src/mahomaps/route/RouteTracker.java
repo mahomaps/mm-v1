@@ -71,6 +71,7 @@ public class RouteTracker {
 		extrapolatedGeolocation.lon = trueGeolocation.lon;
 		MapState ms = MapState.FocusAt(extrapolatedGeolocation, map.state.zoom);
 		map.state = ms;
+		map.line.drawFrom = currentVertex - 1;
 		if (currentSegment == -2) {
 			// first update
 			currentVertex = 0;
@@ -128,6 +129,8 @@ public class RouteTracker {
 				return;
 			}
 			trackingLost = false;
+			map.line.drawFrom = currentVertex - 1;
+			map.line.Invalidate();
 			// voice returning to route
 
 			if (currentSegment == segments.length - 1) {
@@ -161,6 +164,8 @@ public class RouteTracker {
 			if (distToNext < ANCHOR_TRIGGER_DIST) {
 				// we are close enough to next line
 				currentVertex++;
+				map.line.drawFrom = currentVertex - 1;
+				map.line.Invalidate();
 			} else if (distToThis < REATTACH_DIST) {
 				// everything is okay, we are moving along the line
 				// do nothing
