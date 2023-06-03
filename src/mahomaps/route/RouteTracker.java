@@ -172,6 +172,8 @@ public class RouteTracker {
 			} else {
 				// tracking is lost! Reattaching.
 				if (TryReattach()) {
+					map.line.drawFrom = currentVertex - 1;
+					map.line.Invalidate();
 					// sucseed.
 				} else {
 					trackingLost = true;
