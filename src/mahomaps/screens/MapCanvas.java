@@ -56,7 +56,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// draw/input states/temps/caches
 	boolean dragActive;
-	private boolean repaintDebugTick = true;
 	public boolean hidden = false;
 	private int lastOverlaysW;
 	public final Gate repaintGate = new Gate(true);
@@ -301,18 +300,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				repaintGate.Pass();
 			}
 			{
-				long time = System.currentTimeMillis();
 				Graphics g = cachedGraphics;
 				if (g == null)
 					cachedGraphics = g = getGraphics();
 				repaint(g);
-				if (Settings.drawDebugInfo) {
-					time = System.currentTimeMillis() - time;
-					g.setColor(0);
-					g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 0, 20, 0);
-				}
 				flushGraphics();
-				repaintDebugTick = !repaintDebugTick;
 			}
 			if (MahoMapsApp.route == null)
 				repaintGate.Pass(2000);
