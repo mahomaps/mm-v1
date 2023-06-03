@@ -93,12 +93,18 @@ public class RouteDecoder {
 
 		Stack stack = new Stack();
 		double[] n = new double[2];
-		for (int i = 0; i < t.length - 8; i += 8) {
+		for (int i = 0; i < t.length; i += 8) {
 			int c1 = 0;
 			int c2 = 0;
 			for (int j = 0; j < 4; j++) {
-				c1 |= (t[i + j] & 0xFF) << (8 * j);
-				c2 |= (t[i + j + 4] & 0xFF) << (8 * j);
+				if (i + j < t.length)
+					c1 |= (t[i + j] & 0xFF) << (8 * j);
+				else
+					c1 |= 255 << (8 * j);
+				if (i + j + 4 < t.length)
+					c2 |= (t[i + j + 4] & 0xFF) << (8 * j);
+				else
+					c2 |= 255 << (8 * j);
 			}
 			double d1 = c1 / o;
 			double d2 = c2 / o;
