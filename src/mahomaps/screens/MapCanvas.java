@@ -296,20 +296,28 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public void run() throws InterruptedException {
 		while (true) {
+			final RouteTracker rt = MahoMapsApp.route;
 			if (MahoMapsApp.paused || hidden) {
-				repaintGate.Pass();
-			}
-			{
+				if (rt == null) {
+					// we are hidden
+					repaintGate.Pass();
+				} else {
+					// we are hidden, but route is active
+					rt.Update();
+					// drawing does nothing
+					// spin at 20ups
+					repaintGate.Pass(49);
+				}
+			} else {
+				// we are visible
 				Graphics g = cachedGraphics;
 				if (g == null)
 					cachedGraphics = g = getGraphics();
 				repaint(g);
 				flushGraphics();
+				// TODO proper 30 fps limiter
+				repaintGate.Pass(rt != null ? 20 : 2000);
 			}
-			if (MahoMapsApp.route == null)
-				repaintGate.Pass(2000);
-			else
-				repaintGate.Pass(20);
 		}
 	}
 
