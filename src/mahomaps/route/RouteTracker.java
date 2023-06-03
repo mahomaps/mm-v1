@@ -175,7 +175,7 @@ public class RouteTracker {
 					// sucseed.
 				} else {
 					trackingLost = true;
-					tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Уход с маршрута", "");
+					tos = new TrackerOverlayState(RouteSegment.ICON_WALK, 0, "", "Вернитесь на маршрут", "");
 					overlay.ShowPoint(null);
 				}
 			}
@@ -194,7 +194,7 @@ public class RouteTracker {
 
 	/**
 	 * Пытается присоединиться к сегменту линии маршрута. Текущий
-	 * сегмент/вершина/tos в случае успеха будут изменены на подходящие.
+	 * сегмент/вершина в случае успеха будут изменены на подходящие.
 	 * 
 	 * @return True, если удалось.
 	 */
@@ -220,8 +220,6 @@ public class RouteTracker {
 			}
 		}
 
-		tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Возврат на маршрут...", "");
-		overlay.ShowPoint(null);
 		return true;
 	}
 
