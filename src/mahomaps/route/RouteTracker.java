@@ -84,9 +84,6 @@ public class RouteTracker {
 		if (currentSegment == -1) {
 			// route start is not reached
 			ProcessRouteEntering();
-		} else if (currentSegment == segments.length - 1) {
-			// last segment
-			ProcessLastSegment();
 		} else if (currentSegment < segments.length) {
 			// route is follown
 			ProcessRegularSegment();
@@ -110,18 +107,6 @@ public class RouteTracker {
 		}
 	}
 
-	private void ProcessLastSegment() {
-		Geopoint t = vertex[vertex.length - 1];
-		float d = distTo(t);
-		RouteSegment rs = segments[currentSegment];
-		tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, getCurrentSegmentInfo(rs),
-				"Через " + ((int) d) + " метров", "Конец маршрута");
-		if (d < ANCHOR_TRIGGER_DIST) {
-			currentSegment++;
-		}
-		overlay.ShowPoint(null);
-	}
-
 	private void ProcessRegularSegment() {
 		if (trackingLost) {
 			if (!TryReattach()) {
@@ -133,28 +118,32 @@ public class RouteTracker {
 			map.line.Invalidate();
 			// voice returning to route
 
-			if (currentSegment == segments.length - 1) {
-				// last segment.
-				ProcessLastSegment();
-				return;
-			}
-
 			// processing our segment as usual
 		}
 		RouteSegment s = segments[currentSegment];
-		RouteSegment ns = segments[currentSegment + 1];
-		int ev = ns.segmentStartVertex;
+		RouteSegment ns;
+		int ev;
+		String na;
+		if (currentSegment == segments.length - 1) {
+			ns = null;
+			ev = vertex.length - 1;
+			na = "Конец маршрута";
+		} else {
+			ns = segments[currentSegment + 1];
+			ev = ns.segmentStartVertex;
+			na = ns.GetAction();
+		}
+
 		float d = distTo(vertex[ev]);
 		if (d < 200) {
 			final String dist = "Через " + ((int) d) + "м";
-			final String a = ns.GetAction();
 			final String info = getCurrentSegmentInfo(ns);
-			tos = new TrackerOverlayState(ns.GetIcon(), getSegmentAngle(ns), dist, a, info);
+			final int icon = ns == null ? RouteSegment.ICON_FINISH : ns.GetIcon();
+			tos = new TrackerOverlayState(icon, getSegmentAngle(ns), dist, na, info);
 		} else {
 			final String info = getCurrentSegmentInfo(s);
 			final String dist = "Осталось " + ((int) d) + "м";
-			final String a = ns.GetAction();
-			tos = new TrackerOverlayState(s.GetIcon(), 0f, info, dist, a);
+			tos = new TrackerOverlayState(s.GetIcon(), 0f, info, dist, na);
 		}
 		{
 			double distToThis = GetDistanceToSegment(vertex[currentVertex], vertex[currentVertex + 1],
@@ -191,12 +180,12 @@ public class RouteTracker {
 			anchorTouched = true;
 			// voice the action
 		}
-		overlay.ShowPoint(ns.GetAnchor());
+		overlay.ShowPoint(ns == null ? null : ns.GetAnchor());
 	}
 
 	/**
-	 * Пытается присоединиться к сегменту линии маршрута. Текущий
-	 * сегмент/вершина в случае успеха будут изменены на подходящие.
+	 * Пытается присоединиться к сегменту линии маршрута. Текущий сегмент/вершина в
+	 * случае успеха будут изменены на подходящие.
 	 * 
 	 * @return True, если удалось.
 	 */
@@ -299,6 +288,8 @@ public class RouteTracker {
 	}
 
 	private static float getSegmentAngle(RouteSegment rs) {
+		if (rs == null)
+			return 0f;
 		if (rs instanceof AutoSegment) {
 			AutoSegment as = (AutoSegment) rs;
 			return (float) as.angle;
