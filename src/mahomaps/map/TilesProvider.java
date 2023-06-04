@@ -619,6 +619,9 @@ public class TilesProvider implements Runnable {
 		return 0;
 	}
 
+	/**
+	 * Удаляет ВСЕ тайлы из выбранного хранилища кэша (рмс/фс).
+	 */
 	public void ClearCache() {
 		synchronized (cacheAccessLock) {
 			if (Settings.cacheMode == Settings.CACHE_RMS) {
