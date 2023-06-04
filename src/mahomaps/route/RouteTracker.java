@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.map.GeoUpdateThread;
 import mahomaps.map.Geopoint;
 import mahomaps.map.MapState;
 import mahomaps.overlays.MapOverlay;
@@ -18,6 +19,7 @@ public class RouteTracker {
 	final Image icons;
 	public final RouteFollowOverlay overlay;
 	Geopoint trueGeolocation = null;
+	GeoUpdateThread geoProvider = null;
 	Geopoint extrapolatedGeolocation = null;
 	private final Geopoint[] vertex;
 	private final float[] lineLengths;
@@ -27,6 +29,10 @@ public class RouteTracker {
 	int currentVertex;
 	boolean anchorTouched;
 	boolean trackingLost;
+	private long lastUpdateTime = 0;
+	private int lastUpdateNumber;
+	// look at https://t.me/nnmidletschat/13309 for details
+	private double lat1, lon1, lat2, lon2, lat3, lon3, timeDelta12;
 
 	static final int ANCHOR_TRIGGER_DIST = 20;
 	static final int REATTACH_DIST = 40;
@@ -49,6 +55,7 @@ public class RouteTracker {
 
 	public void SpoofGeolocation(MapCanvas m) {
 		map = m;
+		geoProvider = map.geo;
 		trueGeolocation = map.geolocation;
 		extrapolatedGeolocation = new Geopoint(trueGeolocation.lat, trueGeolocation.lon);
 		extrapolatedGeolocation.type = Geopoint.LOCATION;
@@ -61,14 +68,25 @@ public class RouteTracker {
 		trueGeolocation = null;
 		extrapolatedGeolocation = null;
 		map = null;
+		geoProvider = null;
 	}
 
 	/**
 	 * Call this every frame to make tracker work.
 	 */
 	public void Update() {
-		extrapolatedGeolocation.lat = trueGeolocation.lat;
-		extrapolatedGeolocation.lon = trueGeolocation.lon;
+		if (lastUpdateTime == 0) {
+			// init
+			lastUpdateNumber = geoProvider.updateCount;
+			lastUpdateTime = System.currentTimeMillis();
+			lat1 = lat2 = lat3 = trueGeolocation.lat;
+			lon1 = lon2 = lon3 = trueGeolocation.lon;
+		} else {
+			if (lastUpdateNumber != geoProvider.updateCount)
+				ProcessGeoUpdate();
+			ProcessGeo();
+		}
+
 		MapState ms = MapState.FocusAt(extrapolatedGeolocation, map.state.zoom);
 		map.state = ms;
 		map.line.drawFrom = currentVertex - 1;
@@ -93,6 +111,37 @@ public class RouteTracker {
 			overlay.ShowPoint(null);
 		}
 
+	}
+
+	private void ProcessGeoUpdate() {
+		final long now = System.currentTimeMillis();
+		timeDelta12 = (now - lastUpdateTime) / 1000d;
+		lat1 = lat2;
+		lon1 = lon2;
+		lat2 = trueGeolocation.lat;
+		lon2 = trueGeolocation.lon;
+		lat3 = extrapolatedGeolocation.lat;
+		lon3 = extrapolatedGeolocation.lon;
+		lastUpdateTime = now;
+		lastUpdateNumber = geoProvider.updateCount;
+	}
+
+	private void ProcessGeo() {
+		final long now = System.currentTimeMillis();
+		final double delta = (now - lastUpdateTime) / 1000d;
+		final double prg = (delta / timeDelta12) + 1d;
+		double tlon = lerp(lon1, lon2, prg);
+		double tlat = lerp(lat1, lat2, prg);
+		if (delta < 1d) {
+			tlon = lerp(lon3, tlon, delta);
+			tlat = lerp(lat3, tlat, delta);
+		}
+		extrapolatedGeolocation.lat = tlat;
+		extrapolatedGeolocation.lon = tlon;
+	}
+
+	private static double lerp(double a, double b, double f) {
+		return a * (1.0 - f) + (b * f);
 	}
 
 	private void ProcessRouteEntering() {
