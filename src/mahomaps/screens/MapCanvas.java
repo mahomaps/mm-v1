@@ -9,7 +9,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
-import mahomaps.Gate;
+import mahomaps.FpsLimiter;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
@@ -24,6 +24,7 @@ import mahomaps.overlays.OverlaysManager;
 import mahomaps.overlays.SelectOverlay;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import mahomaps.route.RouteTracker;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
 
@@ -38,7 +39,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// geolocation stuff
 	public GeoUpdateThread geo = null;
-	public final Geopoint geolocation;
+	public Geopoint geolocation;
 
 	// input states
 	private boolean touch = hasPointerEvents();
@@ -55,10 +56,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	// draw/input states/temps/caches
 	boolean dragActive;
-	private boolean repaintDebugTick = true;
 	public boolean hidden = false;
 	private int lastOverlaysW;
-	public final Gate repaintGate = new Gate(true);
+	public final FpsLimiter repaintGate = new FpsLimiter();
 	private Graphics cachedGraphics;
 
 	public MapCanvas(TilesProvider tiles) {
@@ -186,13 +186,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		controls.info = GetGeoInfo();
 
-		boolean t = touch;
+		final boolean t = touch;
+		final RouteTracker rt = MahoMapsApp.route;
+
 		int fh = f.getHeight();
 		if (!t)
 			h -= fh;
 
 		lastOverlaysW = getOverlaysW(w, h);
-		overlays.Draw(g, lastOverlaysW, h);
+
+		if (t || rt == null)
+			overlays.Draw(g, lastOverlaysW, h);
 
 		if (t) {
 			int ch = h;
@@ -202,19 +206,30 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 		controls.PaintInfo(g, 0, 0, w, h - overlays.overlaysH);
 
+		if (rt != null) {
+			mapFocused = true;
+			rt.Update();
+			rt.Draw(g, w);
+		}
+
 		if (!t) {
 			g.setColor(0);
 			g.fillRect(0, h, w, fh);
 			g.setColor(-1);
 			g.setFont(f);
 
-			g.drawString("Меню", 0, h, 0);
-			g.drawString("Выбор", w / 2, h, Graphics.TOP | Graphics.HCENTER);
-			if (mapFocused) {
-				if (!UIElement.IsQueueEmpty())
-					g.drawString("К панелям", w, h, Graphics.TOP | Graphics.RIGHT);
+			if (rt == null) {
+				g.drawString("Меню", 0, h, 0);
+				g.drawString("Выбор", w / 2, h, Graphics.TOP | Graphics.HCENTER);
+
+				if (mapFocused) {
+					if (!UIElement.IsQueueEmpty())
+						g.drawString("К панелям", w, h, Graphics.TOP | Graphics.RIGHT);
+				} else {
+					g.drawString("К карте", w, h, Graphics.TOP | Graphics.RIGHT);
+				}
 			} else {
-				g.drawString("К карте", w, h, Graphics.TOP | Graphics.RIGHT);
+				g.drawString("Закр. маршрут", w, h, Graphics.TOP | Graphics.RIGHT);
 			}
 		}
 	}
@@ -281,24 +296,28 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public void run() throws InterruptedException {
 		while (true) {
+			final RouteTracker rt = MahoMapsApp.route;
 			if (MahoMapsApp.paused || hidden) {
-				repaintGate.Pass();
-			}
-			{
-				long time = System.currentTimeMillis();
+				if (rt == null) {
+					// we are hidden
+					repaintGate.Pass();
+				} else {
+					// we are hidden, but route is active
+					repaintGate.Begin();
+					rt.Update();
+					// drawing does nothing
+					repaintGate.End(50); // 20 ups
+				}
+			} else {
+				// we are visible
+				repaintGate.Begin();
 				Graphics g = cachedGraphics;
 				if (g == null)
 					cachedGraphics = g = getGraphics();
 				repaint(g);
-				if (Settings.drawDebugInfo) {
-					time = System.currentTimeMillis() - time;
-					g.setColor(0);
-					g.drawString(time + "ms " + (repaintDebugTick ? "+" : "="), 0, 20, 0);
-				}
 				flushGraphics();
-				repaintDebugTick = !repaintDebugTick;
+				repaintGate.End(rt != null ? 33 : 2000);
 			}
-			repaintGate.Pass(2000);
 		}
 	}
 
@@ -307,6 +326,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void ShowGeo() {
+		if (MahoMapsApp.route != null)
+			return;
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
@@ -327,6 +348,27 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			return;
 
 		touch = false;
+
+		if (MahoMapsApp.route != null) {
+			// когда маршрут ведётся, можно только изменять масштаб и закрывать маршрут.
+			switch (k) {
+			case -7:
+			case -22:
+				MahoMapsApp.route.overlay.OnButtonTap(null, 0);
+				break;
+			case KEY_NUM1:
+			case KEY_STAR:
+				state = state.ZoomOut();
+				break;
+			case KEY_NUM3:
+			case KEY_POUND:
+				state = state.ZoomIn();
+				break;
+			}
+			requestRepaint();
+			return;
+		}
+
 		if (k == -6 || k == -21) { // -21 и -22 для моторол
 			MahoMapsApp.BringMenu();
 			return;
@@ -490,6 +532,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				} else
 					return;
 			}
+
+			if (MahoMapsApp.route != null)
+				return;
+
 			state.xOffset += x - lastPx;
 			state.yOffset += y - lastPy;
 			lastPx = x;
@@ -520,7 +566,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				break handling;
 
 			// tap at map
-			if (MahoMapsApp.lastSearch == null) {
+			if (MahoMapsApp.lastSearch == null && MahoMapsApp.route == null) {
 				Geopoint s = Geopoint.GetAtCoords(state, x - getWidth() / 2, y - getHeight() / 2);
 				if (s.IsValid()) {
 					overlays.PushOverlay(new SelectOverlay(s));
@@ -538,6 +584,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void BeginTextSearch() {
+		if (MahoMapsApp.route != null)
+			return;
 		if (CheckApiAcsess()) {
 			if (MahoMapsApp.lastSearch == null) {
 				MahoMapsApp.BringSubScreen(searchBox);

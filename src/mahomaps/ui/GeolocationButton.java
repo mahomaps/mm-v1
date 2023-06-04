@@ -2,6 +2,7 @@ package mahomaps.ui;
 
 import javax.microedition.lcdui.Graphics;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.map.GeoUpdateThread;
 import mahomaps.screens.MapCanvas;
 
@@ -39,8 +40,10 @@ public class GeolocationButton extends ControlButton {
 				break;
 			}
 		}
-		if (hasGeo)
+		if (hasGeo && MahoMapsApp.route == null)
 			super.Paint(g, x, y, w, h);
+		else
+			H = 0;
 	}
 
 	public void OnTap() {

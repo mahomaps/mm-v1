@@ -16,6 +16,7 @@ import javax.microedition.midlet.MIDlet;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.TilesProvider;
 import mahomaps.overlays.OverlaysManager;
+import mahomaps.route.RouteTracker;
 import mahomaps.screens.MapCanvas;
 import mahomaps.screens.MenuScreen;
 import mahomaps.screens.SearchScreen;
@@ -30,6 +31,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	private static MenuScreen menu;
 	private static MahoMapsApp midlet;
 	public static SearchScreen lastSearch;
+	public static RouteTracker route;
 	public static final YmapsApi api = new YmapsApi();
 	public static String platform = System.getProperty("microedition.platform");
 	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
@@ -141,7 +143,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		thread = null;
 	}
 
-	private static String getAppropCachePath() {
+	public static String getAppropCachePath() {
 		String loc = null;
 		if (IsKemulator()) {
 			loc = "file:///root/ym/";
@@ -313,6 +315,22 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 
 		return sumY;
+	}
+
+	/**
+	 *
+	 * @param a Cos value [-1; 1]
+	 * @return Angle in radians.
+	 */
+	public static double acos(double a) {
+		final double epsilon = 1.0E-14;
+		double x = a;
+		do {
+			x -= (Math.sin(x) - a) / Math.cos(x);
+		} while (Math.abs(Math.sin(x) - a) > epsilon);
+
+		// returned angle is in radians
+		return -1 * (x - Math.PI / 2);
 	}
 
 	public void commandAction(Command c, Displayable d) {

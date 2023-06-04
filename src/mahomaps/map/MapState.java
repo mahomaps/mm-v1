@@ -78,8 +78,12 @@ public class MapState {
 	}
 
 	public static MapState FocusAt(Geopoint p) {
+		return FocusAt(p, Settings.focusZoom);
+	}
+
+	public static MapState FocusAt(Geopoint p, int zoom) {
 		MapState ms = new MapState();
-		ms.zoom = Settings.focusZoom;
+		ms.zoom = zoom;
 		ms.xOffset -= p.GetScreenX(ms);
 		ms.yOffset -= p.GetScreenY(ms);
 		ms.ClampOffset();

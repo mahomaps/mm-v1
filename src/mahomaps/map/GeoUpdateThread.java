@@ -26,6 +26,7 @@ public class GeoUpdateThread extends Thread {
 	public String method = null;
 	public int sattelites = -1;
 	public int totalSattelitesInView = -1;
+	public int updateCount;
 	private Object lock = new Object();
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
@@ -261,6 +262,7 @@ public class GeoUpdateThread extends Thread {
 						state = STATE_UNAVAILABLE;
 					}
 				}
+				updateCount++;
 			}
 
 			public void providerStateChanged(LocationProvider provider, int newState) {

@@ -4,14 +4,14 @@ import javax.microedition.lcdui.Graphics;
 
 import mahomaps.MahoMapsApp;
 
-public class SearchButton extends ControlButton {
+public class MenuButton extends ControlButton {
 
-	public SearchButton(IButtonHandler handler) {
-		super(0, handler, 1);
+	public MenuButton(IButtonHandler handler) {
+		super(1, handler, 2);
 	}
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
-		if (MahoMapsApp.lastSearch == null && MahoMapsApp.route == null)
+		if (MahoMapsApp.route == null)
 			super.Paint(g, x, y, w, h);
 		else
 			H = 0;
