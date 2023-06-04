@@ -9,13 +9,14 @@ import javax.microedition.lcdui.StringItem;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
+import mahomaps.map.TilesProvider;
 
 public class CacheManager extends Form implements CommandListener {
 
 	StringItem delAll = new StringItem(null, "Удалить все тайлы", Item.BUTTON);
 	private Command back = new Command("Назад", Command.BACK, 0);
 
-	public CacheManager() {
+	public CacheManager(TilesProvider tiles) {
 		super("Управление кэшем");
 		addCommand(back);
 		setCommandListener(this);
