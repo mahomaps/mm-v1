@@ -37,12 +37,16 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	public static String version;
 	public static boolean paused;
-
-	private static Command exit = new Command("Выход", Command.EXIT, 0);
-	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
-	
 	private Form bbForm;
 	private ChoiceGroup bbChoice;
+
+	// commands
+	public static Command exit = new Command("Выход", Command.EXIT, 0);
+	public static Command back = new Command("Назад", Command.BACK, 0);
+	public static Command ok = new Command("Ок", Command.OK, 0);
+	public static Command rms = new Command("Исп. RMS", Command.OK, 0);
+	public static Command openLink = new Command("Открыть", Command.ITEM, 1);
+	public static Command reset = new Command("Сбросить", Command.ITEM, 1);
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
@@ -60,7 +64,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		if (thread == null) {
 			if (bb) {
 				Settings.Read();
-				if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm)  {
+				if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm) {
 					BringSubScreen(bbForm);
 					return;
 				}
@@ -95,7 +99,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		try {
 			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
 		} catch (RuntimeException e) {
-			Form f = new Form("Ошибка", new Item[] { new StringItem("Настройки повреждены", "Переустановите приложение.") });
+			Form f = new Form("Ошибка",
+					new Item[] { new StringItem("Настройки повреждены", "Переустановите приложение.") });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -347,7 +352,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			startApp();
 		}
 	}
-	
+
 	public static String getConnectionParams() {
 		if (!bb || !Settings.bbWifi) {
 			return "";
