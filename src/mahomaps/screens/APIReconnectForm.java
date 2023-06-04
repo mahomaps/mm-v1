@@ -14,10 +14,6 @@ import mahomaps.Settings;
 
 public class APIReconnectForm extends Form implements Runnable, CommandListener, ItemCommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-
-	private Command reset = new Command("Сбросить", Command.ITEM, 1);
-
 	public APIReconnectForm() {
 		super("MahoMaps v1");
 		setCommandListener(this);
@@ -40,7 +36,7 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 	}
 
 	private void StartTokenRefresh() {
-		removeCommand(back);
+		removeCommand(MahoMapsApp.back);
 		deleteAll();
 		append(new Gauge("Подключение", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
 		(new Thread(this, "API reconnect")).start();
@@ -51,17 +47,16 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 		append(new StringItem("Статус", "Подключено"));
 		StringItem b = new StringItem("Токен сессии", "Сбросить", Item.BUTTON);
 		b.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT);
-		b.addCommand(reset);
-		b.setDefaultCommand(reset);
+		b.setDefaultCommand(MahoMapsApp.reset);
 		b.setItemCommandListener(this);
 		append(b);
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 	}
 
 	private void ShowSuc() {
 		deleteAll();
 		append(new StringItem("Статус", "Подключение успешно. "));
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 	}
 
 	private void ShowFail(Exception e) {
@@ -74,17 +69,17 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 			append(new StringItem("Возникшее исключение", e.getClass().getName()));
 			append(new StringItem("Сведения", e.getMessage()));
 		}
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMenu();
 		}
 	}
 
 	public void commandAction(Command c, Item item) {
-		if (c == reset) {
+		if (c == MahoMapsApp.reset) {
 			MahoMapsApp.api.token = null;
 			MahoMapsApp.api.Save();
 			StartTokenRefresh();

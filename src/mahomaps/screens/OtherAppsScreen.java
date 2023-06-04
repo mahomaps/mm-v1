@@ -12,9 +12,6 @@ import mahomaps.MahoMapsApp;
 
 public class OtherAppsScreen extends Form implements CommandListener, ItemCommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-	private Command openLink = new Command("Открыть", Command.ITEM, 1);
-
 	StringItem vk = new StringItem("VK", "VK4ME (curoviyxru)", Item.HYPERLINK);
 	StringItem tg = new StringItem("Telegram", "MPGram Web (shinovon)", Item.HYPERLINK);
 	StringItem jt = new StringItem("YouTube", "JTube (shinovon)", Item.HYPERLINK);
@@ -26,7 +23,7 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 	public OtherAppsScreen() {
 		super("Другие программы");
 		setCommandListener(this);
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 
 		append(new StringItem(null,
 				"Мы собрали для вас некоторые другие наши приложения для доступа к актуальным сервисам."));
@@ -40,20 +37,19 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMenu();
 		}
 	}
 
 	private void appendLink(StringItem item) {
-		item.addCommand(openLink);
-		item.setDefaultCommand(openLink);
+		item.setDefaultCommand(MahoMapsApp.openLink);
 		item.setItemCommandListener(this);
 		append(item);
 	}
 
 	public void commandAction(Command c, Item item) {
-		if (c == openLink) {
+		if (c == MahoMapsApp.openLink) {
 			if (item == vk) {
 				MahoMapsApp.open("http://v4.crx.moe/");
 			} else if (item == tg) {

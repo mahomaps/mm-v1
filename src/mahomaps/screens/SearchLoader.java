@@ -20,7 +20,6 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 	private Thread th;
 	public final String query;
 	public final Geopoint point;
-	private Command back = new Command("Назад", Command.BACK, 0);
 
 	public SearchLoader(String query, Geopoint point) {
 		super(query);
@@ -52,11 +51,11 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 			deleteAll();
 			append(new StringItem("Не хватило памяти", "Попробуйте закрыть другие приложения или перезапустить это."));
 		}
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMap();
 		}
 	}

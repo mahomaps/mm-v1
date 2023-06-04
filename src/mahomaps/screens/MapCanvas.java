@@ -33,7 +33,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public volatile MapState state = MapState.Default();
 
 	// search lcdui parts
-	private Command back = new Command("Назад", Command.BACK, 0);
 	private Command search = new Command("Поиск", Command.OK, 1);
 	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
 
@@ -67,7 +66,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		geolocation = new Geopoint(0, 0);
 		geolocation.type = Geopoint.LOCATION;
 
-		searchBox.addCommand(back);
+		searchBox.addCommand(MahoMapsApp.back);
 		searchBox.addCommand(search);
 		searchBox.setCommandListener(this);
 
@@ -595,7 +594,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public void commandAction(Command c, Displayable d) {
 		if (d == searchBox) {
-			if (c == back) {
+			if (c == MahoMapsApp.back) {
 				MahoMapsApp.BringMap();
 			} else {
 				overlays.CloseOverlay(SelectOverlay.ID);

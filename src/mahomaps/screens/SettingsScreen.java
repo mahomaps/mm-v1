@@ -15,8 +15,6 @@ import mahomaps.Settings;
 
 public class SettingsScreen extends Form implements CommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-
 	private ChoiceGroup focusZoom = new ChoiceGroup("Масштаб при просмотре точек", Choice.POPUP,
 			new String[] { "15", "16", "17", "18" }, null);
 	private ChoiceGroup geoLook;
@@ -34,12 +32,12 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Автоматически", "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup("Язык тайлов и поиска (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Русский", "Английский", "Турецкий" }, null);
-	private ChoiceGroup bbNetwork = new ChoiceGroup("Сеть", Choice.EXCLUSIVE,
-			new String[] { "Сотовая", "Wi-Fi" }, null);
+	private ChoiceGroup bbNetwork = new ChoiceGroup("Сеть", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" },
+			null);
 
 	public SettingsScreen() {
 		super("Настройки");
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 		Image[] imgs = null;
 		try {
@@ -109,7 +107,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			Apply();
 			if (!MahoMapsApp.TryInitFSCache(false))
 				return;

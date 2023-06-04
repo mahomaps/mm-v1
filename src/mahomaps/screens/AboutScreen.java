@@ -16,9 +16,6 @@ import mahomaps.MahoMapsApp;
 
 public class AboutScreen extends Form implements CommandListener, ItemCommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-	private Command openLink = new Command("Открыть", Command.ITEM, 1);
-
 	StringItem website = new StringItem("Сайт", "nnp.nnchan.ru", Item.HYPERLINK);
 	StringItem chat = new StringItem("Чат", "t.me/nnmidletschat", Item.HYPERLINK);
 	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
@@ -26,17 +23,21 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 	public AboutScreen() {
 		super("О программе");
 		setCommandListener(this);
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 		try {
-			ImageItem i = new ImageItem(null, MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/icon256.png") : Image.createImage("/icon.png"),
+			ImageItem i = new ImageItem(null,
+					MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/icon256.png")
+							: Image.createImage("/icon.png"),
 					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
 			append(i);
 		} catch (IOException e) {
 		}
-		StringItem s = new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version);
+		StringItem s = new StringItem("MahoMaps",
+				"J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version);
 		s.setLayout(Item.LAYOUT_LEFT);
 		append(s);
-		if(MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1 && MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
+		if (MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1
+				&& MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
 			// фокус на начало экрана
 			try {
 				MahoMapsApp.display.setCurrentItem(s);
@@ -54,16 +55,13 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		append(new StringItem("Группа поддержки", "stacorp"));
 		append(new StringItem("Поиграйте в игры от", "Cygames"));
 		append(new StringItem("Писалось под музыку от", "Lantis"));
-		website.addCommand(openLink);
-		website.setDefaultCommand(openLink);
+		website.setDefaultCommand(MahoMapsApp.openLink);
 		website.setItemCommandListener(this);
 		append(website);
-		chat.addCommand(openLink);
-		chat.setDefaultCommand(openLink);
+		chat.setDefaultCommand(MahoMapsApp.openLink);
 		chat.setItemCommandListener(this);
 		append(chat);
-		gh.addCommand(openLink);
-		gh.setDefaultCommand(openLink);
+		gh.setDefaultCommand(MahoMapsApp.openLink);
 		gh.setItemCommandListener(this);
 		append(gh);
 		try {
@@ -75,22 +73,20 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
 		s.setLayout(Item.LAYOUT_LEFT);
 		append(s);
-		append(new StringItem("Реклама", "Гитхаб Анселя:\ngithub.com/Feodor0090\n"
-				+ "Канал Анселя:\nt.me/sym_ansel_blog\n"
-				+ "Борда rehdzi:\nnnchan.ru\n"
-				+ "Канал Димы:\nt.me/blogprostodimonich\n"
-				+ "Канал Лиса:\nt.me/GingerFox87_blog\n"
-				+ "Игра Выполя:\nt.me/mobap_game\n"));
+		append(new StringItem("Реклама",
+				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
+						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
+						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMenu();
 		}
 	}
 
 	public void commandAction(Command c, Item item) {
-		if (c == openLink) {
+		if (c == MahoMapsApp.openLink) {
 			if (item == website) {
 				MahoMapsApp.open("http://nnp.nnchan.ru");
 			} else if (item == chat) {
