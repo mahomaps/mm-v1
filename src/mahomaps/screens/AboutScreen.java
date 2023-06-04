@@ -25,10 +25,8 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		setCommandListener(this);
 		addCommand(MahoMapsApp.back);
 		try {
-			ImageItem i = new ImageItem(null,
-					MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/icon256.png")
-							: Image.createImage("/icon.png"),
-					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
+			Image img = Image.createImage(MahoMapsApp.GetCanvas().getWidth() > 300 ? "/icon256.png" : "/icon.png");
+			ImageItem i = new ImageItem(null, img, Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
 			append(i);
 		} catch (IOException e) {
 		}
@@ -91,6 +89,8 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 				MahoMapsApp.open("http://nnp.nnchan.ru");
 			} else if (item == chat) {
 				MahoMapsApp.open("http://mp.nnchan.ru/chat.php?c=nnmidletschat");
+			} else if(item == gh) {
+				MahoMapsApp.open("https://github.com/mahomaps");
 			}
 		}
 	}
