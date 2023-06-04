@@ -35,7 +35,7 @@ public class RouteTracker {
 	private double lat1, lon1, lat2, lon2, lat3, lon3, timeDelta12;
 
 	static final int ANCHOR_TRIGGER_DIST = 20;
-	static final int REATTACH_DIST = 40;
+	static final int REATTACH_DIST = 50;
 
 	// drawing temps
 	private TrackerOverlayState tos = new TrackerOverlayState(RouteSegment.NO_ICON, 0, "", "Начинаем маршрут...", "");
