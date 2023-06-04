@@ -14,6 +14,7 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreFullException;
+import javax.microedition.rms.RecordStoreNotFoundException;
 import javax.microedition.rms.RecordStoreNotOpenException;
 
 import mahomaps.Gate;
@@ -616,5 +617,55 @@ public class TilesProvider implements Runnable {
 			}
 		}
 		return 0;
+	}
+
+	public void ClearCache() {
+		synchronized (cacheAccessLock) {
+			if (Settings.cacheMode == Settings.CACHE_RMS) {
+				String[] names = RecordStore.listRecordStores();
+				if (names == null)
+					return;
+				for (int i = 0; i < names.length; i++) {
+					if (names[i].indexOf("tile_") == 0) {
+						try {
+							RecordStore.deleteRecordStore(names[i]);
+						} catch (RecordStoreNotFoundException e) {
+						} catch (RecordStoreException e) {
+						}
+					}
+				}
+			}
+			if (Settings.cacheMode == Settings.CACHE_FS) {
+				FileConnection fc = null;
+				try {
+					fc = (FileConnection) Connector.open(localPath, Connector.READ);
+					Enumeration e = fc.list();
+					while (e.hasMoreElements()) {
+						String name = (String) e.nextElement();
+						if (name.indexOf("tile_") == 0) {
+							FileConnection fc2 = null;
+							try {
+								fc2 = (FileConnection) Connector.open(localPath + name, Connector.WRITE);
+								fc2.delete();
+							} catch (Exception e2) {
+							} finally {
+								if (fc2 != null)
+									try {
+										fc2.close();
+									} catch (IOException e3) {
+									}
+							}
+						}
+					}
+				} catch (Exception e) {
+				} finally {
+					if (fc != null)
+						try {
+							fc.close();
+						} catch (IOException e) {
+						}
+				}
+			}
+		}
 	}
 }
