@@ -21,6 +21,7 @@ public class CacheManager extends Form implements CommandListener {
 		addCommand(back);
 		setCommandListener(this);
 		append(new StringItem("Хранилище", getCacheType()));
+		append(new StringItem("Тайлов хранится", "" + tiles.GetCachedTilesCount()));
 	}
 
 	private static String getCacheType() {
