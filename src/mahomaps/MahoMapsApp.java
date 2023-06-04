@@ -42,11 +42,11 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	// commands
 	public static Command exit = new Command("Выход", Command.EXIT, 0);
-	public static Command back = new Command("Назад", Command.BACK, 0);
+	public static Command back = new Command("Назад", Command.BACK, 1);
 	public static Command ok = new Command("Ок", Command.OK, 0);
 	public static Command rms = new Command("Исп. RMS", Command.OK, 0);
-	public static Command openLink = new Command("Открыть", Command.ITEM, 1);
-	public static Command reset = new Command("Сбросить", Command.ITEM, 1);
+	public static Command openLink = new Command("Открыть", Command.ITEM, 0);
+	public static Command reset = new Command("Сбросить", Command.ITEM, 0);
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
