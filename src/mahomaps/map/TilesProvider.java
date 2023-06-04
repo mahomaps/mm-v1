@@ -46,6 +46,7 @@ public class TilesProvider implements Runnable {
 
 	private final Gate downloadGate = new Gate(false);
 	private final Gate cacheGate = new Gate(true);
+	private final Object cacheAccessLock = new Object();
 
 	private boolean paintState = false;
 
@@ -322,35 +323,39 @@ public class TilesProvider implements Runnable {
 			byte[] blobc = blob.toByteArray();
 			blob = null;
 			if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
-				try {
-					fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
-					fc.create();
-					OutputStream os = fc.openOutputStream();
-					os.write(blobc);
-					os.flush();
-					os.close();
-				} catch (SecurityException e) {
-					MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
-					Settings.cacheMode = Settings.CACHE_DISABLED;
-				} catch (IOException e) {
-					// TODO: Выводить на экран алерт что закэшить не удалось
-				} finally {
-					if (fc != null)
-						fc.close();
-					fc = null;
+				synchronized (cacheAccessLock) {
+					try {
+						fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
+						fc.create();
+						OutputStream os = fc.openOutputStream();
+						os.write(blobc);
+						os.flush();
+						os.close();
+					} catch (SecurityException e) {
+						MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
+						Settings.cacheMode = Settings.CACHE_DISABLED;
+					} catch (IOException e) {
+						// TODO: Выводить на экран алерт что закэшить не удалось
+					} finally {
+						if (fc != null)
+							fc.close();
+						fc = null;
+					}
 				}
 			} else if (Settings.cacheMode == Settings.CACHE_RMS) {
-				try {
-					RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
-					if (r.getNumRecords() == 0)
-						r.addRecord(new byte[1], 0, 1);
-					r.setRecord(1, blobc, 0, blobc.length);
-					r.closeRecordStore();
-				} catch (RecordStoreFullException e) {
-					// TODO: Выводить алерт что место закончилось
-				} catch (Exception e) {
-					// TODO: Выводить на экран алерт что закэшить не удалось
-					e.printStackTrace();
+				synchronized (cacheAccessLock) {
+					try {
+						RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
+						if (r.getNumRecords() == 0)
+							r.addRecord(new byte[1], 0, 1);
+						r.setRecord(1, blobc, 0, blobc.length);
+						r.closeRecordStore();
+					} catch (RecordStoreFullException e) {
+						// TODO: Выводить алерт что место закончилось
+					} catch (Exception e) {
+						// TODO: Выводить на экран алерт что закэшить не удалось
+						e.printStackTrace();
+					}
 				}
 			}
 			Image img = Image.createImage(blobc, 0, blobc.length);
@@ -382,39 +387,41 @@ public class TilesProvider implements Runnable {
 	 * @return Изображение, если тайл сохранён, иначе null.
 	 */
 	private Image tryLoadFromFS(TileId id) {
-		FileConnection fc = null;
-		try {
-			fc = (FileConnection) Connector.open(getFileName(id), Connector.READ);
-			if (!fc.exists()) {
-				fc.close();
-				return null;
-			}
-			InputStream s = fc.openInputStream();
-			ByteArrayOutputStream o = new ByteArrayOutputStream();
-			byte[] buf = new byte[512];
-			int read;
-			while ((read = s.read(buf)) != -1) {
-				o.write(buf, 0, read);
-			}
-			s.close();
-			byte[] b = o.toByteArray();
-			o.close();
-			return Image.createImage(b, 0, b.length);
-		} catch (SecurityException e) {
-			MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
-			Settings.cacheMode = Settings.CACHE_DISABLED;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} catch (OutOfMemoryError e) {
-		} finally {
-			if (fc != null) {
-				try {
+		synchronized (cacheAccessLock) {
+			FileConnection fc = null;
+			try {
+				fc = (FileConnection) Connector.open(getFileName(id), Connector.READ);
+				if (!fc.exists()) {
 					fc.close();
-				} catch (IOException ex) {
+					return null;
+				}
+				InputStream s = fc.openInputStream();
+				ByteArrayOutputStream o = new ByteArrayOutputStream();
+				byte[] buf = new byte[512];
+				int read;
+				while ((read = s.read(buf)) != -1) {
+					o.write(buf, 0, read);
+				}
+				s.close();
+				byte[] b = o.toByteArray();
+				o.close();
+				return Image.createImage(b, 0, b.length);
+			} catch (SecurityException e) {
+				MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
+				Settings.cacheMode = Settings.CACHE_DISABLED;
+			} catch (Exception e) {
+				e.printStackTrace();
+			} catch (OutOfMemoryError e) {
+			} finally {
+				if (fc != null) {
+					try {
+						fc.close();
+					} catch (IOException ex) {
+					}
 				}
 			}
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -424,24 +431,26 @@ public class TilesProvider implements Runnable {
 	 * @return Изображение, если тайл сохранён, иначе null.
 	 */
 	private Image tryLoadFromRMS(TileId id) {
-		byte[] b = null;
-		try {
-			RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
-			if (r.getNumRecords() > 0) {
-				b = r.getRecord(1);
+		synchronized (cacheAccessLock) {
+			byte[] b = null;
+			try {
+				RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
+				if (r.getNumRecords() > 0) {
+					b = r.getRecord(1);
+				}
+				r.closeRecordStore();
+			} catch (RecordStoreNotOpenException e) {
+				e.printStackTrace();
+			} catch (RecordStoreException e) {
+				e.printStackTrace();
 			}
-			r.closeRecordStore();
-		} catch (RecordStoreNotOpenException e) {
-			e.printStackTrace();
-		} catch (RecordStoreException e) {
-			e.printStackTrace();
-		}
 
-		if (b != null) {
-			return Image.createImage(b, 0, b.length);
-		}
+			if (b != null) {
+				return Image.createImage(b, 0, b.length);
+			}
 
-		return null;
+			return null;
+		}
 	}
 
 	/**
@@ -571,37 +580,39 @@ public class TilesProvider implements Runnable {
 		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
 	}
 
-	public int GetCount() {
-		if (Settings.cacheMode == Settings.CACHE_RMS) {
-			String[] names = RecordStore.listRecordStores();
-			if (names == null)
-				return 0;
-			int c = 0;
-			for (int i = 0; i < names.length; i++) {
-				if (names[i].indexOf("tile_") == 0)
-					c++;
-			}
-			return c;
-		}
-		if (Settings.cacheMode == Settings.CACHE_FS) {
-			FileConnection fc = null;
-			try {
-				fc = (FileConnection) Connector.open(localPath, Connector.READ);
-				Enumeration e = fc.list();
+	public int GetCachedTilesCount() {
+		synchronized (cacheAccessLock) {
+			if (Settings.cacheMode == Settings.CACHE_RMS) {
+				String[] names = RecordStore.listRecordStores();
+				if (names == null)
+					return 0;
 				int c = 0;
-				while (e.hasMoreElements()) {
-					String object = (String) e.nextElement();
-					if (object.indexOf("tile_") == 0)
+				for (int i = 0; i < names.length; i++) {
+					if (names[i].indexOf("tile_") == 0)
 						c++;
 				}
 				return c;
-			} catch (Exception e) {
-			} finally {
-				if (fc != null)
-					try {
-						fc.close();
-					} catch (IOException e) {
+			}
+			if (Settings.cacheMode == Settings.CACHE_FS) {
+				FileConnection fc = null;
+				try {
+					fc = (FileConnection) Connector.open(localPath, Connector.READ);
+					Enumeration e = fc.list();
+					int c = 0;
+					while (e.hasMoreElements()) {
+						String object = (String) e.nextElement();
+						if (object.indexOf("tile_") == 0)
+							c++;
 					}
+					return c;
+				} catch (Exception e) {
+				} finally {
+					if (fc != null)
+						try {
+							fc.close();
+						} catch (IOException e) {
+						}
+				}
 			}
 		}
 		return 0;
