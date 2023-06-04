@@ -10,7 +10,6 @@ import javax.microedition.lcdui.Displayable;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
-import mahomaps.route.Route;
 import mahomaps.ui.Button;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -21,17 +20,13 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 	final Vector v = new Vector();
 	private Geopoint a;
 	private Geopoint b;
-	private int method;
-	private Route r;
 
 	private Command leave = new Command("Нет", Command.CANCEL, 0);
 	private Command discard = new Command("Да", Command.OK, 0);
 
-	public RouteFollowOverlay(Geopoint a, Geopoint b, int method, Route r) {
+	public RouteFollowOverlay(Geopoint a, Geopoint b) {
 		this.a = a;
 		this.b = b;
-		this.method = method;
-		this.r = r;
 		content = new FillFlowContainer(new UIElement[] { new Button("Закрыть маршрут", 0, this) });
 		ShowPoint(null);
 	}

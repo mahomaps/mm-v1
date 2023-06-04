@@ -167,7 +167,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			MapCanvas mc = MahoMapsApp.GetCanvas();
 			if (mc.geo != null && mc.geo.DrawPoint()) {
 				try {
-					RouteFollowOverlay rfo = new RouteFollowOverlay(a, b, method, route);
+					RouteFollowOverlay rfo = new RouteFollowOverlay(a, b);
 					MahoMapsApp.GetCanvas().overlays.PushOverlay(rfo);
 					RouteTracker rt = new RouteTracker(route, rfo);
 					rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
