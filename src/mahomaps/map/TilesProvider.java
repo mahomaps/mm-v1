@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.microedition.io.Connector;
@@ -570,4 +571,39 @@ public class TilesProvider implements Runnable {
 		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
 	}
 
+	public int GetCount() {
+		if (Settings.cacheMode == Settings.CACHE_RMS) {
+			String[] names = RecordStore.listRecordStores();
+			if (names == null)
+				return 0;
+			int c = 0;
+			for (int i = 0; i < names.length; i++) {
+				if (names[i].indexOf("tile_") == 0)
+					c++;
+			}
+			return c;
+		}
+		if (Settings.cacheMode == Settings.CACHE_FS) {
+			FileConnection fc = null;
+			try {
+				fc = (FileConnection) Connector.open(localPath, Connector.READ);
+				Enumeration e = fc.list();
+				int c = 0;
+				while (e.hasMoreElements()) {
+					String object = (String) e.nextElement();
+					if (object.indexOf("tile_") == 0)
+						c++;
+				}
+				return c;
+			} catch (Exception e) {
+			} finally {
+				if (fc != null)
+					try {
+						fc.close();
+					} catch (IOException e) {
+					}
+			}
+		}
+		return 0;
+	}
 }
