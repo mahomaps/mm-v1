@@ -1,11 +1,11 @@
 package mahomaps;
 
-public final class FpsLimiter {
-	private final Gate gate = new Gate(true);
-	private long time;
+public final class FpsLimiter extends Gate {
 
-	public void Reset() {
-		gate.Reset();
+	private long time;
+	
+	public FpsLimiter() {
+		super(true);
 	}
 
 	public void Begin() {
@@ -17,10 +17,6 @@ public final class FpsLimiter {
 		if (delay <= 0)
 			return;
 
-		gate.Pass(delay);
-	}
-
-	public void Pass() throws InterruptedException {
-		gate.Pass();
+		super.Pass(delay);
 	}
 }

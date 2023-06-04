@@ -1,6 +1,6 @@
 package mahomaps;
 
-public final class Gate {
+public class Gate {
 	private volatile boolean pass;
 
 	private final Object lock = new Object();
