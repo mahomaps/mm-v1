@@ -25,10 +25,7 @@ public class AutoSegment extends RouteSegment {
 		if (actionText == null || actionText.length() == 0) {
 			this.actionText = "";
 		} else {
-			StringBuffer sb = new StringBuffer();
-			sb.append(Character.toUpperCase(actionText.charAt(0)));
-			sb.append(actionText.substring(1));
-			this.actionText = sb.toString();
+			this.actionText = Character.toUpperCase(actionText.charAt(0)) + actionText.substring(1);
 		}
 		this.actionPoint = new Geopoint(actionPoint.lat, actionPoint.lon);
 		this.actionPoint.type = Geopoint.POI_MARK;

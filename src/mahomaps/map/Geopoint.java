@@ -156,7 +156,7 @@ public class Geopoint {
 		sb.append(latFS);
 
 		r[0] = sb.toString();
-		sb = new StringBuffer();
+		sb.setLength(0);
 
 		if (!lonS)
 			sb.append('-');
