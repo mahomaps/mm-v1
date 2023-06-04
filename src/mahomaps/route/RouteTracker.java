@@ -129,7 +129,9 @@ public class RouteTracker {
 	private void ProcessGeo() {
 		final long now = System.currentTimeMillis();
 		final double delta = (now - lastUpdateTime) / 1000d;
-		final double prg = (delta / timeDelta12) + 1d;
+		double prg = (delta / timeDelta12) + 1d;
+		if (prg > 2d)
+			prg = 2d;
 		double tlon = lerp(lon1, lon2, prg);
 		double tlat = lerp(lat1, lat2, prg);
 		if (delta < 1d) {
