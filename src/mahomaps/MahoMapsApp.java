@@ -47,6 +47,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static Command rms = new Command("Исп. RMS", Command.OK, 0);
 	public static Command openLink = new Command("Открыть", Command.ITEM, 0);
 	public static Command reset = new Command("Сбросить", Command.ITEM, 0);
+	public static Command no = new Command("Нет", Command.CANCEL, 1);
+	public static Command yes = new Command("Да", Command.OK, 0);
+	public static Command toMap = new Command("Карта", Command.SCREEN, 0);
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
