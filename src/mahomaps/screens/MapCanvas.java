@@ -9,7 +9,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
-import mahomaps.Gate;
+import mahomaps.FpsLimiter;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
@@ -58,7 +58,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	boolean dragActive;
 	public boolean hidden = false;
 	private int lastOverlaysW;
-	public final Gate repaintGate = new Gate(true);
+	public final FpsLimiter repaintGate = new FpsLimiter();
 	private Graphics cachedGraphics;
 
 	public MapCanvas(TilesProvider tiles) {
@@ -303,20 +303,20 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					repaintGate.Pass();
 				} else {
 					// we are hidden, but route is active
+					repaintGate.Begin();
 					rt.Update();
 					// drawing does nothing
-					// spin at 20ups
-					repaintGate.Pass(49);
+					repaintGate.End(50); // 20 ups
 				}
 			} else {
 				// we are visible
+				repaintGate.Begin();
 				Graphics g = cachedGraphics;
 				if (g == null)
 					cachedGraphics = g = getGraphics();
 				repaint(g);
 				flushGraphics();
-				// TODO proper 30 fps limiter
-				repaintGate.Pass(rt != null ? 20 : 2000);
+				repaintGate.End(rt != null ? 33 : 2000);
 			}
 		}
 	}
