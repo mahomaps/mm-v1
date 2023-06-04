@@ -152,9 +152,8 @@ public class RouteTracker {
 		tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
 				"Осталось " + ((int) d) + "м", rs.GetDescription());
 		overlay.ShowPoint(rs.GetAnchor());
-		if (d < REATTACH_DIST) {
-			currentSegment = 0;
-			currentVertex = 0;
+		if (TryReattach()) {
+			// segment/vertex are set, do nothing
 		}
 	}
 
