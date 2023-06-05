@@ -143,6 +143,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 				for (int i = 0; i < route.segments.length; i++) {
 					Item[] items = route.segments[i].ToLcdui();
 					for (int j = 0; j < items.length; j++) {
+						items[j].setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 						f.append(items[j]);
 					}
 				}
