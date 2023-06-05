@@ -145,7 +145,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			// network or OOM errors
 		}
 		try {
-			menu = new MenuScreen(); // nothing to fail
+			menu = new MenuScreen(tiles); // nothing to fail
 			canvas = new MapCanvas(tiles); // hz
 			tiles.Start(); // OOM
 			BringMap(); // jic

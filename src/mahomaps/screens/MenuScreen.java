@@ -7,12 +7,15 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.map.TilesProvider;
 
 public class MenuScreen extends List implements CommandListener {
 
+	private TilesProvider tiles;
+
 	public MenuScreen() {
 		super("MahoMaps v1", Choice.IMPLICIT, new String[] { MahoMapsApp.text[9], MahoMapsApp.text[10],
-				MahoMapsApp.text[11], MahoMapsApp.text[12], MahoMapsApp.text[13], MahoMapsApp.text[0] }, null);
+				MahoMapsApp.text[11], "Кэш", MahoMapsApp.text[12], MahoMapsApp.text[13], MahoMapsApp.text[0] }, null);
 		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
@@ -30,10 +33,12 @@ public class MenuScreen extends List implements CommandListener {
 				} else if (sel == 2) {
 					MahoMapsApp.BringSubScreen(new SettingsScreen());
 				} else if (sel == 3) {
-					MahoMapsApp.BringSubScreen(new AboutScreen());
+					MahoMapsApp.BringSubScreen(new CacheManager(tiles));
 				} else if (sel == 4) {
-					MahoMapsApp.BringSubScreen(new OtherAppsScreen());
+					MahoMapsApp.BringSubScreen(new AboutScreen());
 				} else if (sel == 5) {
+					MahoMapsApp.BringSubScreen(new OtherAppsScreen());
+				} else if (sel == 6) {
 					MahoMapsApp.Exit();
 				}
 			}
