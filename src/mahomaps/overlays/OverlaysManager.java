@@ -23,12 +23,16 @@ public final class OverlaysManager {
 	}
 
 	public void DrawMap(Graphics g, MapState ms) {
-		for (int i = 0; i < overlays.size(); i++) {
-			Vector points = ((MapOverlay) overlays.elementAt(i)).GetPoints();
-			int s = points.size();
-			for (int j = 0; j < s; j++) {
-				((Geopoint) points.elementAt(j)).paint(g, ms);
+		try {
+			for (int i = 0; i < overlays.size(); i++) {
+				Vector points = ((MapOverlay) overlays.elementAt(i)).GetPoints();
+				int s = points.size();
+				for (int j = 0; j < s; j++) {
+					((Geopoint) points.elementAt(j)).paint(g, ms);
+				}
 			}
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Failed to draw overlays map content: " + e.toString());
 		}
 	}
 
@@ -37,7 +41,11 @@ public final class OverlaysManager {
 		int oh = 0;
 		for (int i = 0; i < overlays.size(); i++) {
 			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
-			mo.Paint(g, 5, y, w - 10, h);
+			try {
+				mo.Paint(g, 5, y, w - 10, h);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to paint overlay #" + i + " " + e.toString());
+			}
 			y += mo.H + OVERLAYS_SPACING;
 			oh += mo.H + OVERLAYS_SPACING;
 		}
