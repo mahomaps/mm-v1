@@ -11,11 +11,12 @@ import mahomaps.map.TilesProvider;
 
 public class MenuScreen extends List implements CommandListener {
 
-	private TilesProvider tiles;
+	private final TilesProvider tiles;
 
-	public MenuScreen() {
+	public MenuScreen(TilesProvider tiles) {
 		super("MahoMaps v1", Choice.IMPLICIT, new String[] { MahoMapsApp.text[9], MahoMapsApp.text[10],
 				MahoMapsApp.text[11], "Кэш", MahoMapsApp.text[12], MahoMapsApp.text[13], MahoMapsApp.text[0] }, null);
+		this.tiles = tiles;
 		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
