@@ -74,7 +74,7 @@ public class Settings {
 			try {
 				MahoMapsApp.LoadLocale(GetUiLangFile());
 			} catch (Exception e) {
-				MahoMapsApp.LoadLocale("/ru.txt");
+				MahoMapsApp.LoadLocale(new String(new char[] { 'r', 'u' }));
 			}
 		}
 	}
@@ -140,7 +140,7 @@ public class Settings {
 		switch (uiLang) {
 		case 0:
 		default:
-			return "/ru.txt";
+			return new String(new char[] { 'r', 'u' });
 		}
 	}
 }

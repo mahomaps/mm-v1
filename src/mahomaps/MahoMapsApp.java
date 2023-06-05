@@ -307,8 +307,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 	}
 
+	// called in settings load
 	public static void LoadLocale(String name) {
-		text = splitFull(getStringFromJAR(name), '\n');
+		text = splitFull(getStringFromJAR("/" + name + ".txt"), '\n');
 	}
 
 	public static double pow(double a, double b) {
@@ -417,6 +418,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	public static String[] splitFull(String str, char c) {
+		if (str == null)
+			return null;
 		Vector v = new Vector(64, 16);
 		int lle = 0;
 		while (true) {
