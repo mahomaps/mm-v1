@@ -38,14 +38,14 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 	private void StartTokenRefresh() {
 		removeCommand(MahoMapsApp.back);
 		deleteAll();
-		append(new Gauge("Подключение", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+		append(new Gauge(MahoMapsApp.text[14], false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
 		(new Thread(this, "API reconnect")).start();
 	}
 
 	private void ShowOk() {
 		deleteAll();
-		append(new StringItem("Статус", "Подключено"));
-		StringItem b = new StringItem("Токен сессии", "Сбросить", Item.BUTTON);
+		append(new StringItem(MahoMapsApp.text[15], MahoMapsApp.text[16]));
+		StringItem b = new StringItem(MahoMapsApp.text[20], MahoMapsApp.text[5], Item.BUTTON);
 		b.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT);
 		b.setDefaultCommand(MahoMapsApp.reset);
 		b.setItemCommandListener(this);
@@ -55,19 +55,19 @@ public class APIReconnectForm extends Form implements Runnable, CommandListener,
 
 	private void ShowSuc() {
 		deleteAll();
-		append(new StringItem("Статус", "Подключение успешно. "));
+		append(new StringItem(MahoMapsApp.text[15], MahoMapsApp.text[16]));
 		addCommand(MahoMapsApp.back);
 	}
 
 	private void ShowFail(Exception e) {
 		deleteAll();
 		if (e instanceof SecurityException) {
-			append(new StringItem("Статус", "Приложению запрещён доступ в интернет."));
+			append(new StringItem(MahoMapsApp.text[15], MahoMapsApp.text[21]));
 		} else {
-			append(new StringItem("Статус", "Ошибка. Попытайтесь ещё раз."));
-			append(new StringItem("Прокси", Settings.proxyApi ? "Включено" : "Выключено"));
-			append(new StringItem("Возникшее исключение", e.getClass().getName()));
-			append(new StringItem("Сведения", e.getMessage()));
+			append(new StringItem(MahoMapsApp.text[15], MahoMapsApp.text[22]));
+			append(new StringItem(MahoMapsApp.text[19], MahoMapsApp.text[Settings.proxyApi ? 17 : 18]));
+			append(new StringItem(MahoMapsApp.text[23], e.getClass().getName()));
+			append(new StringItem(MahoMapsApp.text[24], e.getMessage()));
 		}
 		addCommand(MahoMapsApp.back);
 	}
