@@ -11,8 +11,8 @@ import mahomaps.MahoMapsApp;
 public class MenuScreen extends List implements CommandListener {
 
 	public MenuScreen() {
-		super("MahoMaps v1", Choice.IMPLICIT, new String[] { "Подключение к API", "Справка по клавиатуре", "Настройки",
-				"О программе", "Другие программы", "Выход" }, null);
+		super("MahoMaps v1", Choice.IMPLICIT, new String[] { MahoMapsApp.text[9], MahoMapsApp.text[10],
+				MahoMapsApp.text[11], MahoMapsApp.text[12], MahoMapsApp.text[13], MahoMapsApp.text[0] }, null);
 		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
