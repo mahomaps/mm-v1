@@ -16,12 +16,12 @@ import mahomaps.MahoMapsApp;
 
 public class AboutScreen extends Form implements CommandListener, ItemCommandListener {
 
-	StringItem website = new StringItem("Сайт", "nnp.nnchan.ru", Item.HYPERLINK);
-	StringItem chat = new StringItem("Чат", "t.me/nnmidletschat", Item.HYPERLINK);
+	StringItem website = new StringItem(MahoMapsApp.text[33], "nnp.nnchan.ru", Item.HYPERLINK);
+	StringItem chat = new StringItem(MahoMapsApp.text[34], "t.me/nnmidletschat", Item.HYPERLINK);
 	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
 
 	public AboutScreen() {
-		super("О программе");
+		super(MahoMapsApp.text[12]);
 		setCommandListener(this);
 		addCommand(MahoMapsApp.back);
 		try {
@@ -31,7 +31,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		} catch (IOException e) {
 		}
 		StringItem s = new StringItem("MahoMaps",
-				"J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version);
+				MahoMapsApp.text[35] + "\n" + MahoMapsApp.text[36] + " 1." + MahoMapsApp.version);
 		s.setLayout(Item.LAYOUT_LEFT);
 		append(s);
 		if (MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1
@@ -89,7 +89,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 				MahoMapsApp.open("http://nnp.nnchan.ru");
 			} else if (item == chat) {
 				MahoMapsApp.open("http://mp.nnchan.ru/chat.php?c=nnmidletschat");
-			} else if(item == gh) {
+			} else if (item == gh) {
 				MahoMapsApp.open("https://github.com/mahomaps");
 			}
 		}
