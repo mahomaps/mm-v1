@@ -1,0 +1,46 @@
+Exit
+Back
+OK
+Use RMS
+Open
+Reset
+No
+Yes
+Map
+API connection
+Keyboard help
+Settings
+About
+Other software
+Connecting
+Status
+Connected
+On
+Off
+Proxy
+Session's token
+Network access is forbidden for this app.
+Error. Please, try again.
+Exception
+Info
+We have compiled some of our other applications for you to access relevant services.
+New version available
+Search
+Menu
+Select
+To panels
+To map
+Close route
+Website
+Chat
+J2ME client for Yandex.Maps.
+Version
+Retry
+Close
+Couldn't receive the API token.
+Online functions are not available.
+Enable
+Internet access is forbidden.
+Tile downloading is disabled.
+File system access is forbidden.
+Cache is disabled.
