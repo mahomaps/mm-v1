@@ -37,7 +37,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	public static String version;
 	public static boolean paused;
-	private Form bbForm;
 	private ChoiceGroup bbChoice;
 
 	// commands
@@ -53,13 +52,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
-		if (bb) {
-			bbForm = new Form("Выберите используемую сеть");
-			bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" }, null);
-			bbForm.addCommand(new Command("OK", Command.OK, 2));
-			bbForm.setCommandListener(this);
-			bbForm.append(bbChoice);
-		}
 	}
 
 	protected void startApp() {
@@ -67,8 +59,19 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		if (thread == null) {
 			if (bb) {
 				Settings.Read();
-				if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm) {
-					BringSubScreen(bbForm);
+				if (!Settings.bbNetworkChoosen) {
+					// можно следить открыт ли экран по существованию радиокнопок
+					if (bbChoice != null) {
+						// возврат т.к. меню уже открыто
+						return;
+					}
+					Form f = new Form("Выберите используемую сеть");
+					bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" }, null);
+					f.addCommand(ok);
+					f.setCommandListener(this);
+					f.append(bbChoice);
+					BringSubScreen(f);
+					// возврат т.к. сеть ещё не выбрана
 					return;
 				}
 			}
@@ -178,6 +181,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	/**
+	 * Запускает кэш с файловой.
+	 *
+	 * @param allowSwitch True, если предоставляется возможность использовать RMS.
+	 *                    Это перезапустит приложение.
 	 * @return False, если инициализировать не удалось.
 	 */
 	public static boolean TryInitFSCache(boolean allowSwitch) {
@@ -348,7 +355,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			Settings.cacheMode = Settings.CACHE_RMS;
 			Settings.Save();
 			startApp();
-		} else if (c.getPriority() == 2) {
+		} else if (c == ok) {
 			Settings.bbWifi = bbChoice.getSelectedIndex() == 1;
 			Settings.bbNetworkChoosen = true;
 			Settings.Save();
