@@ -33,8 +33,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public volatile MapState state = MapState.Default();
 
 	// search lcdui parts
-	private Command search = new Command("Поиск", Command.OK, 1);
-	private TextBox searchBox = new TextBox("Поиск", "", 100, 0);
+	private Command search = new Command(MahoMapsApp.text[27], Command.OK, 1);
+	private TextBox searchBox = new TextBox(MahoMapsApp.text[27], "", 100, 0);
 
 	// geolocation stuff
 	public GeoUpdateThread geo = null;
@@ -218,17 +218,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			g.setFont(f);
 
 			if (rt == null) {
-				g.drawString("Меню", 0, h, 0);
-				g.drawString("Выбор", w / 2, h, Graphics.TOP | Graphics.HCENTER);
+				g.drawString(MahoMapsApp.text[28], 0, h, 0);
+				g.drawString(MahoMapsApp.text[29], w / 2, h, Graphics.TOP | Graphics.HCENTER);
 
 				if (mapFocused) {
 					if (!UIElement.IsQueueEmpty())
-						g.drawString("К панелям", w, h, Graphics.TOP | Graphics.RIGHT);
+						g.drawString(MahoMapsApp.text[30], w, h, Graphics.TOP | Graphics.RIGHT);
 				} else {
-					g.drawString("К карте", w, h, Graphics.TOP | Graphics.RIGHT);
+					g.drawString(MahoMapsApp.text[31], w, h, Graphics.TOP | Graphics.RIGHT);
 				}
 			} else {
-				g.drawString("Закр. маршрут", w, h, Graphics.TOP | Graphics.RIGHT);
+				g.drawString(MahoMapsApp.text[32], w, h, Graphics.TOP | Graphics.RIGHT);
 			}
 		}
 	}
