@@ -18,11 +18,11 @@ public class UpdateScreen extends Form implements ItemCommandListener, CommandLi
 		super("MahoMaps v1");
 		this.url = url;
 		if (text == null)
-			text = "Доступна новая версия.";
+			text = MahoMapsApp.text[26];
 
 		append(text);
 		if (url != null) {
-			StringItem b = new StringItem(null, "Открыть", Item.BUTTON);
+			StringItem b = new StringItem(null, MahoMapsApp.text[4], Item.BUTTON);
 			b.setLayout(Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_BEFORE);
 			b.addCommand(MahoMapsApp.openLink);
 			b.setDefaultCommand(MahoMapsApp.openLink);

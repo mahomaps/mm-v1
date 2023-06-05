@@ -21,12 +21,11 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 	StringItem j2l = new StringItem("J2ME emulator for Android", "J2MEL (nikita36078)", Item.HYPERLINK);
 
 	public OtherAppsScreen() {
-		super("Другие программы");
+		super(MahoMapsApp.text[13]);
 		setCommandListener(this);
 		addCommand(MahoMapsApp.back);
 
-		append(new StringItem(null,
-				"Мы собрали для вас некоторые другие наши приложения для доступа к актуальным сервисам."));
+		append(new StringItem(null, MahoMapsApp.text[25]));
 		appendLink(vk);
 		appendLink(tg);
 		appendLink(jt);
