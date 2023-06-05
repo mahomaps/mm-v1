@@ -1,5 +1,9 @@
 package mahomaps;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Choice;
@@ -368,5 +372,28 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			return "";
 		}
 		return ";deviceside=true;interface=wifi";
+	}
+
+	public static final String getStringFromJAR(String path) {
+		try {
+			StringBuffer sb = new StringBuffer();
+			char[] chars = new char[1024];
+			InputStream stream = MahoMapsApp.class.getResourceAsStream(path);
+			if (stream == null)
+				return null;
+			InputStreamReader isr;
+			isr = new InputStreamReader(stream, "UTF-8");
+			while (true) {
+				int c = isr.read(chars);
+				if (c == -1)
+					break;
+				sb.append(chars, 0, c);
+			}
+			isr.close();
+			return sb.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
