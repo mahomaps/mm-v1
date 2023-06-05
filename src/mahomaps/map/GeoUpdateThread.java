@@ -28,6 +28,7 @@ public class GeoUpdateThread extends Thread {
 	public int totalSattelitesInView = -1;
 	public int updateCount;
 	private Object lock = new Object();
+	public boolean vibrated;
 
 	public GeoUpdateThread(Geopoint positionPoint, MapCanvas map) {
 		super("Geo update");
@@ -252,6 +253,13 @@ public class GeoUpdateThread extends Thread {
 				if(location.isValid()) {
 					Coordinates coordinates = location.getQualifiedCoordinates();
 					if (coordinates.getLatitude() != 0 && coordinates.getLongitude() != 0) {
+						if(!vibrated) {
+							try {
+								MahoMapsApp.display.vibrate(100);
+							} catch (Exception e) {
+							}
+							vibrated = true;
+						}
 						positionPoint.lat = coordinates.getLatitude();
 						positionPoint.lon = coordinates.getLongitude();
 						positionPoint.color = Geopoint.COLOR_RED;
