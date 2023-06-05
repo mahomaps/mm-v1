@@ -22,7 +22,6 @@ public class SearchScreen extends List implements CommandListener {
 	public boolean onePointFocused = false;
 
 	private Command reset = new Command("Сброс", Command.BACK, 0);
-	private Command toMap = new Command("К карте", Command.SCREEN, 0);
 
 	public SearchScreen(String query, Geopoint point, JSONArray results) {
 		super(query, Choice.IMPLICIT);
@@ -38,7 +37,7 @@ public class SearchScreen extends List implements CommandListener {
 		overlay = new SearchOverlay(point, query, results, this);
 		MahoMapsApp.Overlays().PushOverlay(overlay);
 		addCommand(reset);
-		addCommand(toMap);
+		addCommand(MahoMapsApp.toMap);
 		setCommandListener(this);
 	}
 
@@ -51,7 +50,7 @@ public class SearchScreen extends List implements CommandListener {
 		if (c == reset) {
 			ResetSearch();
 			MahoMapsApp.BringMap();
-		} else if (c == toMap) {
+		} else if (c == MahoMapsApp.toMap) {
 			MahoMapsApp.BringMap();
 		} else if (c == SELECT_COMMAND) {
 			overlay.SetSelection(results.getJSONObject(getSelectedIndex()));

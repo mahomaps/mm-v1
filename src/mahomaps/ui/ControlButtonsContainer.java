@@ -16,7 +16,7 @@ public class ControlButtonsContainer extends UIElement implements IButtonHandler
 
 	public ControlButtonsContainer(MapCanvas map) {
 		this.map = map;
-		btns = new UIElement[] { new SearchButton(this), new ControlButton(1, this, 2), new ControlButton(2, this, 3),
+		btns = new UIElement[] { new SearchButton(this), new MenuButton(this), new ControlButton(2, this, 3),
 				new ControlButton(3, this, 4), new GeolocationButton(map) };
 	}
 

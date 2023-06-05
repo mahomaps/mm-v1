@@ -1,6 +1,11 @@
-package mahomaps.map;
+package mahomaps.route;
 
 import java.util.Stack;
+
+import org.json.me.JSONArray;
+import org.json.me.JSONObject;
+
+import mahomaps.map.Geopoint;
 
 public class RouteDecoder {
 	private static final byte[] DECODE_ALPHABET = { -9, -9, -9, -9, -9, -9, -9, -9, -9, -5, -5, -9, -9, -5, -9, -9, -9,
@@ -88,12 +93,18 @@ public class RouteDecoder {
 
 		Stack stack = new Stack();
 		double[] n = new double[2];
-		for (int i = 0; i < t.length - 8; i += 8) {
+		for (int i = 0; i < t.length; i += 8) {
 			int c1 = 0;
 			int c2 = 0;
 			for (int j = 0; j < 4; j++) {
-				c1 |= (t[i + j] & 0xFF) << (8 * j);
-				c2 |= (t[i + j + 4] & 0xFF) << (8 * j);
+				if (i + j < t.length)
+					c1 |= (t[i + j] & 0xFF) << (8 * j);
+				else
+					c1 |= 255 << (8 * j);
+				if (i + j + 4 < t.length)
+					c2 |= (t[i + j + 4] & 0xFF) << (8 * j);
+				else
+					c2 |= 255 << (8 * j);
 			}
 			double d1 = c1 / o;
 			double d2 = c2 / o;
@@ -107,6 +118,77 @@ public class RouteDecoder {
 		Geopoint[] arr = new Geopoint[stack.size()];
 		stack.copyInto(arr);
 		System.out.println("Route points count: " + arr.length);
+		return arr;
+	}
+
+	public static RouteSegment[] DecodeSegments(JSONArray j, Geopoint[] line) {
+		RouteSegment[] arr = new RouteSegment[j.length()];
+		for (int i = 0; i < arr.length; i++) {
+			final JSONObject js = j.getJSONObject(i);
+			final JSONObject props = js.getJSONObject("properties");
+			int sv = -1;
+			{
+				JSONObject gm = js.optJSONObject("geometry");
+				if (gm != null) {
+					JSONArray gms = gm.optJSONArray("geometries");
+					if (gms != null) {
+						sv = gms.getJSONObject(0).optInt("lodIndex", -1);
+					}
+				}
+				if (sv == -1) {
+					JSONArray ftrs = js.optJSONArray("features");
+					if (ftrs != null) {
+						gm = ftrs.getJSONObject(0).optJSONObject("geometry");
+						if (gm != null) {
+							sv = gm.optInt("lodIndex", -1);
+						}
+					}
+				}
+				if (sv == -1)
+					throw new IllegalArgumentException();
+			}
+			final JSONObject segmd = props.getJSONObject("SegmentMetaData");
+			final String descr = segmd.getString("text");
+			int dist = 0;
+			{
+				JSONObject dj = segmd.optJSONObject("Distance");
+				String v = null;
+				if (dj != null)
+					v = dj.optString("value");
+				if (v != null)
+					dist = (int) Double.parseDouble(v);
+			}
+			if (segmd.optBoolean("Walk", false)) {
+				arr[i] = new WalkingSegment(descr, dist, sv, line[sv]);
+				continue;
+			}
+			JSONArray tr = segmd.optJSONArray("Transports");
+			if (tr != null && tr.length() > 0) {
+				String trt = tr.getJSONObject(0).getString("type");
+				if (trt.equals("suburban")) {
+					arr[i] = new RailwaySegment(descr, sv, line[sv]);
+				} else if (trt.equals("underground")) {
+					arr[i] = new MetroSegment(descr, sv, line[sv]);
+				} else {
+					arr[i] = new TransportSegment(descr, sv, line[sv]);
+				}
+				continue;
+			}
+			JSONObject action = segmd.optJSONObject("Action");
+			if (action != null) {
+				String actionKey = action.getString("value");
+				String actionText = action.getString("text");
+				String street = segmd.optString("street", "");
+				int angle = (int) segmd.optDouble("angle", 0);
+				JSONObject durObj = segmd.optJSONObject("Duration");
+				int dur = durObj == null ? 0 : (int) durObj.optDouble("value", 0);
+				arr[i] = new AutoSegment(descr, street, dist, angle, dur, actionKey, actionText, sv, line[sv]);
+				continue;
+			}
+
+			arr[i] = new UnknownSegment(sv);
+		}
+
 		return arr;
 	}
 }

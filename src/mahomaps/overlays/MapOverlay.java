@@ -11,6 +11,7 @@ import mahomaps.ui.UIElement;
 
 public abstract class MapOverlay extends UIElement {
 
+	public static final int OVERLAY_BG = 0x1E1E1E;
 	protected final static Vector EMPTY_VECTOR = new Vector();
 
 	public abstract String GetId();
@@ -30,7 +31,7 @@ public abstract class MapOverlay extends UIElement {
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		if (content == null)
 			return;
-		g.setColor(0x1E1E1E);
+		g.setColor(OVERLAY_BG);
 		g.fillRoundRect(x, y, w, H + 6, 10, 10);
 		content.Paint(g, x + 3, y + 3, w - 6, 0);
 		H = content.H;

@@ -15,31 +15,31 @@ import mahomaps.Settings;
 
 public class SettingsScreen extends Form implements CommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-
 	private ChoiceGroup focusZoom = new ChoiceGroup("Масштаб при просмотре точек", Choice.POPUP,
 			new String[] { "15", "16", "17", "18" }, null);
 	private ChoiceGroup geoLook;
 	private ChoiceGroup geoStatus = new ChoiceGroup("Показывать геопозицию", Choice.POPUP,
 			new String[] { "Только метку на карте", "Статус", "Статус и координаты" }, null);
 	private ChoiceGroup tileInfo = new ChoiceGroup("Отладочная информация", Choice.POPUP,
-			new String[] { "Выключено", "Включено" }, null);
+			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[17] }, null);
 	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.POPUP,
-			new String[] { "Запрещено", "В файловую", "RMS" }, null);
+			new String[] { MahoMapsApp.text[18], "В файловую", "RMS" }, null);
 	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.POPUP,
-			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
-	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование", Choice.POPUP,
-			new String[] { "Отключено", "nnchan.ru", }, null);
+			new String[] { MahoMapsApp.text[18], "Схема, светлая палитра", }, null);
+	private ChoiceGroup proxyTiles = new ChoiceGroup(MahoMapsApp.text[19], Choice.POPUP,
+			new String[] { MahoMapsApp.text[18], "nnchan.ru", }, null);
 	private ChoiceGroup uiSize = new ChoiceGroup("Размер кнопок управления (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Автоматически", "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup("Язык тайлов и поиска (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Русский", "Английский", "Турецкий" }, null);
-	private ChoiceGroup bbNetwork = new ChoiceGroup("Сеть", Choice.EXCLUSIVE,
-			new String[] { "Сотовая", "Wi-Fi" }, null);
+	private ChoiceGroup uiLang = new ChoiceGroup("Язык интерфейса (нужен перезапуск)", Choice.POPUP,
+			new String[] { "Русский", "English" }, null);
+	private ChoiceGroup bbNetwork = new ChoiceGroup("Сеть", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" },
+			null);
 
 	public SettingsScreen() {
-		super("Настройки");
-		addCommand(back);
+		super(MahoMapsApp.text[11]);
+		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 		Image[] imgs = null;
 		try {
@@ -72,7 +72,8 @@ public class SettingsScreen extends Form implements CommandListener {
 		// апи отслеживается отдельно, однако предполагается что оно включено вместе с
 		// тайлами.
 		uiSize.setSelectedIndex(Settings.uiSize, true);
-		lang.setSelectedIndex(Settings.lang, true);
+		lang.setSelectedIndex(Settings.apiLang, true);
+		uiLang.setSelectedIndex(Settings.uiLang, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -83,6 +84,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(proxyTiles);
 		append(uiSize);
 		append(lang);
+		append(uiLang);
 		if (MahoMapsApp.bb) {
 			bbNetwork.setSelectedIndex(Settings.bbWifi ? 1 : 0, true);
 			append(bbNetwork);
@@ -99,7 +101,8 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
 		Settings.uiSize = uiSize.getSelectedIndex();
-		Settings.lang = lang.getSelectedIndex();
+		Settings.apiLang = lang.getSelectedIndex();
+		Settings.uiLang = uiLang.getSelectedIndex();
 		if (MahoMapsApp.bb) {
 			Settings.bbWifi = bbNetwork.getSelectedIndex() == 1;
 		}
@@ -109,7 +112,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			Apply();
 			if (!MahoMapsApp.TryInitFSCache(false))
 				return;
