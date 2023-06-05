@@ -21,13 +21,13 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup geoStatus = new ChoiceGroup("Показывать геопозицию", Choice.POPUP,
 			new String[] { "Только метку на карте", "Статус", "Статус и координаты" }, null);
 	private ChoiceGroup tileInfo = new ChoiceGroup("Отладочная информация", Choice.POPUP,
-			new String[] { "Выключено", "Включено" }, null);
+			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[17] }, null);
 	private ChoiceGroup cache = new ChoiceGroup("Сохранять тайлы", Choice.POPUP,
-			new String[] { "Запрещено", "В файловую", "RMS" }, null);
+			new String[] { MahoMapsApp.text[18], "В файловую", "RMS" }, null);
 	private ChoiceGroup download = new ChoiceGroup("Скачивать тайлы", Choice.POPUP,
-			new String[] { "Запрещено", "Схема, светлая палитра", }, null);
-	private ChoiceGroup proxyTiles = new ChoiceGroup("Проксирование", Choice.POPUP,
-			new String[] { "Отключено", "nnchan.ru", }, null);
+			new String[] { MahoMapsApp.text[18], "Схема, светлая палитра", }, null);
+	private ChoiceGroup proxyTiles = new ChoiceGroup(MahoMapsApp.text[19], Choice.POPUP,
+			new String[] { MahoMapsApp.text[18], "nnchan.ru", }, null);
 	private ChoiceGroup uiSize = new ChoiceGroup("Размер кнопок управления (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Автоматически", "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup("Язык тайлов и поиска (нужен перезапуск)", Choice.POPUP,
@@ -36,7 +36,7 @@ public class SettingsScreen extends Form implements CommandListener {
 			null);
 
 	public SettingsScreen() {
-		super("Настройки");
+		super(MahoMapsApp.text[11]);
 		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 		Image[] imgs = null;
