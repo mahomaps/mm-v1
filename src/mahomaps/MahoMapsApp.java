@@ -51,15 +51,15 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	private ChoiceGroup bbChoice;
 
 	// commands
-	public static Command exit = new Command("Выход", Command.EXIT, 0);
-	public static Command back = new Command("Назад", Command.BACK, 1);
-	public static Command ok = new Command("Ок", Command.OK, 0);
-	public static Command rms = new Command("Исп. RMS", Command.OK, 0);
-	public static Command openLink = new Command("Открыть", Command.ITEM, 0);
-	public static Command reset = new Command("Сбросить", Command.ITEM, 0);
-	public static Command no = new Command("Нет", Command.CANCEL, 1);
-	public static Command yes = new Command("Да", Command.OK, 0);
-	public static Command toMap = new Command("Карта", Command.SCREEN, 0);
+	public static Command exit;
+	public static Command back;
+	public static Command ok;
+	public static Command rms;
+	public static Command openLink;
+	public static Command reset;
+	public static Command no;
+	public static Command yes;
+	public static Command toMap;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
@@ -115,6 +115,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		try {
 			Settings.Read();
 		} catch (Throwable t) {
+			t.printStackTrace();
 			// lang read
 			thread = null;
 			// failfast
@@ -310,6 +311,20 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	// called in settings load
 	public static void LoadLocale(String name) {
 		text = splitFull(getStringFromJAR("/" + name + ".txt"), '\n');
+		if (text == null)
+			throw new RuntimeException("Lang is not loaded");
+		if (text.length != 9)
+			throw new RuntimeException("Lang is outdated");
+
+		exit = new Command(text[0], Command.EXIT, 0);
+		back = new Command(text[1], Command.BACK, 1);
+		ok = new Command(text[2], Command.OK, 0);
+		rms = new Command(text[3], Command.OK, 0);
+		openLink = new Command(text[4], Command.ITEM, 0);
+		reset = new Command(text[5], Command.ITEM, 0);
+		no = new Command(text[6], Command.CANCEL, 1);
+		yes = new Command(text[7], Command.OK, 0);
+		toMap = new Command(text[8], Command.SCREEN, 0);
 	}
 
 	public static double pow(double a, double b) {
