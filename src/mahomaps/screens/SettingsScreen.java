@@ -70,7 +70,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		// апи отслеживается отдельно, однако предполагается что оно включено вместе с
 		// тайлами.
 		uiSize.setSelectedIndex(Settings.uiSize, true);
-		lang.setSelectedIndex(Settings.lang, true);
+		lang.setSelectedIndex(Settings.apiLang, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -97,7 +97,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
 		Settings.uiSize = uiSize.getSelectedIndex();
-		Settings.lang = lang.getSelectedIndex();
+		Settings.apiLang = lang.getSelectedIndex();
 		if (MahoMapsApp.bb) {
 			Settings.bbWifi = bbNetwork.getSelectedIndex() == 1;
 		}

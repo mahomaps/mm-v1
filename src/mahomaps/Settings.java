@@ -20,7 +20,8 @@ public class Settings {
 	public static boolean proxyTiles = false;
 	public static boolean proxyApi = false;
 	public static int uiSize = 0;
-	public static int lang = 0;
+	public static int apiLang = 0;
+	public static int uiLang = 0;
 	public static boolean bbNetworkChoosen;
 	public static boolean bbWifi;
 
@@ -30,6 +31,11 @@ public class Settings {
 	public static final int CACHE_RMS = 2;
 	public static final int CACHE_DISABLED = 0;
 
+	/**
+	 * Читает настройки приложения. Вызывает загрузку локализации.
+	 *
+	 * @return False, если чтение неудачно.
+	 */
 	public static boolean Read() {
 		try {
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
@@ -55,7 +61,8 @@ public class Settings {
 			proxyTiles = j.optBoolean("proxy_tiles");
 			proxyApi = j.optBoolean("proxy_api");
 			uiSize = j.optInt("ui_size", 0);
-			lang = j.optInt("lang", 0);
+			apiLang = j.optInt("lang", 0);
+			uiLang = j.optInt("ui_lang", 0);
 			bbNetworkChoosen = j.optBoolean("bb_network");
 			bbWifi = j.optBoolean("bb_wifi");
 			return true;
@@ -63,6 +70,12 @@ public class Settings {
 			e.printStackTrace();
 			ApplyOptimal();
 			return false;
+		} finally {
+			try {
+				MahoMapsApp.LoadLocale(GetUiLangFile());
+			} catch (Exception e) {
+				MahoMapsApp.LoadLocale("/ru.txt");
+			}
 		}
 	}
 
@@ -88,7 +101,8 @@ public class Settings {
 		j.put("proxy_tiles", proxyTiles);
 		j.put("proxy_api", proxyApi);
 		j.put("ui_size", uiSize);
-		j.put("lang", lang);
+		j.put("lang", apiLang);
+		j.put("ui_lang", uiLang);
 		j.put("bb_network", bbNetworkChoosen);
 		j.put("bb_wifi", bbWifi);
 		return j.toString();
@@ -110,15 +124,23 @@ public class Settings {
 	}
 
 	public static String GetLangString() {
-		switch (lang) {
+		switch (apiLang) {
 		case 0:
-			return new String(new char[] {'r','u','_','R','U'});
+			return new String(new char[] { 'r', 'u', '_', 'R', 'U' });
 		case 1:
-			return new String(new char[] {'e','n','_','U','S'});
+			return new String(new char[] { 'e', 'n', '_', 'U', 'S' });
 		case 2:
-			return new String(new char[] {'t','r','_','T','R'});
+			return new String(new char[] { 't', 'r', '_', 'T', 'R' });
 		default:
 			throw new IndexOutOfBoundsException("Unknown language code!");
+		}
+	}
+
+	public static String GetUiLangFile() {
+		switch (uiLang) {
+		case 0:
+		default:
+			return "/ru.txt";
 		}
 	}
 }

@@ -3,6 +3,7 @@ package mahomaps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Vector;
 
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.Alert;
@@ -28,6 +29,7 @@ import mahomaps.screens.Splash;
 
 public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
+	// globals
 	public static Display display;
 	public static Thread thread;
 	public static TilesProvider tiles;
@@ -37,7 +39,12 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static SearchScreen lastSearch;
 	public static RouteTracker route;
 	public static final YmapsApi api = new YmapsApi();
-	public static String platform = System.getProperty("microedition.platform");
+
+	// locale
+	public static String[] text;
+
+	// info cache
+	public static final String platform = System.getProperty("microedition.platform");
 	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	public static String version;
 	public static boolean paused;
@@ -105,7 +112,15 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		} catch (Throwable t) {
 			// just in case
 		}
-		Settings.Read(); // catch(Throwable) inside
+		try {
+			Settings.Read();
+		} catch (Throwable t) {
+			// lang read
+			thread = null;
+			// failfast
+			Exit();
+			return;
+		}
 		try {
 			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
 		} catch (RuntimeException e) {
@@ -292,6 +307,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 	}
 
+	public static void LoadLocale(String name) {
+		text = splitFull(getStringFromJAR(name), '\n');
+	}
+
 	public static double pow(double a, double b) {
 		boolean gt1 = (Math.sqrt((a - 1) * (a - 1)) <= 1) ? false : true;
 		int oc = -1, iter = 30;
@@ -395,5 +414,26 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static String[] splitFull(String str, char c) {
+		Vector v = new Vector(64, 16);
+		int lle = 0;
+		while (true) {
+			int nle = str.indexOf(c, lle);
+			if (nle == -1) {
+				v.addElement(str.substring(lle, str.length()));
+				break;
+			}
+
+			v.addElement(str.substring(lle, nle));
+			lle = nle + 1;
+		}
+		String[] a = new String[v.size()];
+		v.copyInto(a);
+		v.removeAllElements();
+		v.trimToSize();
+		v = null;
+		return a;
 	}
 }
