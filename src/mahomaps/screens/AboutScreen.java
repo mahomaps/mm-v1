@@ -35,7 +35,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		}
 		StringItem s = new StringItem("MahoMaps",
 				MahoMapsApp.text[35] + "\n" + MahoMapsApp.text[36] + " 1." + MahoMapsApp.version);
-		s.setLayout(Item.LAYOUT_LEFT);
+		s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(s);
 		if (MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1
 				&& MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
@@ -74,7 +74,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		} catch (IOException e) {
 		}
 		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
-		s.setLayout(Item.LAYOUT_LEFT);
+		s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER);
 		append(s);
 		append(new StringItem("Реклама",
 				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
