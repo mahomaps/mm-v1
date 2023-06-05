@@ -20,8 +20,11 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 	StringItem chat = new StringItem(MahoMapsApp.text[34], "t.me/nnmidletschat", Item.HYPERLINK);
 	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
 
+	int i1, i2, i3, i4;
+
 	public AboutScreen() {
 		super(MahoMapsApp.text[12]);
+		SetF();
 		setCommandListener(this);
 		addCommand(MahoMapsApp.back);
 		try {
@@ -42,9 +45,11 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			} catch (Throwable e) {
 			}
 		}
+		SetI();
 		append(new StringItem("Предложил", "GingerFox87"));
 		append(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
-		append(new StringItem("Поддержать нас рублём", "5536 9141 0062 0677"));
+		append(new StringItem("Поддержать нас рублём",
+				String.valueOf(i1) + " " + String.valueOf(i2) + " " + String.valueOf(i3) + " " + String.valueOf(i4)));
 		append(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
 		append(new StringItem("Дизайн", "MuseCat"));
 		append(new StringItem("Прокси", "Shinovon\nrehdzi"));
@@ -75,6 +80,20 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
 						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
 						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
+	}
+
+	private void SetI() {
+		i1 = 5536;
+		i2 = 9141;
+		i3 = 0062;
+		i4 = 0677;
+	}
+
+	private void SetF() {
+		i1 = 1;
+		i2 = 2;
+		i3 = 3;
+		i4 = 4;
 	}
 
 	public void commandAction(Command c, Displayable d) {
