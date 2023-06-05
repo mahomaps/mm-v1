@@ -7,12 +7,12 @@ Reset
 No
 Yes
 Map
-API connections
+API connection
 Keyboard help
 Settings
 About
 Other software
-Connection
+Connecting
 Status
 Connected
 On
@@ -28,10 +28,19 @@ New version available
 Search
 Menu
 Select
-To panel
+To panels
 To map
-End the route
+Close route
 Website
 Chat
 J2ME client for Yandex.Maps.
 Version
+Retry
+Close
+Couldn't receive the API token.
+Online functions are not available.
+Enable
+Internet access is forbidden.
+Tile downloading is disabled.
+File system access is forbidden.
+Cache is disabled.
