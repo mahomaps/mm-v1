@@ -32,6 +32,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Автоматически", "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup("Язык тайлов и поиска (нужен перезапуск)", Choice.POPUP,
 			new String[] { "Русский", "Английский", "Турецкий" }, null);
+	private ChoiceGroup uiLang = new ChoiceGroup("Язык интерфейса (нужен перезапуск)", Choice.POPUP,
+			new String[] { "Русский", "English" }, null);
 	private ChoiceGroup bbNetwork = new ChoiceGroup("Сеть", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" },
 			null);
 
@@ -71,6 +73,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		// тайлами.
 		uiSize.setSelectedIndex(Settings.uiSize, true);
 		lang.setSelectedIndex(Settings.apiLang, true);
+		uiLang.setSelectedIndex(Settings.uiLang, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -81,6 +84,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(proxyTiles);
 		append(uiSize);
 		append(lang);
+		append(uiLang);
 		if (MahoMapsApp.bb) {
 			bbNetwork.setSelectedIndex(Settings.bbWifi ? 1 : 0, true);
 			append(bbNetwork);
@@ -98,6 +102,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
 		Settings.uiSize = uiSize.getSelectedIndex();
 		Settings.apiLang = lang.getSelectedIndex();
+		Settings.uiLang = uiLang.getSelectedIndex();
 		if (MahoMapsApp.bb) {
 			Settings.bbWifi = bbNetwork.getSelectedIndex() == 1;
 		}
