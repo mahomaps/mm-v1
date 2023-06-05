@@ -14,9 +14,9 @@ import mahomaps.ui.UIElement;
 
 public class TileDownloadForbiddenOverlay extends MapOverlay implements IButtonHandler {
 	public TileDownloadForbiddenOverlay() {
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Доступ в интернет запрещён."),
-				new SimpleText("Скачка тайлов отключена."), new ColumnsContainer(
-						new UIElement[] { new Button("Включить", 1, this), new Button("Закрыть", 0, this) }) });
+		content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[42]),
+				new SimpleText(MahoMapsApp.text[43]), new ColumnsContainer(new UIElement[] {
+						new Button(MahoMapsApp.text[41], 1, this), new Button(MahoMapsApp.text[38], 0, this) }) });
 	}
 
 	public String GetId() {

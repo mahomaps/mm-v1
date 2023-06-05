@@ -16,36 +16,40 @@ import mahomaps.MahoMapsApp;
 
 public class AboutScreen extends Form implements CommandListener, ItemCommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-	private Command openLink = new Command("Открыть", Command.ITEM, 1);
-
-	StringItem website = new StringItem("Сайт", "nnp.nnchan.ru", Item.HYPERLINK);
-	StringItem chat = new StringItem("Чат", "t.me/nnmidletschat", Item.HYPERLINK);
+	StringItem website = new StringItem(MahoMapsApp.text[33], "nnp.nnchan.ru", Item.HYPERLINK);
+	StringItem chat = new StringItem(MahoMapsApp.text[34], "t.me/nnmidletschat", Item.HYPERLINK);
 	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
 
+	int i1, i2, i3, i4;
+
 	public AboutScreen() {
-		super("О программе");
+		super(MahoMapsApp.text[12]);
+		SetF();
 		setCommandListener(this);
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 		try {
-			ImageItem i = new ImageItem(null, MahoMapsApp.GetCanvas().getWidth() > 300 ? Image.createImage("/icon256.png") : Image.createImage("/icon.png"),
-					Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
+			Image img = Image.createImage(MahoMapsApp.GetCanvas().getWidth() > 300 ? "/icon256.png" : "/icon.png");
+			ImageItem i = new ImageItem(null, img, Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "logo");
 			append(i);
 		} catch (IOException e) {
 		}
-		StringItem s = new StringItem("MahoMaps", "J2ME клиент растровых Яндекс.Карт.\nВерсия 1." + MahoMapsApp.version);
+		StringItem s = new StringItem("MahoMaps",
+				MahoMapsApp.text[35] + "\n" + MahoMapsApp.text[36] + " 1." + MahoMapsApp.version);
 		s.setLayout(Item.LAYOUT_LEFT);
 		append(s);
-		if(MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1 && MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
+		if (MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1
+				&& MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
 			// фокус на начало экрана
 			try {
 				MahoMapsApp.display.setCurrentItem(s);
 			} catch (Throwable e) {
 			}
 		}
+		SetI();
 		append(new StringItem("Предложил", "GingerFox87"));
 		append(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
-		append(new StringItem("Поддержать нас рублём", "5536 9141 0062 0677"));
+		append(new StringItem("Поддержать нас рублём",
+				String.valueOf(i1) + " " + String.valueOf(i2) + " " + String.valueOf(i3) + " " + String.valueOf(i4)));
 		append(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
 		append(new StringItem("Дизайн", "MuseCat"));
 		append(new StringItem("Прокси", "Shinovon\nrehdzi"));
@@ -54,16 +58,13 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		append(new StringItem("Группа поддержки", "stacorp"));
 		append(new StringItem("Поиграйте в игры от", "Cygames"));
 		append(new StringItem("Писалось под музыку от", "Lantis"));
-		website.addCommand(openLink);
-		website.setDefaultCommand(openLink);
+		website.setDefaultCommand(MahoMapsApp.openLink);
 		website.setItemCommandListener(this);
 		append(website);
-		chat.addCommand(openLink);
-		chat.setDefaultCommand(openLink);
+		chat.setDefaultCommand(MahoMapsApp.openLink);
 		chat.setItemCommandListener(this);
 		append(chat);
-		gh.addCommand(openLink);
-		gh.setDefaultCommand(openLink);
+		gh.setDefaultCommand(MahoMapsApp.openLink);
 		gh.setItemCommandListener(this);
 		append(gh);
 		try {
@@ -75,26 +76,40 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
 		s.setLayout(Item.LAYOUT_LEFT);
 		append(s);
-		append(new StringItem("Реклама", "Гитхаб Анселя:\ngithub.com/Feodor0090\n"
-				+ "Канал Анселя:\nt.me/sym_ansel_blog\n"
-				+ "Борда rehdzi:\nnnchan.ru\n"
-				+ "Канал Димы:\nt.me/blogprostodimonich\n"
-				+ "Канал Лиса:\nt.me/GingerFox87_blog\n"
-				+ "Игра Выполя:\nt.me/mobap_game\n"));
+		append(new StringItem("Реклама",
+				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
+						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
+						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
+	}
+
+	private void SetI() {
+		i1 = 5536;
+		i2 = 9141;
+		i3 = 0062;
+		i4 = 0677;
+	}
+
+	private void SetF() {
+		i1 = 1;
+		i2 = 2;
+		i3 = 3;
+		i4 = 4;
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMenu();
 		}
 	}
 
 	public void commandAction(Command c, Item item) {
-		if (c == openLink) {
+		if (c == MahoMapsApp.openLink) {
 			if (item == website) {
 				MahoMapsApp.open("http://nnp.nnchan.ru");
 			} else if (item == chat) {
 				MahoMapsApp.open("http://mp.nnchan.ru/chat.php?c=nnmidletschat");
+			} else if (item == gh) {
+				MahoMapsApp.open("https://github.com/mahomaps");
 			}
 		}
 	}

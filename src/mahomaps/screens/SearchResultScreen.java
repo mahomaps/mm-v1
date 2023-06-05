@@ -15,7 +15,6 @@ import mahomaps.overlays.SearchOverlay;
 public class SearchResultScreen extends Form implements CommandListener {
 
 	private Command back = new Command("Список", Command.BACK, 0);
-	private Command toMap = new Command("Карта", Command.OK, 0);
 	private final SearchOverlay o;
 
 	public SearchResultScreen(JSONObject obj, SearchOverlay o) {
@@ -42,7 +41,7 @@ public class SearchResultScreen extends Form implements CommandListener {
 		}
 
 		addCommand(back);
-		addCommand(toMap);
+		addCommand(MahoMapsApp.toMap);
 		setCommandListener(this);
 	}
 
@@ -50,7 +49,7 @@ public class SearchResultScreen extends Form implements CommandListener {
 		if (c == back) {
 			o.SetNullSelection();
 			MahoMapsApp.BringSubScreen(MahoMapsApp.lastSearch);
-		} else if (c == toMap) {
+		} else if (c == MahoMapsApp.toMap) {
 			MahoMapsApp.BringMap();
 		}
 	}

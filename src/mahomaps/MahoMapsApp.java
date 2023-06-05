@@ -1,5 +1,10 @@
 package mahomaps;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Vector;
+
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Choice;
@@ -24,6 +29,7 @@ import mahomaps.screens.Splash;
 
 public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
+	// globals
 	public static Display display;
 	public static Thread thread;
 	public static TilesProvider tiles;
@@ -33,26 +39,30 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static SearchScreen lastSearch;
 	public static RouteTracker route;
 	public static final YmapsApi api = new YmapsApi();
-	public static String platform = System.getProperty("microedition.platform");
+
+	// locale
+	public static String[] text;
+
+	// info cache
+	public static final String platform = System.getProperty("microedition.platform");
 	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	public static String version;
 	public static boolean paused;
-
-	private static Command exit = new Command("Выход", Command.EXIT, 0);
-	private static Command rms = new Command("Исп. RMS", Command.OK, 0);
-	
-	private Form bbForm;
 	private ChoiceGroup bbChoice;
+
+	// commands
+	public static Command exit;
+	public static Command back;
+	public static Command ok;
+	public static Command rms;
+	public static Command openLink;
+	public static Command reset;
+	public static Command no;
+	public static Command yes;
+	public static Command toMap;
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
-		if (bb) {
-			bbForm = new Form("Выберите используемую сеть");
-			bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" }, null);
-			bbForm.addCommand(new Command("OK", Command.OK, 2));
-			bbForm.setCommandListener(this);
-			bbForm.append(bbChoice);
-		}
 	}
 
 	protected void startApp() {
@@ -60,8 +70,19 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		if (thread == null) {
 			if (bb) {
 				Settings.Read();
-				if (!Settings.bbNetworkChoosen && display.getCurrent() != bbForm)  {
-					BringSubScreen(bbForm);
+				if (!Settings.bbNetworkChoosen) {
+					// можно следить открыт ли экран по существованию радиокнопок
+					if (bbChoice != null) {
+						// возврат т.к. меню уже открыто
+						return;
+					}
+					Form f = new Form("Выберите используемую сеть");
+					bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" }, null);
+					f.addCommand(ok);
+					f.setCommandListener(this);
+					f.append(bbChoice);
+					BringSubScreen(f);
+					// возврат т.к. сеть ещё не выбрана
 					return;
 				}
 			}
@@ -91,11 +112,21 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		} catch (Throwable t) {
 			// just in case
 		}
-		Settings.Read(); // catch(Throwable) inside
+		try {
+			Settings.Read();
+		} catch (Throwable t) {
+			t.printStackTrace();
+			// lang read
+			thread = null;
+			// failfast
+			Exit();
+			return;
+		}
 		try {
 			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
 		} catch (RuntimeException e) {
-			Form f = new Form("Ошибка", new Item[] { new StringItem("Настройки повреждены", "Переустановите приложение.") });
+			Form f = new Form("Ошибка",
+					new Item[] { new StringItem("Настройки повреждены", "Переустановите приложение.") });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -170,6 +201,10 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	/**
+	 * Запускает кэш с файловой.
+	 *
+	 * @param allowSwitch True, если предоставляется возможность использовать RMS.
+	 *                    Это перезапустит приложение.
 	 * @return False, если инициализировать не удалось.
 	 */
 	public static boolean TryInitFSCache(boolean allowSwitch) {
@@ -273,6 +308,25 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 	}
 
+	// called in settings load
+	public static void LoadLocale(String name) {
+		text = splitFull(getStringFromJAR("/" + name + ".txt"), '\n');
+		if (text == null)
+			throw new RuntimeException("Lang is not loaded");
+		if (text.length != 46)
+			throw new RuntimeException("Lang is outdated");
+
+		exit = new Command(text[0], Command.EXIT, 0);
+		back = new Command(text[1], Command.BACK, 1);
+		ok = new Command(text[2], Command.OK, 0);
+		rms = new Command(text[3], Command.OK, 0);
+		openLink = new Command(text[4], Command.ITEM, 0);
+		reset = new Command(text[5], Command.ITEM, 0);
+		no = new Command(text[6], Command.CANCEL, 1);
+		yes = new Command(text[7], Command.OK, 0);
+		toMap = new Command(text[8], Command.SCREEN, 0);
+	}
+
 	public static double pow(double a, double b) {
 		boolean gt1 = (Math.sqrt((a - 1) * (a - 1)) <= 1) ? false : true;
 		int oc = -1, iter = 30;
@@ -340,18 +394,64 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			Settings.cacheMode = Settings.CACHE_RMS;
 			Settings.Save();
 			startApp();
-		} else if (c.getPriority() == 2) {
+		} else if (c == ok) {
 			Settings.bbWifi = bbChoice.getSelectedIndex() == 1;
 			Settings.bbNetworkChoosen = true;
 			Settings.Save();
 			startApp();
 		}
 	}
-	
+
 	public static String getConnectionParams() {
 		if (!bb || !Settings.bbWifi) {
 			return "";
 		}
 		return ";deviceside=true;interface=wifi";
+	}
+
+	public static final String getStringFromJAR(String path) {
+		try {
+			StringBuffer sb = new StringBuffer();
+			char[] chars = new char[1024];
+			InputStream stream = MahoMapsApp.class.getResourceAsStream(path);
+			if (stream == null)
+				return null;
+			InputStreamReader isr;
+			isr = new InputStreamReader(stream, "UTF-8");
+			while (true) {
+				int c = isr.read(chars);
+				if (c == -1)
+					break;
+				sb.append(chars, 0, c);
+			}
+			isr.close();
+			return sb.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static String[] splitFull(String str, char c) {
+		if (str == null)
+			return null;
+		Vector v = new Vector(64, 16);
+		int lle = 0;
+		while (true) {
+			int nle = str.indexOf(c, lle);
+			if (nle == -1) {
+				v.addElement(str.substring(lle, str.length()));
+				break;
+			}
+
+			v.addElement(str.substring(lle, nle));
+			lle = nle + 1;
+		}
+		String[] a = new String[v.size()];
+		v.copyInto(a);
+		v.removeAllElements();
+		v.trimToSize();
+		v = null;
+		return a;
 	}
 }

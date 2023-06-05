@@ -14,37 +14,34 @@ public class UpdateScreen extends Form implements ItemCommandListener, CommandLi
 
 	private String url;
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-	private Command openLink = new Command("Открыть", Command.ITEM, 1);
-
 	public UpdateScreen(String text, String url) {
 		super("MahoMaps v1");
 		this.url = url;
 		if (text == null)
-			text = "Доступна новая версия.";
+			text = MahoMapsApp.text[26];
 
 		append(text);
 		if (url != null) {
-			StringItem b = new StringItem(null, "Открыть", Item.BUTTON);
+			StringItem b = new StringItem(null, MahoMapsApp.text[4], Item.BUTTON);
 			b.setLayout(Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_BEFORE);
-			b.addCommand(openLink);
-			b.setDefaultCommand(openLink);
+			b.addCommand(MahoMapsApp.openLink);
+			b.setDefaultCommand(MahoMapsApp.openLink);
 			b.setItemCommandListener(this);
 			append(b);
 		}
 
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMap();
 		}
 	}
 
 	public void commandAction(Command c, Item item) {
-		if (c == openLink) {
+		if (c == MahoMapsApp.openLink) {
 			MahoMapsApp.open(url);
 		}
 	}

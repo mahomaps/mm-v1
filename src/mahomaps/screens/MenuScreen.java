@@ -10,18 +10,16 @@ import mahomaps.MahoMapsApp;
 
 public class MenuScreen extends List implements CommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-
 	public MenuScreen() {
-		super("MahoMaps v1", Choice.IMPLICIT, new String[] { "Подключение к API", "Справка по клавиатуре", "Настройки",
-				"О программе", "Другие программы", "Выход" }, null);
-		addCommand(back);
+		super("MahoMaps v1", Choice.IMPLICIT, new String[] { MahoMapsApp.text[9], MahoMapsApp.text[10],
+				MahoMapsApp.text[11], MahoMapsApp.text[12], MahoMapsApp.text[13], MahoMapsApp.text[0] }, null);
+		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
 
 	public void commandAction(Command c, Displayable d) {
 		if (d == this) {
-			if (c == back) {
+			if (c == MahoMapsApp.back) {
 				MahoMapsApp.BringMap();
 			} else if (c == SELECT_COMMAND) {
 				int sel = getSelectedIndex();

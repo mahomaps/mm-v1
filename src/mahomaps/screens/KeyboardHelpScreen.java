@@ -10,8 +10,6 @@ import mahomaps.MahoMapsApp;
 
 public class KeyboardHelpScreen extends Form implements CommandListener {
 
-	private Command back = new Command("Назад", Command.BACK, 0);
-
 	public KeyboardHelpScreen() {
 		super("Справка");
 		append(new StringItem("Навигация", "D-PAD"));
@@ -20,12 +18,12 @@ public class KeyboardHelpScreen extends Form implements CommandListener {
 		append(new StringItem("Геопозиция", "9"));
 		append(new StringItem("Меню приложения", "Левая софт-клавиша"));
 		append(new StringItem("Меню карты", "Правая софт-клавиша"));
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back) {
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMenu();
 		}
 	}

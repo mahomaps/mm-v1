@@ -40,10 +40,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	private final int method;
 	Route route;
 
-	private Command leave = new Command("Нет", Command.CANCEL, 0);
-	private Command discard = new Command("Да", Command.OK, 0);
-	private Command back = new Command("Назад", Command.BACK, 0);
-
 	private boolean anchorsShown = false;
 
 	public RouteOverlay(Geopoint a, Geopoint b, int method) {
@@ -126,8 +122,8 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		case 0: {
 			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
 			a1.setTimeout(Alert.FOREVER);
-			a1.addCommand(discard);
-			a1.addCommand(leave);
+			a1.addCommand(MahoMapsApp.yes);
+			a1.addCommand(MahoMapsApp.no);
 			a1.setCommandListener(this);
 			MahoMapsApp.BringSubScreen(a1);
 			break;
@@ -150,7 +146,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 						f.append(items[j]);
 					}
 				}
-				f.addCommand(back);
+				f.addCommand(MahoMapsApp.back);
 				f.setCommandListener(this);
 				MahoMapsApp.BringSubScreen(f);
 			}
@@ -199,7 +195,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == discard) {
+		if (c == MahoMapsApp.yes) {
 			MahoMapsApp.GetCanvas().line = null;
 			Close();
 		}

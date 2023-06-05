@@ -21,9 +21,6 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 	private Geopoint a;
 	private Geopoint b;
 
-	private Command leave = new Command("Нет", Command.CANCEL, 0);
-	private Command discard = new Command("Да", Command.OK, 0);
-
 	public RouteFollowOverlay(Geopoint a, Geopoint b) {
 		this.a = a;
 		this.b = b;
@@ -55,15 +52,15 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 		if (uid == 0) {
 			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
 			a1.setTimeout(Alert.FOREVER);
-			a1.addCommand(discard);
-			a1.addCommand(leave);
+			a1.addCommand(MahoMapsApp.yes);
+			a1.addCommand(MahoMapsApp.no);
 			a1.setCommandListener(this);
 			MahoMapsApp.BringSubScreen(a1);
 		}
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == discard) {
+		if (c == MahoMapsApp.yes) {
 			MahoMapsApp.GetCanvas().line = null;
 			MahoMapsApp.route.ReleaseGeolocation();
 			MahoMapsApp.route = null;
