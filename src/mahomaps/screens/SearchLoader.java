@@ -31,14 +31,14 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 	}
 
 	public void run() {
-		append(new Gauge("Подключение к серверу", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+		append(new Gauge(MahoMapsApp.text[14], false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
 		try {
 			JSONArray arr = MahoMapsApp.api.Search(query, point, 0.1d);
 			MahoMapsApp.BringSubScreen(new SearchScreen(query, point, arr));
 		} catch (IOException e) {
 			deleteAll();
 			append(new StringItem("Сетевая ошибка", "Проверьте подключение к интернету."));
-			append(new StringItem("Сведения", e.getMessage()));
+			append(new StringItem(MahoMapsApp.text[24], e.getMessage()));
 			e.printStackTrace();
 		} catch (Http403Exception e) {
 			deleteAll();
