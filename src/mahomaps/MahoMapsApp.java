@@ -315,7 +315,11 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			throw new RuntimeException("Lang is not loaded");
 		if (text.length != 46)
 			throw new RuntimeException("Lang is outdated");
-
+		for(int i = 0; i < text.length; i++) {
+			if(text[i].endsWith("\r")) {
+				text[i] = text[i].substring(0, text[i].length()-1);
+			}
+		}
 		exit = new Command(text[0], Command.EXIT, 0);
 		back = new Command(text[1], Command.BACK, 1);
 		ok = new Command(text[2], Command.OK, 0);
