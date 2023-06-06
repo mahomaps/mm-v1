@@ -4,6 +4,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.StringItem;
 
 import org.json.me.JSONArray;
@@ -23,21 +24,37 @@ public class SearchResultScreen extends Form implements CommandListener {
 		JSONObject props = obj.getJSONObject("properties");
 		JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
 		String name = props.optString("name");
-		append(new StringItem("Название", name));
+		StringItem nameItem = new StringItem("Название", name);
+		nameItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+		append(nameItem);
 		String descr = props.optString("description", null);
-		if (descr != null)
-			append(new StringItem("Описание", descr));
-		append(new StringItem("Координаты", point.getDouble(1) + " " + point.getDouble(0)));
+		if (descr != null) {
+			StringItem descrItem = new StringItem("Описание", descr);
+			descrItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+			append(descrItem);
+		}
+		StringItem coordsItem = new StringItem("Координаты", point.getDouble(1) + " " + point.getDouble(0));
+		coordsItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+		append(coordsItem);
 		JSONObject org = props.optJSONObject("CompanyMetaData");
 		if (org != null) {
 			JSONObject hours = org.optJSONObject("Hours");
-			if (hours != null)
-				append(new StringItem("Режим работы", hours.optString("text")));
-			if (org.optString("url", null) != null)
-				append(new StringItem("Сайт", org.optString("url")));
+			if (hours != null) {
+				StringItem hoursItem = new StringItem("Режим работы", hours.optString("text"));
+				hoursItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+				append(hoursItem);
+			}
+			if (org.optString("url", null) != null) {
+				StringItem urlItem = new StringItem("Сайт", org.optString("url"));
+				urlItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+				append(urlItem);
+			}
 			JSONArray phones = org.optJSONArray("Phones");
-			if (phones != null && phones.length() != 0)
-				append(new StringItem("Телефон", phones.getJSONObject(0).optString("formatted")));
+			if (phones != null && phones.length() != 0) {
+				StringItem phonesItem = new StringItem("Телефон", phones.getJSONObject(0).optString("formatted"));
+				phonesItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+				append(phonesItem);
+			}
 		}
 
 		addCommand(back);
