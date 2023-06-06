@@ -70,7 +70,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		try {
 			ImageItem i = new ImageItem(null, Image.createImage("/stick.png"),
 					Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_CENTER, "торшер");
-			add(i);
+			append(i);
 		} catch (IOException e) {
 		}
 		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
