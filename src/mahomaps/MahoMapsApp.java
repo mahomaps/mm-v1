@@ -47,6 +47,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static final String platform = System.getProperty("microedition.platform");
 	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
 	public static String version;
+	public static String commit;
 	public static boolean paused;
 	private ChoiceGroup bbChoice;
 
@@ -87,6 +88,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 				}
 			}
 			version = getAppProperty("MIDlet-Version");
+			commit = getAppProperty("Commit");
 			midlet = this;
 			thread = new Thread(this, "Init & repaint thread");
 			thread.start();
