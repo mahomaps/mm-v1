@@ -63,7 +63,8 @@ public class RouteTracker {
 		map.geolocation = extrapolatedGeolocation;
 	}
 
-	public void ReleaseGeolocation() {
+	// sync to avoid detaching during update
+	public synchronized void ReleaseGeolocation() {
 		map.geolocation = trueGeolocation;
 		trueGeolocation = null;
 		extrapolatedGeolocation = null;
@@ -74,7 +75,11 @@ public class RouteTracker {
 	/**
 	 * Call this every frame to make tracker work.
 	 */
-	public void Update() {
+	public synchronized void Update() {
+		if (map == null) {
+			// we are detached from map
+			return;
+		}
 		if (lastUpdateTime == 0) {
 			// init
 			lastUpdateNumber = geoProvider.updateCount;
