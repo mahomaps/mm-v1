@@ -15,18 +15,17 @@ import mahomaps.map.TilesProvider;
 
 public class CacheManager extends Form implements CommandListener, ItemCommandListener, Runnable {
 
-	StringItem delAll = new StringItem(null, "Удалить все тайлы", Item.BUTTON);
-	private Command back = new Command("Назад", Command.BACK, 0);
-	private Command sel = new Command("Выбрать", Command.OK, 0);
+	StringItem delAll = new StringItem(null, MahoMapsApp.text[70], Item.BUTTON);
+	private Command sel = new Command(MahoMapsApp.text[29], Command.OK, 0);
 	private TilesProvider tiles;
 
 	public CacheManager(TilesProvider tiles) {
-		super("Управление кэшем");
+		super(MahoMapsApp.text[69]);
 		this.tiles = tiles;
-		addCommand(back);
+		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
-		append(new StringItem("Хранилище", getCacheType()));
-		append(new StringItem("Тайлов хранится", "" + tiles.GetCachedTilesCount()));
+		append(new StringItem(MahoMapsApp.text[71], getCacheType()));
+		append(new StringItem(MahoMapsApp.text[72], "" + tiles.GetCachedTilesCount()));
 		delAll.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		delAll.setDefaultCommand(sel);
 		delAll.setItemCommandListener(this);
@@ -36,9 +35,9 @@ public class CacheManager extends Form implements CommandListener, ItemCommandLi
 	private static String getCacheType() {
 		switch (Settings.cacheMode) {
 		case Settings.CACHE_DISABLED:
-			return "Не используется";
+			return MahoMapsApp.text[73];
 		case Settings.CACHE_FS:
-			return "Файловая система";
+			return MahoMapsApp.text[53];
 		case Settings.CACHE_RMS:
 			return "RMS";
 		default:
@@ -47,7 +46,7 @@ public class CacheManager extends Form implements CommandListener, ItemCommandLi
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back)
+		if (c == MahoMapsApp.back)
 			MahoMapsApp.BringMenu();
 	}
 
@@ -55,8 +54,9 @@ public class CacheManager extends Form implements CommandListener, ItemCommandLi
 		if (c == sel) {
 			if (item == delAll) {
 				deleteAll();
-				removeCommand(back);
-				append(new Gauge("Очистка кэша", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+				removeCommand(MahoMapsApp.back);
+				append(new Gauge(MahoMapsApp.text[74], false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+				append(new StringItem(null, MahoMapsApp.text[75]));
 				(new Thread(this, "Cache clear")).start();
 			}
 		}

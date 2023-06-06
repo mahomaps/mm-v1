@@ -73,10 +73,10 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			append(i);
 		} catch (IOException e) {
 		}
-		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
+		s = new StringItem(MahoMapsApp.text[67], "Powered by butthurt from nnchat\n292 labs (tm)");
 		s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER);
 		add(s);
-		add(new StringItem("Реклама",
+		add(new StringItem(MahoMapsApp.text[68],
 				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
 						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
 						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));

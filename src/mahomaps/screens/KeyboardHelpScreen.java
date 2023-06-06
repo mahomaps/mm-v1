@@ -12,13 +12,13 @@ import mahomaps.MahoMapsApp;
 public class KeyboardHelpScreen extends Form implements CommandListener {
 
 	public KeyboardHelpScreen() {
-		super("Справка");
-		add(new StringItem("Навигация", "D-PAD"));
-		add(new StringItem("Масштаб", "1/* - приблизить\n3/# - отдалить"));
-		add(new StringItem("Поиск", "7"));
-		add(new StringItem("Геопозиция", "9"));
-		add(new StringItem("Меню приложения", "Левая софт-клавиша"));
-		add(new StringItem("Меню карты", "Правая софт-клавиша"));
+		super(MahoMapsApp.text[10]);
+		add(new StringItem(MahoMapsApp.text[76], "D-PAD"));
+		add(new StringItem(MahoMapsApp.text[77], "*, #"));
+		add(new StringItem(MahoMapsApp.text[27], "7"));
+		add(new StringItem(MahoMapsApp.text[78], "9"));
+		add(new StringItem(MahoMapsApp.text[79], MahoMapsApp.text[81]));
+		add(new StringItem(MahoMapsApp.text[80], MahoMapsApp.text[82]));
 		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}

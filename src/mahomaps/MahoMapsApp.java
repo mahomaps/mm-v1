@@ -76,8 +76,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 						// возврат т.к. меню уже открыто
 						return;
 					}
-					Form f = new Form("Выберите используемую сеть");
-					bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { "Сотовая", "Wi-Fi" }, null);
+					Form f = new Form(MahoMapsApp.text[63]);
+					bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { MahoMapsApp.text[64], "Wi-Fi" },
+							null);
 					f.addCommand(ok);
 					f.setCommandListener(this);
 					f.append(bbChoice);
@@ -125,8 +126,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		try {
 			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
 		} catch (RuntimeException e) {
-			Form f = new Form("Ошибка",
-					new Item[] { new StringItem("Настройки повреждены", "Переустановите приложение.") });
+			Form f = new Form(MahoMapsApp.text[88],
+					new Item[] { new StringItem(MahoMapsApp.text[91], MahoMapsApp.text[92]) });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -150,7 +151,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			tiles.Start(); // OOM
 			BringMap(); // jic
 		} catch (Throwable t) {
-			Form f = new Form("Ошибка", new Item[] { new StringItem("Инициализация", t.toString()) });
+			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem("Инициализация", t.toString()) });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -166,7 +167,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			canvas.run();
 		} catch (InterruptedException e) {
 		} catch (Throwable t) {
-			Form f = new Form("Ошибка", new Item[] { new StringItem("Поток отрисовки", t.toString()) });
+			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem("Поток отрисовки", t.toString()) });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -214,10 +215,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
-			Form f = new Form("Ошибка",
+			Form f = new Form(MahoMapsApp.text[88],
 					new Item[] {
-							new StringItem("Не удалось подключить кэш на карте памяти",
-									"Отказано в доступе по пути " + getAppropCachePath()),
+							new StringItem(MahoMapsApp.text[89], MahoMapsApp.text[90] + " " + getAppropCachePath()),
 							new StringItem(e.getClass().getName(), e.getMessage()) });
 			f.addCommand(exit);
 			if (allowSwitch)
@@ -313,11 +313,11 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		text = splitFull(getStringFromJAR("/" + name + ".txt"), '\n');
 		if (text == null)
 			throw new RuntimeException("Lang is not loaded");
-		if (text.length != 46)
+		if (text.length != 93)
 			throw new RuntimeException("Lang is outdated");
-		for(int i = 0; i < text.length; i++) {
-			if(text[i].endsWith("\r")) {
-				text[i] = text[i].substring(0, text[i].length()-1);
+		for (int i = 0; i < text.length; i++) {
+			if (text[i].endsWith("\r")) {
+				text[i] = text[i].substring(0, text[i].length() - 1);
 			}
 		}
 		exit = new Command(text[0], Command.EXIT, 0);
