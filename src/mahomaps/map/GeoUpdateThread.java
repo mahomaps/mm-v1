@@ -52,8 +52,8 @@ public class GeoUpdateThread extends Thread {
 		}
 		if (locationAPI == null) {
 			try {
-				while(true) {
-					synchronized(lock) {
+				while (true) {
+					synchronized (lock) {
 						lock.wait();
 					}
 					run();
@@ -75,8 +75,8 @@ public class GeoUpdateThread extends Thread {
 		}
 		locationAPI.setupListener();
 		try {
-			while(true) {
-				synchronized(lock) {
+			while (true) {
+				synchronized (lock) {
 					lock.wait();
 				}
 				locationAPI.resetProvider();
@@ -84,22 +84,22 @@ public class GeoUpdateThread extends Thread {
 		} catch (Exception e) {
 		}
 	}
-	
+
 	public void restart() {
-		synchronized(lock) {
+		synchronized (lock) {
 			lock.notify();
 		}
 	}
-	
+
 	static String[] split(String str, char d) {
 		int i = str.indexOf(d);
-		if(i == -1)
-			return new String[] {str};
+		if (i == -1)
+			return new String[] { str };
 		Vector v = new Vector();
 		v.addElement(str.substring(0, i));
-		while(i != -1) {
+		while (i != -1) {
 			str = str.substring(i + 1);
-			if((i = str.indexOf(d)) != -1)
+			if ((i = str.indexOf(d)) != -1)
 				v.addElement(str.substring(0, i));
 			i = str.indexOf(d);
 		}
@@ -150,8 +150,8 @@ public class GeoUpdateThread extends Thread {
 	 */
 	public final static int STATE_OK = 2;
 
-	public final static String[] states = new String[] { "Ожид. сигнала", "Ожид. сигнала", "Готово", "Ошибка",
-			"Недоступно", "Не поддерживается" };
+	public final static String[] states = new String[] { MahoMapsApp.text[93], MahoMapsApp.text[93],
+			MahoMapsApp.text[94], MahoMapsApp.text[88], MahoMapsApp.text[95], MahoMapsApp.text[96] };
 
 	// для безопасных вызовов
 	class LocationAPI {
@@ -187,26 +187,26 @@ public class GeoUpdateThread extends Thread {
 				e.printStackTrace();
 			}
 		}
-		
+
 		class LocationAPIListener implements LocationListener {
 
 			public void locationUpdated(LocationProvider provider, Location location) {
 				// определение кол-ва спутников
 				String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
-				if(nmea != null) {
+				if (nmea != null) {
 					String[] sequence = split(nmea, '$');
 					int s1 = -1;
 					int s2 = -1;
-					for(int i = sequence.length-1; i >= 0; i--) {
+					for (int i = sequence.length - 1; i >= 0; i--) {
 						String[] sentence = split(sequence[i], ',');
-						if(sentence[0].endsWith("GGA")) {
+						if (sentence[0].endsWith("GGA")) {
 							try {
 								s1 = Integer.parseInt(sentence[7]);
 							} catch (Exception e) {
 								s1 = -1;
 							}
 							s2 = Math.max(s2, s1);
-						} else if(sentence[0].endsWith("GSV")) {
+						} else if (sentence[0].endsWith("GSV")) {
 							try {
 								s2 = Math.max(s2, Integer.parseInt(sentence[3]));
 							} catch (Exception e) {
@@ -220,40 +220,40 @@ public class GeoUpdateThread extends Thread {
 				}
 				String s = "";
 				int t = location.getLocationMethod();
-				if((t & Location.MTE_SATELLITE) == Location.MTE_SATELLITE) {
+				if ((t & Location.MTE_SATELLITE) == Location.MTE_SATELLITE) {
 					s = "GPS";
 				}
-				if((t & Location.MTE_TIMEDIFFERENCE) == Location.MTE_TIMEDIFFERENCE) {
+				if ((t & Location.MTE_TIMEDIFFERENCE) == Location.MTE_TIMEDIFFERENCE) {
 					s += "TD";
 				}
-				if((t & Location.MTE_TIMEOFARRIVAL) == Location.MTE_TIMEOFARRIVAL) {
+				if ((t & Location.MTE_TIMEOFARRIVAL) == Location.MTE_TIMEOFARRIVAL) {
 					s += "TOA";
 				}
-				if((t & Location.MTE_CELLID) == Location.MTE_CELLID) {
+				if ((t & Location.MTE_CELLID) == Location.MTE_CELLID) {
 					s += "CID";
 				}
-				if((t & Location.MTE_SHORTRANGE) == Location.MTE_SHORTRANGE) {
+				if ((t & Location.MTE_SHORTRANGE) == Location.MTE_SHORTRANGE) {
 					s += "SR";
 				}
-				if((t & Location.MTE_ANGLEOFARRIVAL) == Location.MTE_ANGLEOFARRIVAL) {
+				if ((t & Location.MTE_ANGLEOFARRIVAL) == Location.MTE_ANGLEOFARRIVAL) {
 					s += "AOA";
 				}
-				if((t & Location.MTA_ASSISTED) == Location.MTA_ASSISTED) {
+				if ((t & Location.MTA_ASSISTED) == Location.MTA_ASSISTED) {
 					s = "A" + s;
-				} else if((t & Location.MTA_UNASSISTED) == Location.MTA_UNASSISTED) {
+				} else if ((t & Location.MTA_UNASSISTED) == Location.MTA_UNASSISTED) {
 					s = "U" + s;
 				}
-				if((t & Location.MTY_TERMINALBASED) == Location.MTY_TERMINALBASED) {
+				if ((t & Location.MTY_TERMINALBASED) == Location.MTY_TERMINALBASED) {
 					s = "TB " + s;
 				}
-				if((t & Location.MTY_NETWORKBASED) == Location.MTY_NETWORKBASED) {
+				if ((t & Location.MTY_NETWORKBASED) == Location.MTY_NETWORKBASED) {
 					s = "NB " + s;
 				}
 				method = s.length() == 0 ? null : s;
-				if(location.isValid()) {
+				if (location.isValid()) {
 					Coordinates coordinates = location.getQualifiedCoordinates();
 					if (coordinates.getLatitude() != 0 && coordinates.getLongitude() != 0) {
-						if(!vibrated) {
+						if (!vibrated) {
 							try {
 								MahoMapsApp.display.vibrate(100);
 							} catch (Exception e) {
@@ -274,11 +274,11 @@ public class GeoUpdateThread extends Thread {
 			}
 
 			public void providerStateChanged(LocationProvider provider, int newState) {
-				if(newState != LocationProvider.AVAILABLE) {
+				if (newState != LocationProvider.AVAILABLE) {
 					state = STATE_OK_PENDING;
 				}
 				// на случай если изменился провайдер
-				if(newState == LocationProvider.OUT_OF_SERVICE) {
+				if (newState == LocationProvider.OUT_OF_SERVICE) {
 					restart();
 				}
 			}
