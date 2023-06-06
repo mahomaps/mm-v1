@@ -44,6 +44,7 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 	private void appendLink(StringItem item) {
 		item.setDefaultCommand(MahoMapsApp.openLink);
 		item.setItemCommandListener(this);
+		item.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(item);
 	}
 
