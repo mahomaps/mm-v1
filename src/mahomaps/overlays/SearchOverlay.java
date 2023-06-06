@@ -47,10 +47,10 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 			points.addElement(gp);
 		}
 
-		content = new FillFlowContainer(
-				new UIElement[] { new SimpleText(query), new SimpleText("Найдено: " + results.length()),
-						new SimpleText("Ничего не выбрано."), new ColumnsContainer(new UIElement[] {
-								new Button("Список", 1, this), new Button(MahoMapsApp.text[38], 0, this) }) });
+		content = new FillFlowContainer(new UIElement[] { new SimpleText(query),
+				new SimpleText(MahoMapsApp.text[108] + ": " + results.length()), new SimpleText(MahoMapsApp.text[107]),
+				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[106], 1, this),
+						new Button(MahoMapsApp.text[38], 0, this) }) });
 		InvalidateSize();
 	}
 
@@ -73,7 +73,7 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.optString("name")),
 				new SimpleText(data.optString("description")),
 				new ColumnsContainer(
-						new UIElement[] { new Button("Карточка", 2, this), new Button("Показать", 3, this) }),
+						new UIElement[] { new Button(MahoMapsApp.text[109], 2, this), new Button(MahoMapsApp.text[110], 3, this) }),
 				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[104], 4, this),
 						new Button(MahoMapsApp.text[105], 5, this) }),
 				new Button(MahoMapsApp.text[1], 6, this) });

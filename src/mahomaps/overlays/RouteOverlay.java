@@ -71,19 +71,19 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			route = new Route(jo);
 			LoadRoute();
 		} catch (IOException e) {
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Сетевая ошибка."),
-					new Button("Ещё раз", 2, this), new Button("Закрыть", 0, this) });
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[111]),
+					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Http403Exception e) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Отказ в доступе к API."),
 					new SimpleText("Сбросьте сессию в меню"), new SimpleText("и повторите попытку."),
-					new Button("Ещё раз", 2, this), new Button("Закрыть", 0, this) });
+					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
-					new SimpleText(e.getClass().getName()), new Button("Закрыть", 1, this) });
+					new SimpleText(e.getClass().getName()), new Button(MahoMapsApp.text[38], 1, this) });
 		} catch (OutOfMemoryError e) {
 			content = new FillFlowContainer(
-					new UIElement[] { new SimpleText("Не хватило памяти."), new Button("Закрыть", 1, this) });
+					new UIElement[] { new SimpleText("Не хватило памяти."), new Button(MahoMapsApp.text[38], 1, this) });
 		} finally {
 			InvalidateSize();
 		}
@@ -92,10 +92,10 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	public void LoadRoute() {
 		// route field must be non-null here!
 		ColumnsContainer cols = new ColumnsContainer(
-				new UIElement[] { new Button("Подробности", 3, this), new Button("Манёвры", 4, this) });
+				new UIElement[] { new Button(MahoMapsApp.text[113], 3, this), new Button(MahoMapsApp.text[114], 4, this) });
 		content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
-				new SimpleText(route.distance + ", " + route.time), new Button("Поехали!", 5, this), cols,
-				new Button("Закрыть", 0, this) });
+				new SimpleText(route.distance + ", " + route.time), new Button(MahoMapsApp.text[115], 5, this), cols,
+				new Button(MahoMapsApp.text[38], 0, this) });
 		MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 	}
 
@@ -120,7 +120,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
 		case 0: {
-			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
+			Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[112], null, AlertType.WARNING);
 			a1.setTimeout(Alert.FOREVER);
 			a1.addCommand(MahoMapsApp.yes);
 			a1.addCommand(MahoMapsApp.no);
@@ -139,7 +139,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			break;
 		case 3:
 			if (route != null) {
-				Form f = new Form("Маршрут");
+				Form f = new Form(MahoMapsApp.text[116]);
 				for (int i = 0; i < route.segments.length; i++) {
 					Item[] items = route.segments[i].ToLcdui();
 					for (int j = 0; j < items.length; j++) {
