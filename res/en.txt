@@ -44,3 +44,79 @@ Internet access is forbidden.
 Tile downloading is disabled.
 File system access is forbidden.
 Cache is disabled.
+Zoom for points preview
+Show geolocation
+Only mark on map
+Status
+Status & coords
+Debug info
+Save tiles
+File system
+Download tiles
+Scheme, bright pallete
+Control buttons size (restart needed)
+Auto
+Tiles & search language (restart needed)
+Russian
+English
+Turkish
+UI language (restart needed)
+Network
+Cellular
+Geolocation mark kind
+Droplet
+Postscript
+Advertisement
+Cache manegement
+Delete all tiles
+Storage
+Tiles stored
+Not used
+Clearing cache
+App will close after completion.
+Navigation
+Zoom
+Geolocation
+App menu
+Map menu
+Left soft key
+Right soft key
+
+ s. passed
+Signal lost:
+ s.
+Sattelites
+Failure
+Failed to connect cache on memory card.
+Access denied on path
+Settings are damaged
+Reinstall the app.
+Waiting for signal
+Ready
+Unavailable
+Not supported
+Waiting for cache
+Cache reading
+In queue
+Downloading
+Unloaded
+Unavailable
+What's here?
+From here
+To here
+List
+Nothing selected.
+Found
+Card
+Show
+Network error
+Reset built route?
+Details
+Maneuveres
+Go!
+Route
+Your geolocation is not detected, so it can't be used.
+Cancel
+To enter route, your geolocation must be detected.
+Failed to build route.
+Not enough memory.
