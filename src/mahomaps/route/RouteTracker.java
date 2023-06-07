@@ -192,7 +192,7 @@ public class RouteTracker {
 		float d = distTo(vertex[ev]);
 		if (d < 200) {
 			final String dist = "Через " + ((int) d) + "м";
-			final String info = getCurrentSegmentInfo(ns == null ? s : ns);
+			final String info = ns == null ? "Конец маршрута" : getCurrentSegmentInfo(ns);
 			final int icon = ns == null ? RouteSegment.ICON_FINISH : ns.GetIcon();
 			tos = new TrackerOverlayState(icon, getSegmentAngle(ns), dist, na, info);
 		} else {
@@ -352,6 +352,9 @@ public class RouteTracker {
 		return rs.GetDescription();
 	}
 
+	/**
+	 * @return Null if rs was null, segment action angle if it's auto, 0 if not.
+	 */
 	private static float getSegmentAngle(RouteSegment rs) {
 		if (rs == null)
 			return 0f;
