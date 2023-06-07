@@ -270,7 +270,7 @@ public class RouteTracker {
 	}
 
 	/**
-	 * Call this every frame after {@link #Update()} to draw tracker.
+	 * Call this every frame after {@link #Update()} to draw tracker. May fail due to corrupted state object.
 	 */
 	public void Draw(Graphics g, int w) {
 		Font f = Font.getFont(0, 0, 8);
