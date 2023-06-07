@@ -192,7 +192,7 @@ public class RouteTracker {
 		float d = distTo(vertex[ev]);
 		if (d < 200) {
 			final String dist = "Через " + ((int) d) + "м";
-			final String info = getCurrentSegmentInfo(ns);
+			final String info = getCurrentSegmentInfo(ns == null ? s : ns);
 			final int icon = ns == null ? RouteSegment.ICON_FINISH : ns.GetIcon();
 			tos = new TrackerOverlayState(icon, getSegmentAngle(ns), dist, na, info);
 		} else {
@@ -270,7 +270,8 @@ public class RouteTracker {
 	}
 
 	/**
-	 * Call this every frame after {@link #Update()} to draw tracker. May fail due to corrupted state object.
+	 * Call this every frame after {@link #Update()} to draw tracker. May fail due
+	 * to corrupted state object.
 	 */
 	public void Draw(Graphics g, int w) {
 		Font f = Font.getFont(0, 0, 8);
