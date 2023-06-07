@@ -33,8 +33,9 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			append(i);
 		} catch (IOException e) {
 		}
-		add(new StringItem("MahoMaps",
-				MahoMapsApp.text[35] + "\n" + MahoMapsApp.text[36] + " 1." + MahoMapsApp.version));
+		StringItem s = new StringItem("MahoMaps",
+				MahoMapsApp.text[35] + "\n" + MahoMapsApp.text[36] + " 1." + MahoMapsApp.version);
+		add(s);
 		if (MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1
 				&& MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
 			// фокус на начало экрана
