@@ -274,6 +274,15 @@ public class RouteTracker {
 	 * to corrupted state object.
 	 */
 	public void Draw(Graphics g, int w) {
+		try {
+			drawInternal(g, w);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Failed to redraw route tracker: " + e.toString());
+		}
+	}
+
+	private final void drawInternal(Graphics g, int w) {
 		Font f = Font.getFont(0, 0, 8);
 		int fh = f.getHeight();
 		g.setFont(f);

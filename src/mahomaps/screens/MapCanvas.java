@@ -215,16 +215,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		if (rt != null) {
 			mapFocused = true;
-			try {
-				rt.Update();
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to update route: " + e.toString());
-			}
-			try {
-				rt.Draw(g, w);
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to draw route panel: " + e.toString());
-			}
+			rt.Update();
+			rt.Draw(g, w);
 		}
 
 		if (!t) {
