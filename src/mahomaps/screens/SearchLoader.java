@@ -49,7 +49,7 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 			e.printStackTrace();
 		} catch (OutOfMemoryError e) {
 			deleteAll();
-			append(new StringItem("Не хватило памяти", "Попробуйте закрыть другие приложения или перезапустить это."));
+			append(new StringItem(MahoMapsApp.text[121], "Попробуйте закрыть другие приложения или перезапустить это."));
 		}
 		addCommand(MahoMapsApp.back);
 	}

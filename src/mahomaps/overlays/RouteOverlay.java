@@ -79,11 +79,11 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Exception e) {
 			e.printStackTrace();
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Не удалось построить маршрут."),
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[120]),
 					new SimpleText(e.getClass().getName()), new Button(MahoMapsApp.text[38], 1, this) });
 		} catch (OutOfMemoryError e) {
 			content = new FillFlowContainer(
-					new UIElement[] { new SimpleText("Не хватило памяти."), new Button(MahoMapsApp.text[38], 1, this) });
+					new UIElement[] { new SimpleText(MahoMapsApp.text[121]), new Button(MahoMapsApp.text[38], 1, this) });
 		} finally {
 			InvalidateSize();
 		}
@@ -174,7 +174,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 					e.printStackTrace();
 				}
 			} else {
-				Alert a1 = new Alert("MahoMaps v1", "Для начала маршрута необходима геолокация.", null,
+				Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[119], null,
 						AlertType.WARNING);
 				a1.setTimeout(Alert.FOREVER);
 				MahoMapsApp.BringSubScreen(a1, mc);
