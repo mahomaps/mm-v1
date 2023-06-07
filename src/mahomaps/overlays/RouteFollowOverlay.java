@@ -13,7 +13,6 @@ import mahomaps.map.Geopoint;
 import mahomaps.ui.Button;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
-import mahomaps.ui.SimpleText;
 import mahomaps.ui.UIElement;
 
 public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, CommandListener {
@@ -27,9 +26,6 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 		this.b = b;
 		content = new FillFlowContainer(new UIElement[] { new Button("Закрыть маршрут", 0, this) });
 		ShowPoint(null);
-		if (MahoMapsApp.commit != null) {
-			content = new FillFlowContainer(new UIElement[] { content, new SimpleText(MahoMapsApp.commit) });
-		}
 	}
 
 	public void ShowPoint(Geopoint p) {
