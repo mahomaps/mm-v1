@@ -28,8 +28,11 @@ public class TileCache extends TileId {
 		Font f = Font.getFont(0, 0, 8);
 		int vo = f.getHeight();
 		g.setFont(f);
-		if(state == STATE_READY) {
-			g.drawImage(img, tx, ty, 0);
+		if (state == STATE_READY) {
+			Image i = img;
+			if (i == null) // wtf!?
+				throw new NullPointerException("Corrupted tile state!");
+			g.drawImage(i, tx, ty, 0);
 			g.setColor(0, 0, 255);
 		} else {
 			g.setGrayScale(0);
@@ -55,8 +58,8 @@ public class TileCache extends TileId {
 		return STATE_DESCRIPTION[state];
 	}
 
-	public static final String[] STATE_DESCRIPTION = new String[] { "Ожидание кэша", "Чтение кэша", "Ожидание скачивания", "Загрузка",
-			"Готово", "Ошибка загрузки", "Выгружен", "Загрузка невозможна" };
+	public static final String[] STATE_DESCRIPTION = new String[] { "Ожидание кэша", "Чтение кэша",
+			"Ожидание скачивания", "Загрузка", "Готово", "Ошибка загрузки", "Выгружен", "Загрузка невозможна" };
 
 	public static final int STATE_CACHE_PENDING = 0;
 	public static final int STATE_CACHE_LOADING = 1;
