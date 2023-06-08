@@ -30,7 +30,10 @@ public class TileCache extends TileId {
 		int vo = f.getHeight();
 		g.setFont(f);
 		if (state == STATE_READY) {
-			g.drawImage(img, tx, ty, 0);
+			Image i = img;
+			if (i == null) // wtf!?
+				throw new NullPointerException("Corrupted tile state!");
+			g.drawImage(i, tx, ty, 0);
 			g.setColor(0, 0, 255);
 		} else {
 			g.setGrayScale(0);

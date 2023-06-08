@@ -123,6 +123,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	private void drawMap(Graphics g, int w, int h) {
 		MapState ms = state;
+		if (ms == null) // wtf!?
+			throw new NullPointerException("Map state was null at frame begin");
+
 		tiles.BeginMapPaint();
 		g.translate(w >> 1, h >> 1);
 
@@ -183,7 +186,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (Settings.drawDebugInfo)
 			g.drawString(state.toString(), 0, 0, 0);
 
-		controls.info = GetGeoInfo();
+		try {
+			controls.info = GetGeoInfo();
+		} catch (Exception e) {
+			// wtf!!!???
+			throw new RuntimeException("geo infa ebanulas " + e.toString());
+		}
 
 		final boolean t = touch;
 		final RouteTracker rt = MahoMapsApp.route;

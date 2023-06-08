@@ -37,7 +37,11 @@ public final class OverlaysManager {
 		int oh = 0;
 		for (int i = 0; i < overlays.size(); i++) {
 			MapOverlay mo = (MapOverlay) overlays.elementAt(i);
-			mo.Paint(g, 5, y, w - 10, h);
+			try {
+				mo.Paint(g, 5, y, w - 10, h);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to paint overlay #" + i + " " + e.toString());
+			}
 			y += mo.H + OVERLAYS_SPACING;
 			oh += mo.H + OVERLAYS_SPACING;
 		}
