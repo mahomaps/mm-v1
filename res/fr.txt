@@ -1,0 +1,122 @@
+Sortie
+Retourner
+Ok
+Util. RMS
+Ouvrir
+Réinitialiser
+Non
+Oui
+Carte
+Connexion API
+Aide clavier
+Paramètres
+À propos du programme
+Autres programmes
+Connexion
+Statut
+Connecté
+Activé
+Éteindre
+Proxy
+Jeton de session
+Application refusée accès à internet.
+Erreur! Essayer à nouveau.
+Exception levée
+Information
+Autres applications pour accéder aux services pertinents:
+Il y a une nouvelle version!
+Recherche
+Menu
+Choix
+Aux panneaux
+Retour à la carte
+fermer l'itinéraire
+Site
+Discuter
+J2ME client raster Ya.Maps.
+Version
+Encore
+Fermer
+Impossible d'obtenir le jeton API.
+Les fonctionnalités en ligne ne sont pas disponibles.
+Allumer
+Accès Internet refusé.
+Téléchargement de tuiles désactivé.
+Accès au système de fichiers refusé.
+Mise en cache désactivée.
+Échelle lors de la visualisation des points
+Afficher l'emplacement
+Seulement une marque sur la carte
+Statut
+Statut et coordonnées
+Informations de débogage
+Enregistrer les tuiles
+Système de fichiers
+Télécharger les tuiles
+Schéma, palette lumineuse
+Taille des boutons de commande (nécessite un redémarrage)
+Automatiquement
+Mosaïque et langue de recherche (nécessite un redémarrage)
+Russe
+Anglais
+Turc
+Langue de l'interface (nécessite un redémarrage)
+Réseau
+Cellulaire
+Affichage de l'étiquette d'emplacement
+Une goutte
+Épilogue
+Publicité
+Gestion du cache
+Supprimer toutes les vignettes
+Stockage interne
+Tuiles stockées
+Non utilisé
+Vider le cache
+L'application se fermera une fois terminée.
+La navigation
+Escalader
+Géoposition
+Menu des applications
+Menu de la carte
+Touche gauche
+Touche droite
+Disparu 
+ Sec. passées.
+Signal perdu: 
+ Sec. passées.
+Satellites
+Erreur
+Impossible de monter le cache sur la carte mémoire
+Accès refusé en cours de route
+Paramètres corrompus
+Réinstallez l'application.
+En attente d'un signal...
+Prêt
+Pas disponible
+Non supporté
+En attendant le cache
+Lecture du cache
+File d'attente
+Téléchargement...
+Déchargé
+Le chargement n'est pas possible
+Qu'est-ce ici?
+D'ici
+Ici
+Liste
+Rien n'est sélectionné.
+Trouvé
+Carte
+Montrer
+Erreur réseau
+Réinitialiser l'itinéraire construit?
+Détails
+Manœuvres
+Aller!
+Itinéraire
+Votre géolocalisation n'a pas encore été déterminée - il ne sera pas possible de l'utiliser.
+Annuler
+La géolocalisation est nécessaire pour démarrer l'itinéraire.
+Échec de la création de l'itinéraire.
+Pas assez de mémoire.
