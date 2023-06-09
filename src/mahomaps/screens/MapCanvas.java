@@ -175,6 +175,24 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		overlays.DrawMap(g, ms);
 
+		if (Settings.drawDebugInfo) {
+			RouteTracker rt = MahoMapsApp.route;
+			if (rt != null) {
+				Geopoint a1 = new Geopoint(rt.lat1, rt.lon1);
+				Geopoint a2 = new Geopoint(rt.lat2, rt.lon2);
+				Geopoint a3 = new Geopoint(rt.lat3, rt.lon3);
+				g.setColor(255, 0, 255);
+				g.fillTriangle(a1.GetScreenX(ms), a1.GetScreenY(ms), a2.GetScreenX(ms), a2.GetScreenY(ms),
+						a3.GetScreenX(ms), a3.GetScreenY(ms));
+				g.setColor(0, 255, 255);
+				int rx = a2.GetScreenX(ms) - 5;
+				int ry = a2.GetScreenY(ms) - 5;
+				g.fillRect(rx, ry, 10, 10);
+				g.setColor(0);
+				g.drawString("" + rt.lastUpdateNumber, rx, ry, 0);
+			}
+		}
+
 		g.translate(-(w >> 1), -(h >> 1));
 		tiles.EndMapPaint(state);
 	}
