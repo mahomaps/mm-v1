@@ -4,6 +4,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 
 public class TileCache extends TileId {
@@ -58,8 +59,9 @@ public class TileCache extends TileId {
 		return STATE_DESCRIPTION[state];
 	}
 
-	public static final String[] STATE_DESCRIPTION = new String[] { "Ожидание кэша", "Чтение кэша",
-			"Ожидание скачивания", "Загрузка", "Готово", "Ошибка загрузки", "Выгружен", "Загрузка невозможна" };
+	public static final String[] STATE_DESCRIPTION = new String[] { MahoMapsApp.text[97], MahoMapsApp.text[98],
+			MahoMapsApp.text[99], MahoMapsApp.text[100], MahoMapsApp.text[94], MahoMapsApp.text[88],
+			MahoMapsApp.text[101], MahoMapsApp.text[102] };
 
 	public static final int STATE_CACHE_PENDING = 0;
 	public static final int STATE_CACHE_LOADING = 1;

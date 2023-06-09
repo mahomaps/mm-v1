@@ -21,7 +21,7 @@ public class SearchScreen extends List implements CommandListener {
 
 	public boolean onePointFocused = false;
 
-	private Command reset = new Command("Сброс", Command.BACK, 0);
+	private Command reset = new Command(MahoMapsApp.text[5], Command.BACK, 0);
 
 	public SearchScreen(String query, Geopoint point, JSONArray results) {
 		super(query, Choice.IMPLICIT);

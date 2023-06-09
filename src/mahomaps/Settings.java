@@ -141,6 +141,10 @@ public class Settings {
 		case 0:
 		default:
 			return new String(new char[] { 'r', 'u' });
+		case 1:
+			return new String(new char[] { 'e', 'n' });
+		case 2:
+			return new String(new char[] { 'f', 'r' });
 		}
 	}
 }

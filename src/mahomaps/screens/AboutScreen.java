@@ -35,8 +35,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		}
 		StringItem s = new StringItem("MahoMaps",
 				MahoMapsApp.text[35] + "\n" + MahoMapsApp.text[36] + " 1." + MahoMapsApp.version);
-		s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
-		append(s);
+		add(s);
 		if (MahoMapsApp.platform != null && MahoMapsApp.platform.indexOf("S60") != -1
 				&& MahoMapsApp.platform.indexOf("platform_version=3.2") == -1) {
 			// фокус на начало экрана
@@ -73,17 +72,15 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			append(i);
 		} catch (IOException e) {
 		}
-		s = new StringItem("Послесловие", "Powered by butthurt from nnchat\n292 labs (tm)");
-		s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER);
-		add(s);
-		add(new StringItem("Реклама",
+		add(new StringItem(MahoMapsApp.text[67], "Powered by butthurt from nnchat\n292 labs (tm)"));
+		add(new StringItem(MahoMapsApp.text[68],
 				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
 						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
 						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
 	}
-	
+
 	private void add(StringItem item) {
-		item.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
+		item.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT);
 		append(item);
 	}
 

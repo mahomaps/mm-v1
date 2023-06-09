@@ -34,10 +34,10 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			content = new FillFlowContainer(new UIElement[] { new ColumnsContainer(new UIElement[] {
 					new Button("На авто", 1, this), new Button("Пешком", 2, this), new Button("На общ.тр", 3, this)
 
-					}), new Button("Отмена", 0, this) });
+					}), new Button(MahoMapsApp.text[118], 0, this) });
 		} else if (a == null && b == null) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText("Выберите точки А и Б на карте."),
-					new Button("Отмена", 0, this) });
+					new Button(MahoMapsApp.text[118], 0, this) });
 		} else {
 			String s;
 			Button bt;
@@ -50,7 +50,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 				bt = new Button("От моей геолокации", 11, this);
 				v.addElement(b);
 			}
-			content = new FillFlowContainer(new UIElement[] { new SimpleText(s), bt, new Button("Отмена", 0, this) });
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(s), bt, new Button(MahoMapsApp.text[118], 0, this) });
 		}
 	}
 
@@ -81,7 +81,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	private static void NotifyNoGeo() {
-		Alert a = new Alert("Маршрут", "Ваша геопозиция ещё не определена - её не получится использовать.", null,
+		Alert a = new Alert(MahoMapsApp.text[116], MahoMapsApp.text[117], null,
 				AlertType.WARNING);
 		a.setTimeout(4000);
 		MahoMapsApp.BringSubScreen(a, MahoMapsApp.GetCanvas());

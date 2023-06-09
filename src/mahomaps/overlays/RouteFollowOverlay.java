@@ -24,7 +24,7 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 	public RouteFollowOverlay(Geopoint a, Geopoint b) {
 		this.a = a;
 		this.b = b;
-		content = new FillFlowContainer(new UIElement[] { new Button("Закрыть маршрут", 0, this) });
+		content = new FillFlowContainer(new UIElement[] { new Button(MahoMapsApp.text[32], 0, this) });
 		ShowPoint(null);
 	}
 
@@ -50,7 +50,7 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 
 	public void OnButtonTap(UIElement sender, int uid) {
 		if (uid == 0) {
-			Alert a1 = new Alert("MahoMaps v1", "Сбросить построенный маршрут?", null, AlertType.WARNING);
+			Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[112], null, AlertType.WARNING);
 			a1.setTimeout(Alert.FOREVER);
 			a1.addCommand(MahoMapsApp.yes);
 			a1.addCommand(MahoMapsApp.no);

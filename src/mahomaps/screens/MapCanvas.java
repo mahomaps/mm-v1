@@ -257,9 +257,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		int passed = (int) ((System.currentTimeMillis() - geo.lastUpdateTime) / 1000);
 		if (geo.state != GeoUpdateThread.STATE_OK) {
 			v.addElement(GeoUpdateThread.states[geo.state]);
-			v.addElement("Прошло " + passed + " с.");
+			v.addElement(MahoMapsApp.text[83] + passed + MahoMapsApp.text[84]);
 		} else if (passed >= 5) {
-			v.addElement("Сигнал потерян: " + passed + " с.");
+			v.addElement(MahoMapsApp.text[85] + passed + MahoMapsApp.text[86]);
 		}
 
 		// метод и спутники
@@ -268,7 +268,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			if (geo.totalSattelitesInView >= 0) {
 				String s2 = (geo.sattelites >= 0 ? geo.sattelites + "/" : "") + geo.totalSattelitesInView;
 				if (s == null) {
-					s = "Спутников: " + s2;
+					s = MahoMapsApp.text[87] + ": " + s2;
 				} else {
 					s += " (" + s2 + ")";
 				}
