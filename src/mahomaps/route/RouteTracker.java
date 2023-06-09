@@ -30,9 +30,9 @@ public class RouteTracker {
 	boolean anchorTouched;
 	boolean trackingLost;
 	private long lastUpdateTime = 0;
-	private int lastUpdateNumber;
+	public int lastUpdateNumber;
 	// look at https://t.me/nnmidletschat/13309 for details
-	private double lat1, lon1, lat2, lon2, lat3, lon3, timeDelta12;
+	public volatile double lat1, lon1, lat2, lon2, lat3, lon3, timeDelta12;
 
 	static final int ANCHOR_TRIGGER_DIST = 20;
 	static final int REATTACH_DIST = 50;
