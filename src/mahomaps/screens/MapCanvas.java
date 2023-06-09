@@ -184,6 +184,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				g.setColor(255, 0, 255);
 				g.fillTriangle(a1.GetScreenX(ms), a1.GetScreenY(ms), a2.GetScreenX(ms), a2.GetScreenY(ms),
 						a3.GetScreenX(ms), a3.GetScreenY(ms));
+				// last position
+				g.setColor(0, 255, 0);
+				g.fillRect(a3.GetScreenX(ms) - 5, a3.GetScreenY(ms) - 5, 10, 10);
+				// "true" position
 				g.setColor(0, 255, 255);
 				int rx = a2.GetScreenX(ms) - 5;
 				int ry = a2.GetScreenY(ms) - 5;
