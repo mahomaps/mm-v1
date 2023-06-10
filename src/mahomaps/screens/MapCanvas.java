@@ -30,7 +30,7 @@ import mahomaps.ui.UIElement;
 
 public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
-	public volatile MapState state = MapState.Default();
+	public volatile MapState state = Settings.ReadStateOrDefault();
 
 	// search lcdui parts
 	private Command search = new Command(MahoMapsApp.text[27], Command.OK, 1);
