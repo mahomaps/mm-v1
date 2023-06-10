@@ -4,9 +4,12 @@ import javax.microedition.rms.RecordStore;
 
 import org.json.me.JSONObject;
 
+import mahomaps.map.MapState;
+
 public class Settings {
 
 	private static final String RMS_NAME = "mm_v1_prefs";
+	private static final String POS_RMS_NAME = "mm_v1_state";
 
 	private Settings() {
 	}
@@ -116,6 +119,37 @@ public class Settings {
 			if (r.getNumRecords() == 0) {
 				r.addRecord(new byte[1], 0, 1);
 			}
+			r.setRecord(1, d, 0, d.length);
+			r.closeRecordStore();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static MapState ReadStateOrDefault() {
+		try {
+			RecordStore r = RecordStore.openRecordStore(POS_RMS_NAME, true);
+			byte[] d = null;
+			if (r.getNumRecords() > 0) {
+				d = r.getRecord(1);
+			}
+			r.closeRecordStore();
+
+			if (d != null) {
+				return MapState.Decode(new String(d));
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return MapState.Default();
+	}
+
+	public static void SaveState(MapState ms) {
+		try {
+			byte[] d = ms.Encode().getBytes();
+			RecordStore r = RecordStore.openRecordStore(POS_RMS_NAME, true);
+			if (r.getNumRecords() == 0)
+				r.addRecord(new byte[1], 0, 1);
 			r.setRecord(1, d, 0, d.length);
 			r.closeRecordStore();
 		} catch (Exception e) {
