@@ -588,6 +588,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public void dispose() {
 		if (geo != null)
 			geo.Dispose();
+		Settings.SaveState(state);
 	}
 
 	public void BeginTextSearch() {
