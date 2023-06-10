@@ -81,6 +81,7 @@ public final class YmapsApi extends YmapsApiBase {
 		JSONObject obj = SaveCookies();
 		if (obj != null && obj.length() != 0)
 			j.put("cookies", SaveCookies());
+		j.put("time", System.currentTimeMillis());
 
 		try {
 			byte[] d = j.toString().getBytes();
@@ -110,6 +111,13 @@ public final class YmapsApi extends YmapsApiBase {
 				return;
 
 			JSONObject j = new JSONObject(new String(d));
+			if (j.has("time")) {
+				long time = j.optLong("time");
+				long dif = System.currentTimeMillis() - time;
+				// reset session each 8 hours (1000ms * 60s * 60m * 8h)
+				if (dif > 1000L * 3600L * 8L)
+					return;
+			}
 			token = j.optString("token", null);
 			JSONObject cs = j.optJSONObject("cookies");
 			if (cs != null && cs.length() != 0 && token != null)
