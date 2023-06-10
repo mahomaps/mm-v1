@@ -1,5 +1,7 @@
 package mahomaps.map;
 
+import org.json.me.JSONObject;
+
 import mahomaps.Settings;
 
 public class MapState {
@@ -95,6 +97,28 @@ public class MapState {
 		ms.zoom = 0;
 		ms.xOffset = -128;
 		ms.yOffset = -128;
+		return ms;
+	}
+
+	public String Encode() {
+		JSONObject j = new JSONObject();
+		j.put("z", zoom);
+		j.put("x", tileX);
+		j.put("y", tileY);
+		j.put("xo", xOffset);
+		j.put("yo", yOffset);
+		return j.toString();
+	}
+
+	public static MapState Decode(String s) {
+		final JSONObject j = new JSONObject(s);
+		final MapState ms = new MapState();
+		ms.zoom = j.optInt("z");
+		ms.tileX = j.optInt("x");
+		ms.tileY = j.optInt("y");
+		ms.xOffset = j.optInt("xo");
+		ms.yOffset = j.optInt("yo");
+		ms.ClampOffset();
 		return ms;
 	}
 
