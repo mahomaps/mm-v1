@@ -70,7 +70,7 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		JSONObject data = ((JSONObject) p.object).getObject("properties");
 
 		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.getNullableString("name")),
-				new SimpleText(data.getNullableString("description")),
+				new SimpleText(data.getString("description", "")),
 				new ColumnsContainer(
 						new UIElement[] { new Button(MahoMapsApp.text[109], 2, this), new Button(MahoMapsApp.text[110], 3, this) }),
 				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[104], 4, this),
