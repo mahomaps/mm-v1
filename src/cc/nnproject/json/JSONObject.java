@@ -197,15 +197,15 @@ public class JSONObject extends AbstractJSON {
 	}
 
 	public void put(String name, double d) {
-		table.put(name, Double.toString(d));
+		table.put(name, new Double(d));
 	}
 
 	public void put(String name, int i) {
-		table.put(name, Integer.toString(i));
+		table.put(name, new Integer(i));
 	}
 
 	public void put(String name, long l) {
-		table.put(name, Long.toString(l));
+		table.put(name, new Long(l));
 	}
 	
 	public void put(String name, Object obj) {
