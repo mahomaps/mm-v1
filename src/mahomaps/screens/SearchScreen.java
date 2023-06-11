@@ -30,7 +30,7 @@ public class SearchScreen extends List implements CommandListener {
 		for (int i = 0; i < results.size(); i++) {
 			JSONObject obj = results.getObject(i);
 			JSONObject props = obj.getObject("properties");
-			append(props.getString("name") + (props.has("description") ? " (" + props.getString("description", "") + ")" : ""), null);
+			append(props.getString("name") + (props.has("description") && !props.isNull("description") ? " (" + props.getString("description", "") + ")" : ""), null);
 		}
 		MahoMapsApp.lastSearch = this;
 		overlay = new SearchOverlay(point, query, results, this);
