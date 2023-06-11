@@ -11,9 +11,7 @@ import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONObject;
-
+import cc.nnproject.json.*;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 
@@ -181,8 +179,8 @@ public abstract class YmapsApiBase {
 	}
 
 	protected void LoadCookies(JSONObject j) {
-		JSONArray names = j.names();
-		for (int i = 0; i < names.length(); i++) {
+		JSONArray names = j.keysAsArray();
+		for (int i = 0; i < names.size(); i++) {
 			String key = names.getString(i);
 			cookies.put(key, j.getString(key));
 		}

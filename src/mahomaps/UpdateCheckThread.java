@@ -6,7 +6,7 @@ import java.io.InputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
-import org.json.me.JSONObject;
+import cc.nnproject.json.*;
 
 import mahomaps.api.YmapsApiBase;
 import mahomaps.screens.UpdateScreen;
@@ -67,9 +67,9 @@ public class UpdateCheckThread extends Thread {
 			String str = new String(o.toByteArray(), "UTF-8");
 			o.close();
 			if (r == 200) {
-				JSONObject j = new JSONObject(str);
-				String uurl = j.optString("url", null);
-				String utext = j.optString("text", null);
+				JSONObject j = JSON.getObject(str);
+				String uurl = j.getString("url", null);
+				String utext = j.getString("text", null);
 				if (uurl != null || utext != null) {
 					MahoMapsApp.BringSubScreen(new UpdateScreen(utext, uurl));
 				}
