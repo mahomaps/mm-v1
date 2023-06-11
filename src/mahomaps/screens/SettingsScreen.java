@@ -12,6 +12,7 @@ import javax.microedition.lcdui.Image;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
+import tube42.lib.imagelib.ImageUtils;
 
 public class SettingsScreen extends Form implements CommandListener {
 
@@ -43,8 +44,9 @@ public class SettingsScreen extends Form implements CommandListener {
 		setCommandListener(this);
 		Image[] imgs = null;
 		try {
-			int size = 20;
-			Image sheet = Image.createImage("/geo" + size + ".png");
+			final int size = 20;
+			Image sheet = ImageUtils.halve(Image.createImage("/geo40.png"));
+
 			Image i1 = Image.createImage(size, size);
 			i1.getGraphics().drawImage(sheet, 0, 0, 0);
 			Image i2 = Image.createImage(size, size);
