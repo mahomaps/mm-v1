@@ -110,10 +110,10 @@ public final class YmapsApi extends YmapsApiBase {
 
 			JSONObject j = JSON.getObject(new String(d));
 			token = j.getNullableString("token");
-      long dif = j.getLong("time");
-      // reset session each 8 hours (1000ms * 60s * 60m * 8h)
-      if (dif > 1000L * 3600L * 8L)
-        return;
+			long dif = j.getLong("time", 0);
+			// reset session each 8 hours (1000ms * 60s * 60m * 8h)
+			if (dif > 1000L * 3600L * 8L)
+				return;
 			JSONObject cs = j.getNullableObject("cookies");
 			if (cs != null && cs.size() != 0 && token != null)
 				LoadCookies(cs);
