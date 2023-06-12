@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import mahomaps.MahoMapsApp;
 import tube42.lib.imagelib.ColorUtils;
 
 public class Splash extends Canvas {
@@ -28,15 +29,15 @@ public class Splash extends Canvas {
 
 		final int c1 = 0xa74134;
 		final int c2 = 0xf8503c;
-		
+
 		for (int i = 0; i < h; i++) {
 			g.setColor(ColorUtils.blend(c1, c2, i * 255 / h));
 			g.drawLine(0, i, w, i);
 		}
-		
-		
+
+		g.setColor(-1);
+
 		if (this.image == null) {
-			g.setColor(-1);
 			g.setFont(Font.getFont(0, Font.STYLE_BOLD, Font.SIZE_LARGE));
 			int x = w >> 1;
 			int y = h >> 1;
@@ -44,6 +45,11 @@ public class Splash extends Canvas {
 			g.drawString("Maps", x, y, Graphics.TOP | Graphics.HCENTER);
 		} else {
 			g.drawImage(image, w >> 1, h >> 1, Graphics.VCENTER | Graphics.HCENTER);
+		}
+
+		if (MahoMapsApp.commit != null) {
+			g.setFont(Font.getDefaultFont());
+			g.drawString(MahoMapsApp.commit, w >> 1, h, Graphics.BOTTOM | Graphics.HCENTER);
 		}
 	}
 }
