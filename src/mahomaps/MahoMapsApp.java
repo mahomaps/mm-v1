@@ -69,8 +69,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	protected void startApp() {
 		paused = false;
 		if (thread == null) {
+			Settings.Read();
 			if (bb) {
-				Settings.Read();
 				if (!Settings.bbNetworkChoosen) {
 					// можно следить открыт ли экран по существованию радиокнопок
 					if (bbChoice != null) {
@@ -114,16 +114,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			BringSubScreen(new Splash());
 		} catch (Throwable t) {
 			// just in case
-		}
-		try {
-			Settings.Read();
-		} catch (Throwable t) {
-			t.printStackTrace();
-			// lang read
-			thread = null;
-			// failfast
-			Exit();
-			return;
 		}
 		try {
 			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
