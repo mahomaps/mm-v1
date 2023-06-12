@@ -49,7 +49,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static String version;
 	public static String commit;
 	public static boolean paused;
-	private ChoiceGroup bbChoice;
+	private ChoiceGroup lang, bbNet;
 
 	// commands
 	public static Command exit;
@@ -69,31 +69,35 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	protected void startApp() {
 		paused = false;
 		if (thread == null) {
-			Settings.Read();
-			if (bb) {
-				if (!Settings.bbNetworkChoosen) {
-					// можно следить открыт ли экран по существованию радиокнопок
-					if (bbChoice != null) {
-						// возврат т.к. меню уже открыто
-						return;
-					}
-					Form f = new Form(MahoMapsApp.text[63]);
-					bbChoice = new ChoiceGroup("", Choice.EXCLUSIVE, new String[] { MahoMapsApp.text[64], "Wi-Fi" },
-							null);
-					f.addCommand(ok);
-					f.setCommandListener(this);
-					f.append(bbChoice);
-					BringSubScreen(f);
-					// возврат т.к. сеть ещё не выбрана
-					return;
-				}
-			}
 			version = getAppProperty("MIDlet-Version");
 			commit = getAppProperty("Commit");
 			midlet = this;
+			Settings.Read();
+			if (Settings.firstLaunch) {
+				processFirstLaunch();
+				return;
+			}
 			thread = new Thread(this, "Init & repaint thread");
 			thread.start();
 		}
+	}
+
+	private void processFirstLaunch() {
+		if (lang != null)
+			return;
+
+		// do not translate anything here
+		Form f = new Form("Setup");
+		lang = new ChoiceGroup("Language", Choice.EXCLUSIVE, new String[] { "Russian", "English", "French" }, null);
+		bbNet = new ChoiceGroup("Network", Choice.EXCLUSIVE, new String[] { "Cellular", "Wi-Fi" }, null);
+		f.append(lang);
+		if (bb) {
+			f.append(bbNet);
+		}
+		f.addCommand(ok);
+		f.setCommandListener(this);
+		BringSubScreen(f);
+		return;
 	}
 
 	protected void destroyApp(boolean arg0) {
@@ -391,9 +395,20 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			Settings.Save();
 			startApp();
 		} else if (c == ok) {
-			Settings.bbWifi = bbChoice.getSelectedIndex() == 1;
-			Settings.bbNetworkChoosen = true;
+			if (thread != null)
+				throw new IllegalStateException("First-run setup can't be finished if app is running!");
+			int selLang = lang.getSelectedIndex();
+			Settings.uiLang = selLang;
+			if (selLang == 1 || selLang == 2) {
+				// english api for english/french UI
+				Settings.apiLang = 1;
+			}
+			if (bb)
+				Settings.bbWifi = bbNet.getSelectedIndex() == 1;
+			Settings.firstLaunch = false;
 			Settings.Save();
+			bbNet = null;
+			lang = null;
 			startApp();
 		}
 	}
