@@ -5,9 +5,7 @@ import java.io.IOException;
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.rms.RecordStore;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONException;
-import org.json.me.JSONObject;
+import cc.nnproject.json.*;
 
 import mahomaps.Settings;
 import mahomaps.map.Geopoint;
@@ -57,16 +55,16 @@ public final class YmapsApi extends YmapsApiBase {
 
 	public final JSONArray Search(String text, Geopoint around, double zone)
 			throws JSONException, IOException, Http403Exception {
-		JSONArray j = (new JSONObject(GetUtf(GetSearchUrl(text, around, zone)))).getJSONArray("features");
+		JSONArray j = (JSON.getObject(GetUtf(GetSearchUrl(text, around, zone)))).getArray("features");
 		return j;
 	}
 
 	public final JSONObject Route(Geopoint a, Geopoint b, int type)
 			throws JSONException, IOException, Http403Exception {
-		JSONArray j = (new JSONObject(GetUtf(GetRouteUrl(a, b, type)))).getJSONArray("features");
-		if (j.length() == 0)
+		JSONArray j = (JSON.getObject(GetUtf(GetRouteUrl(a, b, type)))).getArray("features");
+		if (j.size() == 0)
 			throw new ConnectionNotFoundException();
-		JSONObject j1 = j.getJSONObject(0).getJSONArray("features").getJSONObject(0);
+		JSONObject j1 = j.getObject(0).getArray("features").getObject(0);
 		return j1;
 	}
 
@@ -79,7 +77,7 @@ public final class YmapsApi extends YmapsApiBase {
 		if (token != null)
 			j.put("token", token);
 		JSONObject obj = SaveCookies();
-		if (obj != null && obj.length() != 0)
+		if (obj != null && obj.size() != 0)
 			j.put("cookies", SaveCookies());
 		j.put("time", System.currentTimeMillis());
 
@@ -110,17 +108,14 @@ public final class YmapsApi extends YmapsApiBase {
 			if (d == null)
 				return;
 
-			JSONObject j = new JSONObject(new String(d));
-			if (j.has("time")) {
-				long time = j.optLong("time");
-				long dif = System.currentTimeMillis() - time;
-				// reset session each 8 hours (1000ms * 60s * 60m * 8h)
-				if (dif > 1000L * 3600L * 8L)
-					return;
-			}
-			token = j.optString("token", null);
-			JSONObject cs = j.optJSONObject("cookies");
-			if (cs != null && cs.length() != 0 && token != null)
+			JSONObject j = JSON.getObject(new String(d));
+			token = j.getNullableString("token");
+			long dif = j.getLong("time", 0);
+			// reset session each 8 hours (1000ms * 60s * 60m * 8h)
+			if (dif > 1000L * 3600L * 8L)
+				return;
+			JSONObject cs = j.getNullableObject("cookies");
+			if (cs != null && cs.size() != 0 && token != null)
 				LoadCookies(cs);
 		} catch (Throwable e) {
 			e.printStackTrace();

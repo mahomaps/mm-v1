@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2002 JSON.org
+Copyright (c) 2022 Arman Jussupgaliyev
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -11,8 +11,6 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-The Software shall be used for Good, not Evil.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,44 +19,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package cc.nnproject.json;
 
-package org.json.me;
+public class JSONException extends RuntimeException {
+	
+	JSONException() {
+	}
+	
+	JSONException(String string) {
+		super(string);
+	}
+	
+	public String toString() {
+		return getMessage() == null ? "JSONException" : "JSONException: " + getMessage();
+	}
 
-import java.io.IOException;
-import java.io.Writer;
-
-/**
- * A simple StringBuffer-based implementation of StringWriter
- */
-public class StringWriter extends Writer {
-    
-    final private StringBuffer buf;
-    
-    public StringWriter() {
-        super();
-        buf = new StringBuffer();
-    }
-    
-    public StringWriter(int initialSize) {
-        super();
-        buf = new StringBuffer(initialSize);
-    }
-    
-    public void write(char[] cbuf, int off, int len) throws IOException {
-        buf.append(cbuf, off, len);
-    }
-
-    public void write(String str) throws IOException {
-        buf.append(str);
-    }
-
-    public void write(String str, int off, int len) throws IOException {
-        buf.append(str.substring(off, len));
-    }
-
-    public void flush() throws IOException {
-    }
-
-    public void close() throws IOException {
-    }
 }

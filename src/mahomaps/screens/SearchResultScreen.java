@@ -7,8 +7,7 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.StringItem;
 
-import org.json.me.JSONArray;
-import org.json.me.JSONObject;
+import cc.nnproject.json.*;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.overlays.SearchOverlay;
@@ -21,13 +20,13 @@ public class SearchResultScreen extends Form implements CommandListener {
 	public SearchResultScreen(JSONObject obj, SearchOverlay o) {
 		super("Результат поиска");
 		this.o = o;
-		JSONObject props = obj.getJSONObject("properties");
-		JSONArray point = obj.getJSONObject("geometry").getJSONArray("coordinates");
-		String name = props.optString("name");
+		JSONObject props = obj.getObject("properties");
+		JSONArray point = obj.getObject("geometry").getArray("coordinates");
+		String name = props.getNullableString("name");
 		StringItem nameItem = new StringItem("Название", name);
 		nameItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(nameItem);
-		String descr = props.optString("description", null);
+		String descr = props.getString("description", null);
 		if (descr != null) {
 			StringItem descrItem = new StringItem("Описание", descr);
 			descrItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
@@ -36,22 +35,22 @@ public class SearchResultScreen extends Form implements CommandListener {
 		StringItem coordsItem = new StringItem("Координаты", point.getDouble(1) + " " + point.getDouble(0));
 		coordsItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(coordsItem);
-		JSONObject org = props.optJSONObject("CompanyMetaData");
+		JSONObject org = props.getNullableObject("CompanyMetaData");
 		if (org != null) {
-			JSONObject hours = org.optJSONObject("Hours");
+			JSONObject hours = org.getNullableObject("Hours");
 			if (hours != null) {
-				StringItem hoursItem = new StringItem("Режим работы", hours.optString("text"));
+				StringItem hoursItem = new StringItem("Режим работы", hours.getNullableString("text"));
 				hoursItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 				append(hoursItem);
 			}
-			if (org.optString("url", null) != null) {
-				StringItem urlItem = new StringItem("Сайт", org.optString("url"));
+			if (org.getNullableString("url") != null) {
+				StringItem urlItem = new StringItem("Сайт", org.getNullableString("url"));
 				urlItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 				append(urlItem);
 			}
-			JSONArray phones = org.optJSONArray("Phones");
-			if (phones != null && phones.length() != 0) {
-				StringItem phonesItem = new StringItem("Телефон", phones.getJSONObject(0).optString("formatted"));
+			JSONArray phones = org.getNullableArray("Phones");
+			if (phones != null && phones.size() != 0) {
+				StringItem phonesItem = new StringItem("Телефон", phones.getObject(0).getNullableString("formatted"));
 				phonesItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 				append(phonesItem);
 			}

@@ -14,7 +14,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Item;
 
-import org.json.me.JSONObject;
+import cc.nnproject.json.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.api.Http403Exception;
