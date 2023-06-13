@@ -48,7 +48,7 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 		add(new StringItem("Предложил", "GingerFox87"));
 		add(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
 		add(new StringItem("Поддержать нас рублём",
-				String.valueOf(i1) + " " + String.valueOf(i2) + " " + String.valueOf(i3) + " " + String.valueOf(i4)));
+				s(i1) + " " + s(i2) + " " + s(i3) + " " + s(i4)));
 		add(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
 		add(new StringItem("Дизайн", "MuseCat"));
 		add(new StringItem("Прокси", "Shinovon\nrehdzi"));
@@ -77,6 +77,12 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
 						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
 						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
+	}
+
+	private String s(int i) {
+		String s = String.valueOf(i);
+		while(s.length() < 4) s = "0" + s;
+		return s;
 	}
 
 	private void add(StringItem item) {
