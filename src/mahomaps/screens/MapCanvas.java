@@ -62,7 +62,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private Graphics cachedGraphics;
 
 	public Gate keysGate = new Gate(true);
-	private boolean keysHolding;
 	private boolean[] keysState = new boolean[4];
 
 	public MapCanvas(TilesProvider tiles) {
@@ -313,9 +312,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					while (true) {
 						keysGate.Pass();
 						try {
-							while (keysHolding) {
+							boolean b = true;
+							while (b) {
+								b = false;
 								for (int i = 0; i < keysState.length; i++) {
-									if (keysState[i]) _keyRepeated(-1 - i);
+									if (keysState[i]) {
+										_keyRepeated(-1 - i);
+										b = true;
+									}
 								}
 								Thread.sleep(50);
 							}
@@ -499,7 +503,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		}
 		requestRepaint();
 
-		keysHolding = true;
 		keysGate.Reset();
 	}
 	
@@ -537,8 +540,25 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void keyReleased(int k) {
-		keysHolding = false;
-		keysState[0] = keysState[1] = keysState[2] = keysState[3] = false;
+		int ga = 0;
+		try {
+			ga = getGameAction(k);
+		} catch (IllegalArgumentException e) {
+		}
+		switch(ga) {
+		case UP:
+			keysState[0] = false;
+			break;
+		case DOWN:
+			keysState[1] = false;
+			break;
+		case LEFT:
+			keysState[2] = false;
+			break;
+		case RIGHT:
+			keysState[3] = false;
+			break;
+		}
 		repeatCount = 0;
 		requestRepaint();
 	}
