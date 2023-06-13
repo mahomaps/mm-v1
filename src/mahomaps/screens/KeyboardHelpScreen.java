@@ -15,14 +15,16 @@ public class KeyboardHelpScreen extends Form implements CommandListener {
 		super(MahoMapsApp.text[10]);
 		add(new StringItem(MahoMapsApp.text[76], "D-PAD"));
 		add(new StringItem(MahoMapsApp.text[77], "*, #"));
+		add(new StringItem(MahoMapsApp.text[78], "1"));
+		add(new StringItem("Toggle geo status", "3"));
 		add(new StringItem(MahoMapsApp.text[27], "7"));
-		add(new StringItem(MahoMapsApp.text[78], "9"));
+		// add(new StringItem("Bookmarks", "9"));
 		add(new StringItem(MahoMapsApp.text[79], MahoMapsApp.text[81]));
 		add(new StringItem(MahoMapsApp.text[80], MahoMapsApp.text[82]));
 		addCommand(MahoMapsApp.back);
 		setCommandListener(this);
 	}
-	
+
 	private void add(StringItem item) {
 		item.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(item);

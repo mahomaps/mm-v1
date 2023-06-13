@@ -25,8 +25,8 @@ public class Settings {
 	public static int uiSize = 0;
 	public static int apiLang = 0;
 	public static int uiLang = 0;
-	public static boolean bbNetworkChoosen;
 	public static boolean bbWifi;
+	public static boolean firstLaunch = true;
 
 	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
@@ -66,8 +66,8 @@ public class Settings {
 			uiSize = j.getInt("ui_size", 0);
 			apiLang = j.getInt("lang", 0);
 			uiLang = j.getInt("ui_lang", 0);
-			bbNetworkChoosen = j.getBoolean("bb_network");
-			bbWifi = j.getBoolean("bb_wifi");
+			bbWifi = j.getBoolean("bb_wifi", false);
+			firstLaunch = j.getBoolean("1", true);
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -106,8 +106,8 @@ public class Settings {
 		j.put("ui_size", uiSize);
 		j.put("lang", apiLang);
 		j.put("ui_lang", uiLang);
-		j.put("bb_network", bbNetworkChoosen);
 		j.put("bb_wifi", bbWifi);
+		j.put("1", firstLaunch);
 		return j.toString();
 	}
 
