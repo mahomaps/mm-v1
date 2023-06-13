@@ -31,9 +31,11 @@ public class BookmarksScreen extends List implements CommandListener {
 		list.build();
 		fillList();
 		addCommand(MahoMapsApp.back);
-		addCommand(from);
-		addCommand(to);
-		addCommand(del);
+		if (list.size() > 0) {
+			addCommand(from);
+			addCommand(to);
+			addCommand(del);
+		}
 		setCommandListener(this);
 	}
 
