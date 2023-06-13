@@ -5,6 +5,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.TextBox;
 import javax.microedition.rms.RecordStore;
 
 import cc.nnproject.json.JSON;
@@ -46,6 +47,24 @@ public class BookmarksScreen extends List implements CommandListener {
 		} catch (Throwable e) {
 			return JSON.getArray("[]");
 		}
+	}
+
+	public static void BeginAdd(final Geopoint p, String defaultName) {
+		final TextBox tb = new TextBox("Название закладки?", defaultName == null ? "" : defaultName, 100, 0);
+		tb.addCommand(MahoMapsApp.back);
+		tb.addCommand(MahoMapsApp.ok);
+		tb.setCommandListener(new CommandListener() {
+			public void commandAction(Command c, Displayable d) {
+				if (c == MahoMapsApp.back)
+					MahoMapsApp.BringMap();
+				else if (c == MahoMapsApp.ok) {
+					String text = tb.getString();
+					if (text != null && text.length() > 0) {
+						Add(p, text);
+					}
+				}
+			}
+		});
 	}
 
 	public static void Add(Geopoint p, String name) {
