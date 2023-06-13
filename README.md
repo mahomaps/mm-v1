@@ -1,6 +1,6 @@
 # MahoMaps v1
 
-![logo](res/icon256.png)
+![logo](icon256.png)
 
 Yandex.Maps client for MIDP2-capable devices.
 
