@@ -37,7 +37,7 @@ public final class JSON {
 	 */
 	public final static boolean parse_members = false;
 	
-	public final static Object null_equivalent = new NullEquivalent();
+	public final static Object json_null = new Object();
 
 	public static final String FORMAT_TAB = "  ";
 	
@@ -66,7 +66,7 @@ public final class JSON {
 		} else if (obj instanceof Vector) {
 			return new JSONArray((Vector) obj);
 		} else if (obj == null) {
-			return null_equivalent;
+			return json_null;
 		} else {
 			return obj;
 		}
@@ -165,7 +165,7 @@ public final class JSON {
 			return str;
 		} else if (first != '{' && first != '[') {
 			if (str.equals("null"))
-				return null_equivalent;
+				return json_null;
 			if (str.equals("true"))
 				return TRUE;
 			if (str.equals("false"))
@@ -239,11 +239,7 @@ public final class JSON {
 					key = key.substring(1, key.length() - 1);
 					nextDelimiter = ',';
 				} else {
-					String s = str.substring(i, splIndex);
-					while (s.endsWith("\r") || s.endsWith("\n")) {
-						s = s.substring(0, s.length() - 1);
-					}
-					Object value = s.trim();
+					Object value = str.substring(i, splIndex).trim();
 					if (parse_members) value = parseJSON(value.toString());
 					else value = new JSONString(value.toString());
 					if (object) {
@@ -258,7 +254,7 @@ public final class JSON {
 	}
 	
 	public static boolean isNull(Object obj) {
-		return null_equivalent.equals(obj);
+		return json_null.equals(obj);
 	}
 
 	public static String escape_utf8(String s) {
@@ -303,41 +299,27 @@ public final class JSON {
 		return sb.toString();
 	}
 
-	static class NullEquivalent {
-		public boolean equals(Object obj) {
-			return obj == null || obj instanceof NullEquivalent || super.equals(obj);
-		}
-
-		public String toString() {
-			return "null";
-		}
-	}
-
-	public static Double getDouble(Object o) throws JSONException {
+	public static double getDouble(Object o) throws JSONException {
 		try {
-			if (o instanceof Short)
-				return new Double((double) ((Short)o).shortValue());
-			else if (o instanceof Integer)
-				return new Double((double) ((Integer)o).intValue());
-			else if (o instanceof Long)
-				return new Double((double) ((Long)o).longValue());
-			else if (o instanceof Double)
-				return (Double) o;
+			if (o instanceof Integer)
+				return ((Integer) o).intValue();
+			if (o instanceof Long)
+				return ((Long) o).longValue();
+			if (o instanceof Double)
+				return ((Double) o).doubleValue();
 		} catch (Throwable e) {
 		}
 		throw new JSONException("Value cast failed: " + o);
 	}
 
-	public static Long getLong(Object o) throws JSONException {
+	public static long getLong(Object o) throws JSONException {
 		try {
-			if (o instanceof Short)
-				return new Long((long) ((Short)o).shortValue());
-			else if (o instanceof Integer)
-				return new Long((long) ((Integer)o).longValue());
-			else if (o instanceof Long)
-				return (Long) o;
-			else if (o instanceof Double)
-				return new Long(((Double)o).longValue());
+			if (o instanceof Integer)
+				return ((Integer) o).longValue();
+			if (o instanceof Long)
+				return ((Long) o).longValue();
+			if (o instanceof Double)
+				return ((Double) o).longValue();
 		} catch (Throwable e) {
 		}
 		throw new JSONException("Value cast failed: " + o);
