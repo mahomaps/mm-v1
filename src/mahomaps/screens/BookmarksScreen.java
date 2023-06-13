@@ -13,6 +13,7 @@ import cc.nnproject.json.JSONArray;
 import cc.nnproject.json.JSONObject;
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
+import mahomaps.map.MapState;
 
 public class BookmarksScreen extends List implements CommandListener {
 
@@ -20,15 +21,26 @@ public class BookmarksScreen extends List implements CommandListener {
 
 	private JSONArray list;
 
+	private Command from = new Command("Отсюда", Command.ITEM, 0);
+	private Command to = new Command("Сюда", Command.ITEM, 1);
+	private Command del = new Command("Удалить", Command.ITEM, 1);
+
 	public BookmarksScreen() {
 		super("Закладки", Choice.IMPLICIT);
 		list = read();
 		list.build();
+		fillList();
+		addCommand(MahoMapsApp.back);
+		addCommand(from);
+		addCommand(to);
+		addCommand(del);
+		setCommandListener(this);
+	}
+
+	private void fillList() {
 		for (int i = 0; i < list.size(); i++) {
 			append(list.getObject(i).getString("name", "Not named"), null);
 		}
-		addCommand(MahoMapsApp.back);
-		setCommandListener(this);
 	}
 
 	private static JSONArray read() {
@@ -74,6 +86,10 @@ public class BookmarksScreen extends List implements CommandListener {
 		obj.put("lat", p.lat);
 		obj.put("lon", p.lon);
 		arr.add(obj);
+		Save(arr);
+	}
+
+	private static void Save(JSONArray arr) {
 		try {
 			byte[] d = arr.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
@@ -87,8 +103,32 @@ public class BookmarksScreen extends List implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == MahoMapsApp.back)
+		if (c == MahoMapsApp.back) {
 			MahoMapsApp.BringMap();
+			return;
+		}
+
+		if (list.size() == 0)
+			return;
+		int n = getSelectedIndex();
+		if (n == -1)
+			return;
+
+		if (c == del) {
+			list.remove(n);
+			delete(n);
+			return;
+		}
+		JSONObject obj = list.getObject(n);
+		Geopoint p = new Geopoint(obj.getDouble("lat"), obj.getDouble("lon"));
+		if (c == SELECT_COMMAND) {
+			MahoMapsApp.GetCanvas().state = MapState.FocusAt(p);
+			MahoMapsApp.BringMap();
+		} else if (c == from) {
+			// TODO build route
+		} else if (c == to) {
+			// TODO build route
+		}
 	}
 
 }
