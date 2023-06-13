@@ -6,6 +6,7 @@ import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
 import mahomaps.screens.MapCanvas;
@@ -128,12 +129,15 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		int method = 0;
 		switch (uid) {
 		case 1:
+			Settings.PushUsageFlag(64);
 			method = YmapsApi.ROUTE_AUTO;
 			break;
 		case 2:
+			Settings.PushUsageFlag(32);
 			method = YmapsApi.ROUTE_BYFOOT;
 			break;
 		case 3:
+			Settings.PushUsageFlag(128);
 			method = YmapsApi.ROUTE_TRANSPORT;
 			break;
 		}

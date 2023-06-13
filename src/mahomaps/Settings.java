@@ -51,6 +51,11 @@ public class Settings {
 	 */
 	public static int usageFlags = 0;
 
+	public static synchronized void PushUsageFlag(int flag) {
+		usageFlags |= flag;
+		Save();
+	}
+
 	/**
 	 * Читает настройки приложения. Вызывает загрузку локализации.
 	 *

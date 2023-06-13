@@ -338,6 +338,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
+			Settings.PushUsageFlag(8);
 		} else if (geo.DrawPoint()) {
 			state = MapState.FocusAt(geolocation);
 		} else if (geo.state == GeoUpdateThread.STATE_UNAVAILABLE) {
@@ -609,6 +610,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				overlays.CloseOverlay(SelectOverlay.ID);
 				Geopoint sa = GetSearchAnchor();
 				MahoMapsApp.BringSubScreen(new SearchLoader(searchBox.getString(), sa));
+				Settings.PushUsageFlag(16);
 			}
 		}
 	}
