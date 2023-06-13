@@ -312,16 +312,21 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					while (true) {
 						keysGate.Pass();
 						try {
-							boolean b = true;
-							while (b) {
-								b = false;
+							Thread.sleep(50);
+							boolean holding = true;
+							boolean holded = false;
+							while (holding) {
+								holding = false;
 								for (int i = 0; i < keysState.length; i++) {
 									if (keysState[i]) {
 										_keyRepeated(-1 - i);
-										b = true;
+										holding = true;
 									}
 								}
-								Thread.sleep(50);
+								if(!holded && holding) {
+									holded = true;
+									Thread.sleep(200);
+								}
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
