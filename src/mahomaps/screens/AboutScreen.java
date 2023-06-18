@@ -13,6 +13,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 
 public class AboutScreen extends Form implements CommandListener, ItemCommandListener {
 
@@ -77,9 +78,10 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
 						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
 						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
+		Settings.PushUsageFlag(1);
 	}
 
-	private String s(int i) {
+	private static String s(int i) {
 		String s = String.valueOf(i);
 		while(s.length() < 4) s = "0" + s;
 		return s;

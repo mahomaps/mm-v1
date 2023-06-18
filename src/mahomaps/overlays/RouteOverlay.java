@@ -17,6 +17,7 @@ import javax.microedition.lcdui.Item;
 import cc.nnproject.json.JSONObject;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 import mahomaps.api.Http403Exception;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
@@ -82,8 +83,8 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[120]),
 					new SimpleText(e.getClass().getName()), new Button(MahoMapsApp.text[38], 1, this) });
 		} catch (OutOfMemoryError e) {
-			content = new FillFlowContainer(
-					new UIElement[] { new SimpleText(MahoMapsApp.text[121]), new Button(MahoMapsApp.text[38], 1, this) });
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[121]),
+					new Button(MahoMapsApp.text[38], 1, this) });
 		} finally {
 			InvalidateSize();
 		}
@@ -91,8 +92,8 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void LoadRoute() {
 		// route field must be non-null here!
-		ColumnsContainer cols = new ColumnsContainer(
-				new UIElement[] { new Button(MahoMapsApp.text[113], 3, this), new Button(MahoMapsApp.text[114], 4, this) });
+		ColumnsContainer cols = new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[113], 3, this),
+				new Button(MahoMapsApp.text[114], 4, this) });
 		content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
 				new SimpleText(route.distance + ", " + route.time), new Button(MahoMapsApp.text[115], 5, this), cols,
 				new Button(MahoMapsApp.text[38], 0, this) });
@@ -150,6 +151,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 				f.addCommand(MahoMapsApp.back);
 				f.setCommandListener(this);
 				MahoMapsApp.BringSubScreen(f);
+				Settings.PushUsageFlag(512);
 			}
 			break;
 		case 4:
@@ -170,12 +172,12 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 					rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
 					MahoMapsApp.route = rt;
 					UIElement.Deselect();
+					Settings.PushUsageFlag(256);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else {
-				Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[119], null,
-						AlertType.WARNING);
+				Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[119], null, AlertType.WARNING);
 				a1.setTimeout(Alert.FOREVER);
 				MahoMapsApp.BringSubScreen(a1, mc);
 			}
