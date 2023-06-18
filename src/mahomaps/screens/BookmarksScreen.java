@@ -14,6 +14,7 @@ import cc.nnproject.json.JSONObject;
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.map.MapState;
+import mahomaps.overlays.RouteBuildOverlay;
 
 public class BookmarksScreen extends List implements CommandListener {
 
@@ -127,9 +128,11 @@ public class BookmarksScreen extends List implements CommandListener {
 			MahoMapsApp.GetCanvas().state = MapState.FocusAt(p);
 			MahoMapsApp.BringMap();
 		} else if (c == from) {
-			// TODO build route
+			RouteBuildOverlay.Get().SetA(p);
+			MahoMapsApp.BringMap();
 		} else if (c == to) {
-			// TODO build route
+			RouteBuildOverlay.Get().SetB(p);
+			MahoMapsApp.BringMap();
 		}
 	}
 
