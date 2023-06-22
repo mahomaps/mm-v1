@@ -10,6 +10,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
 import mahomaps.FpsLimiter;
+import mahomaps.Gate;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
@@ -59,6 +60,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private int lastOverlaysW;
 	public final FpsLimiter repaintGate = new FpsLimiter();
 	private Graphics cachedGraphics;
+
+	public Gate keysGate = new Gate(true);
+	private boolean[] keysState = new boolean[4];
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -302,6 +306,36 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void run() throws InterruptedException {
+		new Thread("Key holder thread") {
+			public void run() {
+				try {
+					while (true) {
+						keysGate.Pass();
+						try {
+							Thread.sleep(50);
+							boolean holding = true;
+							boolean holded = false;
+							while (holding) {
+								holding = false;
+								for (int i = 0; i < keysState.length; i++) {
+									if (keysState[i]) {
+										_keyRepeated(-1 - i);
+										holding = true;
+									}
+								}
+								if(!holded && holding) {
+									holded = true;
+									Thread.sleep(200);
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				} catch (InterruptedException e) {
+				}
+			}
+		}.start();
 		while (true) {
 			final RouteTracker rt = MahoMapsApp.route;
 			if (MahoMapsApp.paused || hidden) {
@@ -421,18 +455,22 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					}
 					break handling;
 				case UP:
+					keysState[0] = true;
 					state.yOffset += 10;
 					state.ClampOffset();
 					break handling;
 				case DOWN:
+					keysState[1] = true;
 					state.yOffset -= 10;
 					state.ClampOffset();
 					break handling;
 				case LEFT:
+					keysState[2] = true;
 					state.xOffset += 10;
 					state.ClampOffset();
 					break handling;
 				case RIGHT:
+					keysState[3] = true;
 					state.xOffset -= 10;
 					state.ClampOffset();
 					break handling;
@@ -477,19 +515,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 		}
 		requestRepaint();
+
+		keysGate.Reset();
+	}
+	
+	protected void keyRepeated(int k) {
 	}
 
-	protected void keyRepeated(int k) {
-		// "home" button
-		if (k == -12)
-			return;
-
-		touch = false;
-		int ga = 0;
-		try {
-			ga = getGameAction(k);
-		} catch (IllegalArgumentException e) { // j2l moment
-		}
+	protected void _keyRepeated(int k) {
 		if (mapFocused) {
 			int val;
 			if (repeatCount < 25) {
@@ -497,17 +530,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			} else {
 				val = 50;
 			}
-			switch (ga) {
-			case UP:
+			switch (k) {
+			case -1:
 				state.yOffset += val;
 				break;
-			case DOWN:
+			case -2:
 				state.yOffset -= val;
 				break;
-			case LEFT:
+			case -3:
 				state.xOffset += val;
 				break;
-			case RIGHT:
+			case -4:
 				state.xOffset -= val;
 				break;
 			default:
@@ -520,6 +553,25 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void keyReleased(int k) {
+		int ga = 0;
+		try {
+			ga = getGameAction(k);
+		} catch (IllegalArgumentException e) {
+		}
+		switch(ga) {
+		case UP:
+			keysState[0] = false;
+			break;
+		case DOWN:
+			keysState[1] = false;
+			break;
+		case LEFT:
+			keysState[2] = false;
+			break;
+		case RIGHT:
+			keysState[3] = false;
+			break;
+		}
 		repeatCount = 0;
 		requestRepaint();
 	}
