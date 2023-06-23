@@ -9,6 +9,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.TextField;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
@@ -27,8 +28,9 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[53], "RMS" }, null);
 	private ChoiceGroup download = new ChoiceGroup(MahoMapsApp.text[54], Choice.POPUP,
 			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[55], }, null);
-	private ChoiceGroup proxyTiles = new ChoiceGroup(MahoMapsApp.text[19], Choice.POPUP,
-			new String[] { MahoMapsApp.text[18], "nnchan.ru", }, null);
+	private ChoiceGroup proxyTiles = new ChoiceGroup(MahoMapsApp.text[19], Choice.MULTIPLE,
+			new String[] { "Proxy tiles", "Proxy API", }, null);
+	private TextField proxyServer = new TextField("Proxy prefix", "", 256, TextField.URL);
 	private ChoiceGroup uiSize = new ChoiceGroup(MahoMapsApp.text[56], Choice.POPUP,
 			new String[] { MahoMapsApp.text[57], "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup(MahoMapsApp.text[58], Choice.POPUP,
@@ -76,6 +78,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		uiSize.setSelectedIndex(Settings.uiSize, true);
 		lang.setSelectedIndex(Settings.apiLang, true);
 		uiLang.setSelectedIndex(Settings.uiLang, true);
+		proxyServer.setString(Settings.proxyServer);
 
 		append(focusZoom);
 		append(geoLook);
@@ -84,6 +87,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(cache);
 		append(download);
 		append(proxyTiles);
+		append(proxyServer);
 		append(uiSize);
 		append(lang);
 		append(uiLang);
@@ -100,8 +104,8 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.drawDebugInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
 		Settings.allowDownload = download.getSelectedIndex() == 1;
-		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
-		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
+		Settings.proxyTiles = proxyTiles.isSelected(0);
+		Settings.proxyApi = proxyTiles.isSelected(1);
 		Settings.uiSize = uiSize.getSelectedIndex();
 		Settings.apiLang = lang.getSelectedIndex();
 		Settings.uiLang = uiLang.getSelectedIndex();
@@ -111,6 +115,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}
+		Settings.proxyServer = proxyServer.getString();
 	}
 
 	public void commandAction(Command c, Displayable d) {
