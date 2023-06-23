@@ -305,7 +305,8 @@ public class TilesProvider implements Runnable {
 		FileConnection fc = null;
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
-			ByteArrayOutputStream blob = new ByteArrayOutputStream();
+			int len = (int) hc.getLength();
+			ByteArrayOutputStream blob = len <= 0 ? new ByteArrayOutputStream() : new ByteArrayOutputStream(len);
 			byte[] buf = new byte[8192];
 			InputStream s = hc.openInputStream();
 			while (true) {
