@@ -7,6 +7,7 @@ import cc.nnproject.json.*;
 import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.map.MapState;
+import mahomaps.screens.BookmarksScreen;
 import mahomaps.screens.SearchResultScreen;
 import mahomaps.screens.SearchScreen;
 import mahomaps.ui.Button;
@@ -71,11 +72,12 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 
 		content = new FillFlowContainer(new UIElement[] { new SimpleText(data.getNullableString("name")),
 				new SimpleText(data.getString("description", "")),
-				new ColumnsContainer(
-						new UIElement[] { new Button(MahoMapsApp.text[109], 2, this), new Button(MahoMapsApp.text[110], 3, this) }),
+				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[109], 2, this),
+						new Button(MahoMapsApp.text[110], 3, this) }),
 				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[104], 4, this),
 						new Button(MahoMapsApp.text[105], 5, this) }),
-				new Button(MahoMapsApp.text[1], 6, this) });
+				new ColumnsContainer(new UIElement[] { new Button("В закладки", 7, this),
+						new Button(MahoMapsApp.text[1], 6, this) }), });
 		InvalidateSize();
 	}
 
@@ -131,6 +133,10 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 			break;
 		case 6:
 			SetNullSelection();
+			break;
+		case 7:
+			BookmarksScreen.BeginAdd(selected,
+					((JSONObject) selected.object).getObject("properties").getNullableString("name"));
 			break;
 		}
 	}

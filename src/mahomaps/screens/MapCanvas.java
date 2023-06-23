@@ -452,7 +452,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					BeginTextSearch();
 					break handling;
 				case KEY_NUM9:
-					// bookmarks
+					MahoMapsApp.BringSubScreen(new BookmarksScreen());
 					break handling;
 				case KEY_STAR:
 					state = state.ZoomIn();
