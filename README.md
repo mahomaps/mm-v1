@@ -46,6 +46,25 @@ On symbian 9.x, it's recommended to install a patch to allow access to file syst
 - [KEmulator nnmod](https://nnp.nnchan.ru/kem/)
 - [J2ME Loader](https://github.com/nikita36078/J2ME-Loader)
 
+## Build without IDE
+
+### Github actions
+
+We have an action which builds the app on git pushes. You can pull latest builds from it, check "checks" section of your pull request or commit info.
+
+### Windows
+
+Install an SDK for your device, follow its instructions.
+
+### Debian / Ubuntu
+
+```
+dpkg --add-architecture i386
+apt update
+apt-get install gcc-multilib libxt6:i386
+```
+Then install 32-bit JDK 1.6.0 and [WTK 2.5.2](https://www.oracle.com/java/technologies/java-archive-downloads-javame-downloads.html). Edit [build script](build.sh) to use your installed tools (instead of "compiler" repo clone) and run it.
+
 ## Contact us
 
 [Telegram chat](https://t.me/nnmidletschat)
