@@ -51,6 +51,7 @@ public class MapState {
 		ms.xOffset = xOffset;
 		ms.yOffset = yOffset;
 		ms.zoom = zoom;
+		ms.map = map;
 		return ms;
 	}
 
@@ -63,6 +64,7 @@ public class MapState {
 		ms.tileY = tileY * 2;
 		ms.xOffset = xOffset * 2;
 		ms.yOffset = yOffset * 2;
+		ms.map = map;
 		ms.ClampOffset();
 		return ms;
 	}
@@ -76,6 +78,7 @@ public class MapState {
 		ms.tileY = tileY / 2;
 		ms.xOffset = (xOffset - (tileX % 2 == 1 ? 256 : 0)) / 2;
 		ms.yOffset = (yOffset - (tileY % 2 == 1 ? 256 : 0)) / 2;
+		ms.map = map;
 		ms.ClampOffset();
 		return ms;
 	}

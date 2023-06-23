@@ -305,10 +305,7 @@ public class TilesProvider implements Runnable {
 		FileConnection fc = null;
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
-			int len = (int) hc.getLength();
-			if (len <= 0)
-				throw new IOException("Empty response");
-			ByteArrayOutputStream blob = new ByteArrayOutputStream(len);
+			ByteArrayOutputStream blob = new ByteArrayOutputStream();
 			byte[] buf = new byte[8192];
 			InputStream s = hc.openInputStream();
 			while (true) {
@@ -570,7 +567,8 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
+		String url = (tileId.map == 0 ? "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" : "https://core-sat.maps.yandex.net/tiles?l=sat&lang=")
+				+ lang + "&x=" + tileId.x + "&y="
 				+ tileId.y + "&z=" + tileId.zoom;
 		if (Settings.proxyTiles) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
