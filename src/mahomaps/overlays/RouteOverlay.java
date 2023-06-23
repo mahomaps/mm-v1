@@ -1,11 +1,8 @@
 package mahomaps.overlays;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Vector;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
@@ -13,8 +10,6 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Item;
-
-import cc.nnproject.json.JSONObject;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
@@ -67,9 +62,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void run() {
 		try {
-			JSONObject jo = MahoMapsApp.api.Route(a, b, method);
-			Dump(jo);
-			route = new Route(jo);
+			route = new Route(MahoMapsApp.api.Route(a, b, method));
 			LoadRoute();
 		} catch (IOException e) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[111]),
@@ -203,30 +196,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			Close();
 		}
 		MahoMapsApp.BringMap();
-	}
-
-	public static void Dump(JSONObject j) {
-		FileConnection fc = null;
-		try {
-			// String base = "file:///root/";
-			String base = System.getProperty("fileconn.dir.photos");
-			fc = (FileConnection) Connector.open(base + "route" + System.currentTimeMillis() + ".json");
-			if (!fc.exists())
-				fc.create();
-			else
-				fc.truncate(0);
-			OutputStream stream = fc.openOutputStream();
-			stream.write(j.toString().getBytes("UTF-8"));
-			stream.flush();
-			stream.close();
-		} catch (Exception e) {
-		} finally {
-			try {
-				if (fc != null)
-					fc.close();
-			} catch (IOException e) {
-			}
-		}
 	}
 
 }
