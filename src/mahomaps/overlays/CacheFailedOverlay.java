@@ -15,7 +15,7 @@ public class CacheFailedOverlay extends MapOverlay implements IButtonHandler {
 
 	public CacheFailedOverlay() {
 		content = new FillFlowContainer(new UIElement[] { new SimpleText("Caching failed!"),
-				new SimpleText("Please, check if your phone or SD memory is full."), new ColumnsContainer(new UIElement[] {
+				new SimpleText("Please, check that memory is not full."), new ColumnsContainer(new UIElement[] {
 						new Button(MahoMapsApp.text[38], 0, this) }) });
 	}
 
