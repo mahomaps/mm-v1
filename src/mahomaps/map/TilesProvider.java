@@ -320,42 +320,40 @@ public class TilesProvider implements Runnable {
 			hc = null;
 			byte[] blobc = blob.toByteArray();
 			blob = null;
-			if (id.map == 0) { // TODO
-				if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
-					synchronized (cacheAccessLock) {
-						try {
-							fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
-							fc.create();
-							OutputStream os = fc.openOutputStream();
-							os.write(blobc);
-							os.flush();
-							os.close();
-						} catch (SecurityException e) {
-							MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
-							Settings.cacheMode = Settings.CACHE_DISABLED;
-						} catch (IOException e) {
-							MahoMapsApp.Overlays().PushOverlay(new CacheFailedOverlay());
-							Settings.cacheMode = Settings.CACHE_DISABLED;
-						} finally {
-							if (fc != null)
-								fc.close();
-							fc = null;
-						}
+			if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
+				synchronized (cacheAccessLock) {
+					try {
+						fc = (FileConnection) Connector.open(getFileName(id), Connector.WRITE);
+						fc.create();
+						OutputStream os = fc.openOutputStream();
+						os.write(blobc);
+						os.flush();
+						os.close();
+					} catch (SecurityException e) {
+						MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
+						Settings.cacheMode = Settings.CACHE_DISABLED;
+					} catch (IOException e) {
+						MahoMapsApp.Overlays().PushOverlay(new CacheFailedOverlay());
+						Settings.cacheMode = Settings.CACHE_DISABLED;
+					} finally {
+						if (fc != null)
+							fc.close();
+						fc = null;
 					}
-				} else if (Settings.cacheMode == Settings.CACHE_RMS) {
-					synchronized (cacheAccessLock) {
-						try {
-							RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
-							if (r.getNumRecords() == 0)
-								r.addRecord(new byte[1], 0, 1);
-							r.setRecord(1, blobc, 0, blobc.length);
-							r.closeRecordStore();
-						} catch (RecordStoreFullException e) {
-							// TODO: Выводить алерт что место закончилось
-						} catch (Exception e) {
-							// TODO: Выводить на экран алерт что закэшить не удалось
-							e.printStackTrace();
-						}
+				}
+			} else if (Settings.cacheMode == Settings.CACHE_RMS) {
+				synchronized (cacheAccessLock) {
+					try {
+						RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
+						if (r.getNumRecords() == 0)
+							r.addRecord(new byte[1], 0, 1);
+						r.setRecord(1, blobc, 0, blobc.length);
+						r.closeRecordStore();
+					} catch (RecordStoreFullException e) {
+						// TODO: Выводить алерт что место закончилось
+					} catch (Exception e) {
+						// TODO: Выводить на экран алерт что закэшить не удалось
+						e.printStackTrace();
 					}
 				}
 			}
@@ -388,7 +386,6 @@ public class TilesProvider implements Runnable {
 	 * @return Изображение, если тайл сохранён, иначе null.
 	 */
 	private Image tryLoadFromFS(TileId id) {
-		if (id.map == 1) return null; // TODO
 		synchronized (cacheAccessLock) {
 			FileConnection fc = null;
 			try {
@@ -433,7 +430,6 @@ public class TilesProvider implements Runnable {
 	 * @return Изображение, если тайл сохранён, иначе null.
 	 */
 	private Image tryLoadFromRMS(TileId id) {
-		if (id.map == 1) return null; // TODO
 		synchronized (cacheAccessLock) {
 			byte[] b = null;
 			try {
