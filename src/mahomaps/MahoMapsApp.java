@@ -101,6 +101,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	protected void destroyApp(boolean arg0) {
+		Settings.Save();
 		if (thread != null)
 			thread.interrupt();
 		if (tiles != null)

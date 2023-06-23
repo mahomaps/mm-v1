@@ -37,6 +37,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Русский", "English", "Français" }, null);
 	private ChoiceGroup bbNetwork = new ChoiceGroup(MahoMapsApp.text[63], Choice.EXCLUSIVE,
 			new String[] { MahoMapsApp.text[64], "Wi-Fi" }, null);
+	private ChoiceGroup map = new ChoiceGroup("Map", Choice.EXCLUSIVE,
+			new String[] { "Scheme", "Satellite" }, null);
 
 	public SettingsScreen() {
 		super(MahoMapsApp.text[11]);
@@ -76,6 +78,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		uiSize.setSelectedIndex(Settings.uiSize, true);
 		lang.setSelectedIndex(Settings.apiLang, true);
 		uiLang.setSelectedIndex(Settings.uiLang, true);
+		map.setSelectedIndex(Settings.map, true);
 
 		append(focusZoom);
 		append(geoLook);
@@ -87,6 +90,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(uiSize);
 		append(lang);
 		append(uiLang);
+		append(map);
 		if (MahoMapsApp.bb) {
 			bbNetwork.setSelectedIndex(Settings.bbWifi ? 1 : 0, true);
 			append(bbNetwork);
@@ -111,6 +115,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}
+		Settings.map = map.getSelectedIndex();
 	}
 
 	public void commandAction(Command c, Displayable d) {
