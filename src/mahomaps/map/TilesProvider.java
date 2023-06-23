@@ -23,6 +23,7 @@ import mahomaps.Settings;
 import mahomaps.api.YmapsApiBase;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import mahomaps.overlays.CacheFailedOverlay;
 
 public class TilesProvider implements Runnable {
 
@@ -300,14 +301,13 @@ public class TilesProvider implements Runnable {
 	 * @throws InterruptedException Если поток прерван.
 	 */
 	private Image download(TileId id) throws InterruptedException {
-
 		HttpConnection hc = null;
 		FileConnection fc = null;
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
 			int len = (int) hc.getLength();
 			if (len <= 0)
-				throw new IOException("Empty responce");
+				throw new IOException("Empty response");
 			ByteArrayOutputStream blob = new ByteArrayOutputStream(len);
 			byte[] buf = new byte[8192];
 			InputStream s = hc.openInputStream();
@@ -336,7 +336,8 @@ public class TilesProvider implements Runnable {
 						MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
 						Settings.cacheMode = Settings.CACHE_DISABLED;
 					} catch (IOException e) {
-						// TODO: Выводить на экран алерт что закэшить не удалось
+						MahoMapsApp.Overlays().PushOverlay(new CacheFailedOverlay());
+						Settings.cacheMode = Settings.CACHE_DISABLED;
 					} finally {
 						if (fc != null)
 							fc.close();
