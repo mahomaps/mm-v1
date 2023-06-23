@@ -58,7 +58,7 @@ public class BookmarksScreen extends List implements CommandListener {
 			if (d == null)
 				return JSON.getArray("[]");
 
-			return JSON.getArray(new String(d));
+			return JSON.getArray(new String(d, "UTF-8"));
 		} catch (Throwable e) {
 			return JSON.getArray("[]");
 		}
@@ -77,9 +77,11 @@ public class BookmarksScreen extends List implements CommandListener {
 					if (text != null && text.length() > 0) {
 						Add(p, text);
 					}
+					MahoMapsApp.BringMap();
 				}
 			}
 		});
+		MahoMapsApp.BringSubScreen(tb);
 	}
 
 	public static void Add(Geopoint p, String name) {
@@ -94,7 +96,7 @@ public class BookmarksScreen extends List implements CommandListener {
 
 	private static void Save(JSONArray arr) {
 		try {
-			byte[] d = arr.toString().getBytes();
+			byte[] d = arr.toString().getBytes("UTF-8");
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
 			if (r.getNumRecords() == 0)
 				r.addRecord(new byte[1], 0, 1);
@@ -120,6 +122,7 @@ public class BookmarksScreen extends List implements CommandListener {
 		if (c == del) {
 			list.remove(n);
 			delete(n);
+			Save(list);
 			return;
 		}
 		JSONObject obj = list.getObject(n);
