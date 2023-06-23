@@ -460,6 +460,9 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				case KEY_POUND:
 					state = state.ZoomOut();
 					break handling;
+				case KEY_NUM0:
+					state.map = state.map == 0 ? 1 : 0;
+					break handling;
 				}
 			} else {
 				switch (ga) {
