@@ -2,7 +2,7 @@ package mahomaps;
 
 public class Gate {
 	private volatile boolean pass;
-
+фифщиф
 	private final Object lock = new Object();
 
 	/**
