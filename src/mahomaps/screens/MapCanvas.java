@@ -41,7 +41,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public Geopoint geolocation;
 
 	// input states
-	private boolean touch = hasPointerEvents();
 	private boolean mapFocused = true;
 	private int repeatCount = 0;
 	int startPx, startPy;
@@ -69,6 +68,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		searchBox.addCommand(MahoMapsApp.back);
 		searchBox.addCommand(search);
 		searchBox.setCommandListener(this);
+
+		UIElement.touchInput = hasPointerEvents();
 
 		controls = new ControlButtonsContainer(this);
 
@@ -114,7 +115,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		drawMap(g, w, h);
 		drawOverlay(g, w, h);
 		UIElement.CommitInputQueue();
-		if (UIElement.IsQueueEmpty() && !touch && !mapFocused) {
+		if (UIElement.IsQueueEmpty() && !UIElement.touchInput && !mapFocused) {
 			mapFocused = true;
 			UIElement.Deselect();
 			requestRepaint();
@@ -164,7 +165,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			geolocation.paint(g, ms);
 		}
 
-		if (!touch) {
+		if (!UIElement.touchInput) {
 			g.setColor(0xff0000);
 
 			g.drawLine(-6, 0, -2, 0);
@@ -193,7 +194,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			throw new RuntimeException("geo infa ebanulas " + e.toString());
 		}
 
-		final boolean t = touch;
+		final boolean t = UIElement.touchInput;
 		final RouteTracker rt = MahoMapsApp.route;
 
 		int fh = f.getHeight();
@@ -355,7 +356,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (k == -12)
 			return;
 
-		touch = false;
+		UIElement.touchInput = false;
 
 		if (MahoMapsApp.route != null) {
 			// когда маршрут ведётся, можно только изменять масштаб и закрывать маршрут.
@@ -484,7 +485,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (k == -12)
 			return;
 
-		touch = false;
+		UIElement.touchInput = false;
 		int ga = 0;
 		try {
 			ga = getGameAction(k);
@@ -525,7 +526,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
-		touch = true;
+		UIElement.touchInput = true;
 		mapFocused = true;
 		if (n == 0) {
 			UIElement.InvokePressEvent(x, y);

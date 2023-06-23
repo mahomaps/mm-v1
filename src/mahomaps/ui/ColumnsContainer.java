@@ -16,7 +16,7 @@ public class ColumnsContainer extends UIComposite {
 	public void Paint(Graphics g, int x, int y, int w, int h) {
 		int[] widths = new int[children.size()];
 		int wsum = 0;
-		int rh = h;
+		int rh = 1;
 		for (int i = 0; i < children.size(); i++) {
 			UIElement el = ((UIElement) children.elementAt(i));
 			widths[i] = el.W;

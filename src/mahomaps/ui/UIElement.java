@@ -16,8 +16,8 @@ public abstract class UIElement {
 	private static volatile Vector queueTemp = new Vector();
 	private static int selectedIndex = -1;
 	private static boolean isSelectedInQueue = false;
-
 	private static ITouchAcceptor holdElement = null;
+	public static boolean touchInput;
 
 	protected static synchronized void RegisterForInput(ITouchAcceptor ta, int x, int y, int w, int h) {
 		queueTemp.addElement(new UITouchZone(ta, x, y, w, h));
