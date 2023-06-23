@@ -573,7 +573,7 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getFileName(TileId id) {
-		return localPath + "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom + (id.map == 1 ? "_s" : "");
+		return localPath + getRmsName(id);
 	}
 
 	private String getRmsName(TileId id) {
