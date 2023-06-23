@@ -39,6 +39,12 @@ public class Line {
 		}
 		cache = new int[(ti + 1) * 2];
 		System.arraycopy(temp, 0, cache, 0, cache.length);
+		if (forZoom <= 7)
+			thickness = 0;
+		else if (forZoom <= 14)
+			thickness = 1;
+		else
+			thickness = 2;
 	}
 
 	public void Invalidate() {
