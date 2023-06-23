@@ -20,7 +20,7 @@ public class CacheFailedOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	public String GetId() {
-		return "no_token";
+		return "cache_fail";
 	}
 
 	public Vector GetPoints() {
