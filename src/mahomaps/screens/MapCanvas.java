@@ -9,6 +9,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
+import mahomaps.DeviceControlInvoker;
 import mahomaps.FpsLimiter;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
@@ -58,6 +59,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private int lastOverlaysW;
 	public final FpsLimiter repaintGate = new FpsLimiter();
 	private Graphics cachedGraphics;
+
+	private long lastResetTime;
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -325,6 +328,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				repaint(g);
 				flushGraphics();
 				repaintGate.End(rt != null ? 33 : 2000);
+				if (rt != null && System.currentTimeMillis() - lastResetTime > 15000L) {
+					DeviceControlInvoker.resetUserInactivityTime();
+					lastResetTime = System.currentTimeMillis();
+				}
 			}
 		}
 	}
