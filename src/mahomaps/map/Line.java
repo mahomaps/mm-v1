@@ -10,6 +10,7 @@ public class Line {
 
 	private int forZoom = -1;
 	private int[] cache = null;
+	private int thickness = 2;
 	public int drawFrom = 0;
 
 	public Line(Geopoint start, Geopoint[] source) {
@@ -63,25 +64,27 @@ public class Line {
 			if (!vis1 && !vis2)
 				continue;
 			g.setColor(0xff0000);
-			{
-				// first point
-				// draw nothing?
-			}
-			{
+			if (thickness == 0) {
+				g.drawLine(x1, y1, x2, y2);
+			} else {
 				// second point
-				g.fillRect(x2 - 1, y2 - 2, 2, 4);
-				g.fillRect(x2 - 2, y2 - 1, 4, 2);
-			}
-			{
-				// line
-				final int hor = Math.abs(x2 - x1);
-				final int ver = Math.abs(y2 - y1);
-				if (hor > ver) {
-					g.fillTriangle(x1, y1 - 2, x1, y1 + 2, x2, y2 + 2);
-					g.fillTriangle(x1, y1 - 2, x2, y2 - 2, x2, y2 + 2);
+				if (thickness == 1) {
+					g.fillRect(x2 - 1, y2 - 1, 2, 2);
 				} else {
-					g.fillTriangle(x1 - 2, y1, x1 + 2, y1, x2 - 2, y2);
-					g.fillTriangle(x2 + 2, y2, x1 + 2, y1, x2 - 2, y2);
+					g.fillRect(x2 - (thickness >> 1), y2 - thickness, thickness, thickness << 1);
+					g.fillRect(x2 - thickness, y2 - (thickness >> 1), thickness << 1, thickness);
+				}
+				// line
+				{
+					final int hor = Math.abs(x2 - x1);
+					final int ver = Math.abs(y2 - y1);
+					if (hor > ver) {
+						g.fillTriangle(x1, y1 - thickness, x1, y1 + thickness, x2, y2 + thickness);
+						g.fillTriangle(x1, y1 - thickness, x2, y2 - thickness, x2, y2 + thickness);
+					} else {
+						g.fillTriangle(x1 - thickness, y1, x1 + thickness, y1, x2 - thickness, y2);
+						g.fillTriangle(x2 + thickness, y2, x1 + thickness, y1, x2 - thickness, y2);
+					}
 				}
 			}
 		}
