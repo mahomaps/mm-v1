@@ -13,16 +13,16 @@ public class TileCache extends TileId {
 	public volatile int state = 0;
 	public volatile int unuseCount;
 
-	public TileCache(int x, int y, int zoom) {
-		super(x, y, zoom);
+	public TileCache(int x, int y, int zoom, int map) {
+		super(x, y, zoom, map);
 	}
 
 	public TileCache(TileId id) {
-		super(id.x, id.y, id.zoom);
+		super(id.x, id.y, id.zoom, id.map);
 	}
 
 	public boolean is(TileId id) {
-		return id.x == x && id.y == y && id.zoom == zoom;
+		return id.x == x && id.y == y && id.zoom == zoom && id.map == map;
 	}
 
 	public void paint(Graphics g, int tx, int ty) {

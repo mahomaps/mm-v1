@@ -8,6 +8,7 @@ public class MapState {
 	public int tileX, tileY;
 	public int xOffset, yOffset;
 	public int zoom;
+	public int map; // 0 - render, 1 - satellite
 
 	public final void ClampOffset() {
 		while (xOffset > 0) {
