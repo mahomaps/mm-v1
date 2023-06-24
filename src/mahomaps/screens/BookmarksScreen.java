@@ -24,7 +24,8 @@ public class BookmarksScreen extends List implements CommandListener {
 
 	private Command from = new Command("Отсюда", Command.ITEM, 0);
 	private Command to = new Command("Сюда", Command.ITEM, 1);
-	private Command del = new Command("Удалить", Command.ITEM, 1);
+	private Command del = new Command("Удалить", Command.ITEM, 2);
+	private Command rename = new Command("Переименовать", Command.ITEM, 2);
 
 	public BookmarksScreen() {
 		super("Закладки", Choice.IMPLICIT);
@@ -36,6 +37,7 @@ public class BookmarksScreen extends List implements CommandListener {
 			addCommand(from);
 			addCommand(to);
 			addCommand(del);
+			addCommand(rename);
 		}
 		setCommandListener(this);
 	}
@@ -109,6 +111,10 @@ public class BookmarksScreen extends List implements CommandListener {
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == MahoMapsApp.back) {
+			if (d instanceof TextBox) {
+				MahoMapsApp.BringSubScreen(this);
+				return;
+			}
 			MahoMapsApp.BringMap();
 			return;
 		}
@@ -119,10 +125,25 @@ public class BookmarksScreen extends List implements CommandListener {
 		if (n == -1)
 			return;
 
+		if (c == MahoMapsApp.ok) {
+			 // будем надеяться что фокус элемента не сбросится пока юзер будет вводить текст
+			String s = ((TextBox) d).getString();
+			set(n, s, null);
+			list.getObject(n).put("name", s);
+			return;
+		}
 		if (c == del) {
 			list.remove(n);
 			delete(n);
 			Save(list);
+			return;
+		}
+		if (c == rename) {
+			final TextBox tb = new TextBox("Название закладки?", getString(n), 100, 0);
+			tb.addCommand(MahoMapsApp.back);
+			tb.addCommand(MahoMapsApp.ok);
+			tb.setCommandListener(this);
+			MahoMapsApp.BringSubScreen(tb);
 			return;
 		}
 		JSONObject obj = list.getObject(n);
