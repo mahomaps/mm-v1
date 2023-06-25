@@ -86,6 +86,7 @@ public class Settings {
 			cacheMode = j.getInt("cache", 1);
 			proxyTiles = j.getBoolean("proxy_tiles");
 			proxyApi = j.getBoolean("proxy_api");
+			proxyServer = j.getString("proxy_server", proxyServer);
 			uiSize = j.getInt("ui_size", 0);
 			apiLang = j.getInt("lang", 0);
 			uiLang = j.getInt("ui_lang", 0);
@@ -128,6 +129,7 @@ public class Settings {
 		j.put("cache", cacheMode);
 		j.put("proxy_tiles", proxyTiles);
 		j.put("proxy_api", proxyApi);
+		j.put("proxy_server", proxyServer);
 		j.put("ui_size", uiSize);
 		j.put("lang", apiLang);
 		j.put("ui_lang", uiLang);
