@@ -106,9 +106,6 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.drawDebugInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
 		Settings.allowDownload = download.isSelected(0);
-		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
-		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
-		Settings.allowDownload = download.isSelected(0);
 		Settings.proxyTiles = proxyUsage.isSelected(0);
 		Settings.proxyApi = proxyUsage.isSelected(1);
 		Settings.uiSize = uiSize.getSelectedIndex();
