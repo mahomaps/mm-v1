@@ -55,6 +55,15 @@ public class TilesProvider implements Runnable {
 	private Thread networkTh;
 	private Thread cacheTh;
 
+	public static final String[] tilesUrls = new String[] {
+			// scheme
+			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=",
+			// sat
+			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
+			// hybrid
+			// next PR
+	};
+
 	public TilesProvider(String lang) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
@@ -564,9 +573,8 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = (tileId.map == 0 ? "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" : "https://core-sat.maps.yandex.net/tiles?l=sat&lang=")
-				+ lang + "&x=" + tileId.x + "&y="
-				+ tileId.y + "&z=" + tileId.zoom;
+		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
+				+ "&z=" + tileId.zoom;
 		if (Settings.proxyTiles) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
