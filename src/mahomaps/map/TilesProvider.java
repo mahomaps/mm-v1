@@ -61,7 +61,7 @@ public class TilesProvider implements Runnable {
 			// sat
 			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
 			// hybrid
-			// next PR
+			"http://nnp.nnchan.ru/mergedtile.php?lang="
 	};
 
 	public TilesProvider(String lang) {
@@ -575,7 +575,7 @@ public class TilesProvider implements Runnable {
 	private String getUrl(TileId tileId) {
 		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
 				+ "&z=" + tileId.zoom;
-		if (Settings.proxyTiles) {
+		if (Settings.proxyTiles && url.startsWith("https")) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		return url;
@@ -586,7 +586,7 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getRmsName(TileId id) {
-		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom + (id.map == 1 ? "_s" : "");
+		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom + (id.map > 0 ? "_" + id.map : "");
 	}
 
 	public int GetCachedTilesCount() {
