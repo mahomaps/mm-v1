@@ -55,6 +55,15 @@ public class TilesProvider implements Runnable {
 	private Thread networkTh;
 	private Thread cacheTh;
 
+	public static final String[] tilesUrls = new String[] {
+			// scheme
+			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=",
+			// sat
+			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
+			// hybrid
+			// next PR
+	};
+
 	public TilesProvider(String lang) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
@@ -306,9 +315,7 @@ public class TilesProvider implements Runnable {
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
 			int len = (int) hc.getLength();
-			if (len <= 0)
-				throw new IOException("Empty response");
-			ByteArrayOutputStream blob = new ByteArrayOutputStream(len);
+			ByteArrayOutputStream blob = len <= 0 ? new ByteArrayOutputStream() : new ByteArrayOutputStream(len);
 			byte[] buf = new byte[8192];
 			InputStream s = hc.openInputStream();
 			while (true) {
@@ -535,7 +542,7 @@ public class TilesProvider implements Runnable {
 		while (x >= max)
 			x -= max;
 
-		tileId = new TileId(x, tileId.y, tileId.zoom);
+		tileId = new TileId(x, tileId.y, tileId.zoom, tileId.map);
 
 		TileCache cached = null;
 
@@ -566,8 +573,8 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
-				+ tileId.y + "&z=" + tileId.zoom;
+		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
+				+ "&z=" + tileId.zoom;
 		if (Settings.proxyTiles) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
@@ -575,11 +582,11 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getFileName(TileId id) {
-		return localPath + "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
+		return localPath + getRmsName(id);
 	}
 
 	private String getRmsName(TileId id) {
-		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
+		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom + (id.map == 1 ? "_s" : "");
 	}
 
 	public int GetCachedTilesCount() {

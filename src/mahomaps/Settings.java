@@ -27,6 +27,7 @@ public class Settings {
 	public static int uiLang = 0;
 	public static boolean bbWifi;
 	public static boolean firstLaunch = true;
+	public static int map;
 
 	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
@@ -92,6 +93,7 @@ public class Settings {
 			bbWifi = j.getBoolean("bb_wifi", false);
 			firstLaunch = j.getBoolean("1", true);
 			usageFlags = j.getInt("tm", 0);
+			map = j.getInt("map", 0);
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -134,6 +136,7 @@ public class Settings {
 		j.put("bb_wifi", bbWifi);
 		j.put("1", firstLaunch);
 		j.put("tm", usageFlags);
+		j.put("map", map);
 		return j.toString();
 	}
 
