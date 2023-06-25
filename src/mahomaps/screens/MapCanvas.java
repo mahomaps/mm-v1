@@ -461,7 +461,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					state = state.ZoomOut();
 					break handling;
 				case KEY_NUM0:
-					Settings.map = Settings.map == 0 ? 1 : 0;
+					// layer toggle
+					Settings.map++;
+					if (Settings.map >= TilesProvider.tilesUrls.length)
+						Settings.map = 0;
+					Settings.Save();
 					break handling;
 				}
 			} else {
