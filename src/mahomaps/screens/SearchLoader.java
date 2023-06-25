@@ -42,7 +42,7 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 			e.printStackTrace();
 		} catch (Http403Exception e) {
 			deleteAll();
-			append(new StringItem("Отказ в доступе к API", "Попробуйте сбросить сессию в меню."));
+			append(new StringItem(MahoMapsApp.text[135], MahoMapsApp.text[136]));
 		} catch (Exception e) {
 			deleteAll();
 			append(new StringItem(e.getClass().getName(), e.getMessage()));

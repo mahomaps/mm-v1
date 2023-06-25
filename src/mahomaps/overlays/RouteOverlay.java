@@ -43,7 +43,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		this.b = b;
 		this.method = method;
 		ShowAB();
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Загружаем маршрут...") });
+		content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[134]) });
 		Thread th = new Thread(this, "Route api request");
 		th.start();
 	}
@@ -68,9 +68,9 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[111]),
 					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Http403Exception e) {
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Отказ в доступе к API."),
-					new SimpleText("Сбросьте сессию в меню"), new SimpleText("и повторите попытку."),
-					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
+			content = new FillFlowContainer(
+					new UIElement[] { new SimpleText(MahoMapsApp.text[135]), new SimpleText(MahoMapsApp.text[136]),
+							new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[120]),
@@ -87,9 +87,9 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		// route field must be non-null here!
 		ColumnsContainer cols = new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[113], 3, this),
 				new Button(MahoMapsApp.text[114], 4, this) });
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
-				new SimpleText(route.distance + ", " + route.time), new Button(MahoMapsApp.text[115], 5, this), cols,
-				new Button(MahoMapsApp.text[38], 0, this) });
+		content = new FillFlowContainer(
+				new UIElement[] { new SimpleText(Type(method)), new SimpleText(route.distance + ", " + route.time),
+						new Button(MahoMapsApp.text[115], 5, this), cols, new Button(MahoMapsApp.text[38], 0, this) });
 		MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 	}
 
@@ -181,11 +181,11 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	private static String Type(int t) {
 		switch (t) {
 		case YmapsApi.ROUTE_AUTO:
-			return "на авто";
+			return MahoMapsApp.text[126];
 		case YmapsApi.ROUTE_BYFOOT:
-			return "пешком";
+			return MahoMapsApp.text[127];
 		case YmapsApi.ROUTE_TRANSPORT:
-			return "на транспорте";
+			return MahoMapsApp.text[128];
 		}
 		return "";
 	}

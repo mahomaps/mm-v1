@@ -29,7 +29,7 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 
 		content = new FillFlowContainer(new UIElement[] {
 				new SimpleText(p.toString()), new Button(MahoMapsApp.text[103], 1, this),
-				new Button("В закладки", 4, this), new ColumnsContainer(new UIElement[] {
+				new Button(MahoMapsApp.text[137], 4, this), new ColumnsContainer(new UIElement[] {
 						new Button(MahoMapsApp.text[104], 2, this), new Button(MahoMapsApp.text[105], 3, this) }),
 				new Button(MahoMapsApp.text[38], 0, this) });
 	}

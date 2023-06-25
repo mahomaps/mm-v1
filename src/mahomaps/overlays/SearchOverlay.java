@@ -76,7 +76,7 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 						new Button(MahoMapsApp.text[110], 3, this) }),
 				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[104], 4, this),
 						new Button(MahoMapsApp.text[105], 5, this) }),
-				new ColumnsContainer(new UIElement[] { new Button("В закладки", 7, this),
+				new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[137], 7, this),
 						new Button(MahoMapsApp.text[1], 6, this) }), });
 		InvalidateSize();
 	}
