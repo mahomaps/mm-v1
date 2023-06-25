@@ -25,8 +25,9 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[17] }, null);
 	private ChoiceGroup cache = new ChoiceGroup(MahoMapsApp.text[52], Choice.POPUP,
 			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[53], "RMS" }, null);
-	private ChoiceGroup download = new ChoiceGroup(MahoMapsApp.text[54], Choice.POPUP,
-			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[55], }, null);
+	private ChoiceGroup download = new ChoiceGroup(MahoMapsApp.text[54], Choice.MULTIPLE,
+			new String[] { MahoMapsApp.text[18] }, null);
+	private ChoiceGroup map = new ChoiceGroup("Map", Choice.EXCLUSIVE, new String[] { "Scheme", "Satellite" }, null);
 	private ChoiceGroup proxyTiles = new ChoiceGroup(MahoMapsApp.text[19], Choice.POPUP,
 			new String[] { MahoMapsApp.text[18], "nnchan.ru", }, null);
 	private ChoiceGroup uiSize = new ChoiceGroup(MahoMapsApp.text[56], Choice.POPUP,
@@ -37,8 +38,6 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { "Русский", "English", "Français" }, null);
 	private ChoiceGroup bbNetwork = new ChoiceGroup(MahoMapsApp.text[63], Choice.EXCLUSIVE,
 			new String[] { MahoMapsApp.text[64], "Wi-Fi" }, null);
-	private ChoiceGroup map = new ChoiceGroup("Map", Choice.EXCLUSIVE,
-			new String[] { "Scheme", "Satellite" }, null);
 
 	public SettingsScreen() {
 		super(MahoMapsApp.text[11]);
@@ -71,7 +70,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		geoStatus.setSelectedIndex(Settings.showGeo, true);
 		tileInfo.setSelectedIndex(Settings.drawDebugInfo ? 1 : 0, true);
 		cache.setSelectedIndex(Settings.cacheMode, true);
-		download.setSelectedIndex(Settings.allowDownload ? 1 : 0, true);
+		download.setSelectedIndex(0, Settings.allowDownload);
 		proxyTiles.setSelectedIndex(Settings.proxyTiles ? 1 : 0, true);
 		// апи отслеживается отдельно, однако предполагается что оно включено вместе с
 		// тайлами.
@@ -86,11 +85,11 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(tileInfo);
 		append(cache);
 		append(download);
+		append(map);
 		append(proxyTiles);
 		append(uiSize);
 		append(lang);
 		append(uiLang);
-		append(map);
 		if (MahoMapsApp.bb) {
 			bbNetwork.setSelectedIndex(Settings.bbWifi ? 1 : 0, true);
 			append(bbNetwork);
@@ -103,7 +102,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.showGeo = geoStatus.getSelectedIndex();
 		Settings.drawDebugInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
-		Settings.allowDownload = download.getSelectedIndex() == 1;
+		Settings.allowDownload = download.isSelected(0);
 		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
 		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
 		Settings.uiSize = uiSize.getSelectedIndex();
