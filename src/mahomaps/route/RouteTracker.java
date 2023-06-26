@@ -112,7 +112,7 @@ public class RouteTracker {
 			ProcessRegularSegment();
 		} else {
 			// route ended
-			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, "", "Маршрут завершён.", "");
+			tos = new TrackerOverlayState(RouteSegment.ICON_FINISH, 0, "", MahoMapsApp.text[140], "");
 			overlay.ShowPoint(null);
 		}
 
@@ -154,7 +154,7 @@ public class RouteTracker {
 	private void ProcessRouteEntering() {
 		final double d = GetDistanceToSegment(vertex[0], vertex[1], extrapolatedGeolocation);
 		final RouteSegment rs = segments[0];
-		tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), "Проследуйте к старту",
+		tos = new TrackerOverlayState(rs.GetIcon(), getSegmentAngle(rs), MahoMapsApp.text[143],
 				"Осталось " + ((int) d) + "м", rs.GetDescription());
 		overlay.ShowPoint(rs.GetAnchor());
 		if (TryReattach()) {
@@ -182,7 +182,7 @@ public class RouteTracker {
 		if (currentSegment == segments.length - 1) {
 			ns = null;
 			ev = vertex.length - 1;
-			na = "Конец маршрута";
+			na = MahoMapsApp.text[141];
 		} else {
 			ns = segments[currentSegment + 1];
 			ev = ns.segmentStartVertex;
@@ -192,7 +192,7 @@ public class RouteTracker {
 		float d = distTo(vertex[ev]);
 		if (d < 200) {
 			final String dist = "Через " + ((int) d) + "м";
-			final String info = ns == null ? "Конец маршрута" : getCurrentSegmentInfo(ns);
+			final String info = ns == null ? "" : getCurrentSegmentInfo(ns);
 			final int icon = ns == null ? RouteSegment.ICON_FINISH : ns.GetIcon();
 			tos = new TrackerOverlayState(icon, getSegmentAngle(ns), dist, na, info);
 		} else {
@@ -221,7 +221,7 @@ public class RouteTracker {
 					// sucseed.
 				} else {
 					trackingLost = true;
-					tos = new TrackerOverlayState(RouteSegment.ICON_WALK, 0, "", "Вернитесь на маршрут", "");
+					tos = new TrackerOverlayState(RouteSegment.ICON_WALK, 0, "", MahoMapsApp.text[142], "");
 					overlay.ShowPoint(null);
 				}
 			}

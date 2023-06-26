@@ -9,7 +9,7 @@ public class Route {
 	public Geopoint[] points;
 	public RouteSegment[] segments;
 	public String time;
-	public String distance = "Неизвестно";
+	public String distance = "Unknown";
 
 	public Route(JSONObject route) {
 		JSONObject props = route.getObject("properties");

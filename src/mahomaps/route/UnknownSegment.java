@@ -1,6 +1,8 @@
 package mahomaps.route;
 
-public class UnknownSegment extends RouteSegment {
+import mahomaps.MahoMapsApp;
+
+public final class UnknownSegment extends RouteSegment {
 
 	protected UnknownSegment(int sv) {
 		super(sv);
@@ -15,15 +17,15 @@ public class UnknownSegment extends RouteSegment {
 	}
 
 	public String GetType() {
-		return "Неизвестный сегмент";
+		return MahoMapsApp.text[146];
 	}
 
 	public String GetDescription() {
-		return "Неизвестный сегмент";
+		return MahoMapsApp.text[146];
 	}
 
 	public String GetAction() {
-		return "Неизвестный сегмент";
+		return MahoMapsApp.text[146];
 	}
 
 }

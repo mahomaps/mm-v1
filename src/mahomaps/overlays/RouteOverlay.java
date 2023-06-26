@@ -185,7 +185,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		case YmapsApi.ROUTE_BYFOOT:
 			return MahoMapsApp.text[127];
 		case YmapsApi.ROUTE_TRANSPORT:
-			return MahoMapsApp.text[128];
+			return MahoMapsApp.text[144];
 		}
 		return "";
 	}

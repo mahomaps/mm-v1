@@ -1,5 +1,6 @@
 package mahomaps.route;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 
 public class RailwaySegment extends TransportSegment {
@@ -9,7 +10,7 @@ public class RailwaySegment extends TransportSegment {
 	}
 
 	public String GetType() {
-		return "На пригородном поезде";
+		return MahoMapsApp.text[139];
 	}
 
 	public int GetIcon() {
