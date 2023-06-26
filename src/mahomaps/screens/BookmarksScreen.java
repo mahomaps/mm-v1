@@ -22,13 +22,13 @@ public class BookmarksScreen extends List implements CommandListener {
 
 	private JSONArray list;
 
-	private Command from = new Command("Отсюда", Command.ITEM, 0);
-	private Command to = new Command("Сюда", Command.ITEM, 1);
-	private Command del = new Command("Удалить", Command.ITEM, 2);
-	private Command rename = new Command("Переименовать", Command.ITEM, 2);
+	private Command from = new Command(MahoMapsApp.text[104], Command.ITEM, 0);
+	private Command to = new Command(MahoMapsApp.text[105], Command.ITEM, 1);
+	private Command del = new Command(MahoMapsApp.text[149], Command.ITEM, 2);
+	private Command rename = new Command(MahoMapsApp.text[150], Command.ITEM, 2);
 
 	public BookmarksScreen() {
-		super("Закладки", Choice.IMPLICIT);
+		super(MahoMapsApp.text[148], Choice.IMPLICIT);
 		list = read();
 		list.build();
 		fillList();
@@ -67,7 +67,7 @@ public class BookmarksScreen extends List implements CommandListener {
 	}
 
 	public static void BeginAdd(final Geopoint p, String defaultName) {
-		final TextBox tb = new TextBox("Название закладки?", defaultName == null ? "" : defaultName, 100, 0);
+		final TextBox tb = new TextBox(MahoMapsApp.text[151], defaultName == null ? "" : defaultName, 100, 0);
 		tb.addCommand(MahoMapsApp.back);
 		tb.addCommand(MahoMapsApp.ok);
 		tb.setCommandListener(new CommandListener() {
@@ -139,7 +139,7 @@ public class BookmarksScreen extends List implements CommandListener {
 			return;
 		}
 		if (c == rename) {
-			final TextBox tb = new TextBox("Название закладки?", getString(n), 100, 0);
+			final TextBox tb = new TextBox(MahoMapsApp.text[151], getString(n), 100, 0);
 			tb.addCommand(MahoMapsApp.back);
 			tb.addCommand(MahoMapsApp.ok);
 			tb.setCommandListener(this);
