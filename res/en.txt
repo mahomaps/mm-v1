@@ -152,7 +152,7 @@ Rename
 Bookmark name?
 Toggle geolocation view
 Map layer
-Sattelite
+Satellite
 Hybrid
 Proxy tiles
 Proxy API
@@ -162,6 +162,6 @@ Try to close other apps or restart this one.
 Name
 Description
 Coords
-Operating mode
+Opening hours
 Website
 Phone
