@@ -14,9 +14,9 @@ import mahomaps.ui.UIElement;
 public class CacheFailedOverlay extends MapOverlay implements IButtonHandler {
 
 	public CacheFailedOverlay() {
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Caching failed!"),
-				new SimpleText("Please, check that memory is not full."), new ColumnsContainer(new UIElement[] {
-						new Button(MahoMapsApp.text[38], 0, this) }) });
+		content = new FillFlowContainer(
+				new UIElement[] { new SimpleText(MahoMapsApp.text[124]), new SimpleText(MahoMapsApp.text[125]),
+						new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[38], 0, this) }) });
 	}
 
 	public String GetId() {

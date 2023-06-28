@@ -1,5 +1,6 @@
 package mahomaps.route;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 
 public class AutoSegment extends RouteSegment {
@@ -45,11 +46,11 @@ public class AutoSegment extends RouteSegment {
 	}
 
 	public String GetType() {
-		return "На автомобиле";
+		return MahoMapsApp.text[126];
 	}
 
 	public String GetDescription() {
-		return descr + ", " + dist + " метров";
+		return descr + ", " + dist + "m";
 	}
 
 	public String GetAction() {

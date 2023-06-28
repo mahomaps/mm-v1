@@ -147,7 +147,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			tiles.Start(); // OOM
 			BringMap(); // jic
 		} catch (Throwable t) {
-			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem("Инициализация", t.toString()) });
+			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem(MahoMapsApp.text[122], t.toString()) });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -163,7 +163,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			canvas.run();
 		} catch (InterruptedException e) {
 		} catch (Throwable t) {
-			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem("Поток отрисовки", t.toString()) });
+			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem(MahoMapsApp.text[123], t.toString()) });
 			f.addCommand(exit);
 			f.setCommandListener(this);
 			BringSubScreen(f);
@@ -309,7 +309,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		text = splitFull(getStringFromJAR("/" + name + ".txt"), '\n');
 		if (text == null)
 			throw new RuntimeException("Lang is not loaded");
-		if (text.length != 122)
+		if (text.length != 167)
 			throw new RuntimeException("Lang is outdated");
 		for (int i = 0; i < text.length; i++) {
 			if (text[i].endsWith("\r")) {

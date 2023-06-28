@@ -186,6 +186,9 @@ public class Settings {
 		}
 	}
 
+	/**
+	 * Gets language string for use in API requests.
+	 */
 	public static String GetLangString() {
 		switch (apiLang) {
 		case 0:

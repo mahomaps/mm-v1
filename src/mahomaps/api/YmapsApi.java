@@ -46,11 +46,9 @@ public final class YmapsApi extends YmapsApiBase {
 		default:
 			throw new IllegalArgumentException();
 		}
-		String baseUrl = "https://api-maps.yandex.ru/services/route/2.0/?lang=";
-		String lang = new String(new char[] { baseUrl.charAt(29), baseUrl.charAt(38), '_',
-				Character.toUpperCase(baseUrl.charAt(29)), 'U' });
-		return baseUrl + lang + "&token=" + token + "&rll=" + a.lon + "%2C" + a.lat + "~" + b.lon + "%2C" + b.lat
-				+ "&rtm=dtr&results=1&apikey=" + key + typeS;
+		return "https://api-maps.yandex.ru/services/route/2.0/?lang=" + Settings.GetLangString() + "&token=" + token
+				+ "&rll=" + a.lon + "%2C" + a.lat + "~" + b.lon + "%2C" + b.lat + "&rtm=dtr&results=1&apikey=" + key
+				+ typeS;
 	}
 
 	public final JSONArray Search(String text, Geopoint around, double zone)
