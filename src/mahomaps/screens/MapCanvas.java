@@ -147,7 +147,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			int x = xo - trX * 256;
 			int xi = tx - trX;
 			while (x < w / 2) {
-				TileCache tile = tiles.getTile(new TileId(xi, yi, ms.zoom, Settings.map));
+				TileCache tile = tiles.GetTile(new TileId(xi, yi, ms.zoom, Settings.map));
 				if (tile != null)
 					tile.paint(g, x, y);
 				x += 256;

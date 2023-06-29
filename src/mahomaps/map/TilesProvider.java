@@ -566,7 +566,7 @@ public class TilesProvider implements Runnable {
 	 *         null</b> если координаты плитки не находятся в пределах карты
 	 *         (например, Y отрицательный).
 	 */
-	public TileCache getTile(TileId tileId) {
+	public TileCache GetTile(TileId tileId) {
 		if (!paintState)
 			throw new IllegalStateException("Paint was not performing now, can't get tile!");
 		if (Thread.currentThread() != accessTh)
