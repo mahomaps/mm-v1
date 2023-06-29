@@ -498,11 +498,7 @@ public class TilesProvider implements Runnable {
 	 * Выполняет операции, необходимые после очередной отрисовки.
 	 */
 	public void EndMapPaint(MapState ms) {
-		if (Thread.currentThread() != accessTh)
-			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
-		if (!paintState)
-			throw new IllegalStateException("Paint was not performed.");
-		paintState = false;
+		exitPaintState();
 
 		final int reqZoom = ms.zoom;
 
@@ -530,6 +526,36 @@ public class TilesProvider implements Runnable {
 
 		if (removed)
 			cacheGate.Reset();
+	}
+
+	public void EndMapPaintThenDiscardAll() {
+		exitPaintState();
+
+		synchronized (cache) {
+			for (int i = cache.size() - 1; i > -1; i--) {
+				TileCache t = (TileCache) cache.elementAt(i);
+				synchronized (t) {
+					switch (t.state) {
+					case TileCache.STATE_CACHE_LOADING:
+					case TileCache.STATE_SERVER_LOADING:
+						// we can't remove this tile
+						continue;
+					default:
+						t.state = TileCache.STATE_UNLOADED;
+						cache.removeElementAt(i);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private void exitPaintState() {
+		if (Thread.currentThread() != accessTh)
+			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
+		if (!paintState)
+			throw new IllegalStateException("Paint was not performed.");
+		paintState = false;
 	}
 
 	/**
