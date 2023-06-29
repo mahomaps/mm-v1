@@ -54,6 +54,7 @@ public class TilesProvider implements Runnable {
 
 	private Thread networkTh;
 	private Thread cacheTh;
+	private Thread accessTh;
 
 	public static final String[] tilesUrls = new String[] {
 			// scheme
@@ -61,16 +62,18 @@ public class TilesProvider implements Runnable {
 			// sat
 			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
 			// hybrid
-			"http://nnp.nnchan.ru/mergedtile.php?lang="
-	};
+			"http://nnp.nnchan.ru/mergedtile.php?lang=" };
 
-	public TilesProvider(String lang) {
+	public TilesProvider(String lang, Thread accesser) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
 		this.lang = lang;
+		accessTh = accesser;
 	}
 
 	public void Start() {
+		if (accessTh == null)
+			throw new IllegalStateException("Tiles provider must be bound to a thread!");
 		if (networkTh != null || cacheTh != null)
 			throw new IllegalStateException("Can't start already running tiles provider!");
 		networkTh = new Thread(this, "Tiles downloader");
@@ -466,7 +469,7 @@ public class TilesProvider implements Runnable {
 	 * Выполняет операции, необходимые перед очередной отрисовкой.
 	 */
 	public void BeginMapPaint() {
-		if (Thread.currentThread() != MahoMapsApp.thread)
+		if (Thread.currentThread() != accessTh)
 			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
 		if (paintState)
 			throw new IllegalStateException("Paint is already in progress.");
@@ -483,7 +486,7 @@ public class TilesProvider implements Runnable {
 	 * Выполняет операции, необходимые после очередной отрисовки.
 	 */
 	public void EndMapPaint(MapState ms) {
-		if (Thread.currentThread() != MahoMapsApp.thread)
+		if (Thread.currentThread() != accessTh)
 			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
 		if (!paintState)
 			throw new IllegalStateException("Paint was not performed.");
@@ -528,7 +531,7 @@ public class TilesProvider implements Runnable {
 	public TileCache getTile(TileId tileId) {
 		if (!paintState)
 			throw new IllegalStateException("Paint was not performing now, can't get tile!");
-		if (Thread.currentThread() != MahoMapsApp.thread)
+		if (Thread.currentThread() != accessTh)
 			throw new IllegalThreadStateException(INVALID_THREAD_ERR);
 
 		int max = 0x1 << tileId.zoom;
@@ -573,8 +576,7 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
-				+ "&z=" + tileId.zoom;
+		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y + "&z=" + tileId.zoom;
 		if (Settings.proxyTiles && url.startsWith("https")) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}

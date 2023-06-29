@@ -120,7 +120,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 			// just in case
 		}
 		try {
-			tiles = new TilesProvider(Settings.GetLangString()); // wrong lang in settings
+			tiles = new TilesProvider(Settings.GetLangString(), thread); // wrong lang in settings
 		} catch (RuntimeException e) {
 			Form f = new Form(MahoMapsApp.text[88],
 					new Item[] { new StringItem(MahoMapsApp.text[91], MahoMapsApp.text[92]) });
