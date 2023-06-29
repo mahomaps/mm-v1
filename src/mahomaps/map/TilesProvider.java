@@ -82,12 +82,24 @@ public class TilesProvider implements Runnable {
 		cacheTh.start();
 	}
 
-	public void Stop() {
-		if (networkTh != null)
+	public void Stop(boolean blocking) {
+		if (networkTh != null) {
 			networkTh.interrupt();
+			try {
+				if (blocking)
+					networkTh.join();
+			} catch (InterruptedException e) {
+			}
+		}
 		networkTh = null;
-		if (cacheTh != null)
+		if (cacheTh != null) {
 			cacheTh.interrupt();
+			try {
+				if (blocking)
+					cacheTh.join();
+			} catch (InterruptedException e) {
+			}
+		}
 		cacheTh = null;
 	}
 

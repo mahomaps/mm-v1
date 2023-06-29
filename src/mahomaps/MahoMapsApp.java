@@ -104,7 +104,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		if (thread != null)
 			thread.interrupt();
 		if (tiles != null)
-			tiles.Stop();
+			tiles.Stop(false);
 		if (canvas != null)
 			canvas.dispose();
 	}
