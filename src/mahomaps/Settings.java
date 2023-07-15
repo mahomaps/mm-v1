@@ -202,6 +202,9 @@ public class Settings {
 		}
 	}
 
+	/**
+	 * Gets language string for localisation files.
+	 */
 	public static String GetUiLangFile() {
 		switch (uiLang) {
 		case 0:
@@ -211,6 +214,8 @@ public class Settings {
 			return new String(new char[] { 'e', 'n' });
 		case 2:
 			return new String(new char[] { 'f', 'r' });
+		case 3:
+			return new String(new char[] { 'a', 'r' });
 		}
 	}
 }
