@@ -68,3 +68,16 @@ Then install 32-bit JDK 1.6.0 and [WTK 2.5.2](https://www.oracle.com/java/techno
 ## Contact us
 
 [Telegram chat](https://t.me/nnmidletschat)
+
+## Adding your own localisation
+
+- Create copy of `en.txt`/`ru.txt`, name it with your language's code and translate all strings.
+- Keep in mind that original language of app was russian (russian is original. Not english).
+- You can test how it will look like with replacing english file, for example.
+- To make it actually work as one more language, you need to make 3 changes in app's code:
+
+1. Go to `Settings.java`. In `GetUiLangFile()` add one more case (with next number) to the switch. Make it return name of your file without `.txt`.
+2. Startup selection: `MahoMapsApp.java`, `processFirstLaunch()`. Add your language to `lang` choice group. Name it in english (`Russian`, not `Русский`).
+3. Settings menu: `SettingsScreen.java`, `ChoiceGroup uiLang`. Add your language. Name it as is (`Русский`, not `Russian`).
+
+CI on your pull request will attempt to compile the project. If you failed somewhere, it will show that.

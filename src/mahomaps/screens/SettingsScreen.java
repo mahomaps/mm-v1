@@ -38,7 +38,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup lang = new ChoiceGroup(MahoMapsApp.text[58], Choice.POPUP,
 			new String[] { MahoMapsApp.text[59], MahoMapsApp.text[60], MahoMapsApp.text[61] }, null);
 	private ChoiceGroup uiLang = new ChoiceGroup(MahoMapsApp.text[62], Choice.POPUP,
-			new String[] { "Русский", "English", "Français" }, null);
+			new String[] { "Русский", "English", "Français", "العربية" }, null);
 	private ChoiceGroup bbNetwork = new ChoiceGroup(MahoMapsApp.text[63], Choice.EXCLUSIVE,
 			new String[] { MahoMapsApp.text[64], "Wi-Fi" }, null);
 

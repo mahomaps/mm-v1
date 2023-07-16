@@ -88,7 +88,7 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 
 		// do not translate anything here
 		Form f = new Form("Setup");
-		lang = new ChoiceGroup("Language", Choice.EXCLUSIVE, new String[] { "Russian", "English", "French" }, null);
+		lang = new ChoiceGroup("Language", Choice.EXCLUSIVE, new String[] { "Russian", "English", "French", "Arabic" }, null);
 		bbNet = new ChoiceGroup("Network", Choice.EXCLUSIVE, new String[] { "Cellular", "Wi-Fi" }, null);
 		f.append(lang);
 		if (bb) {
