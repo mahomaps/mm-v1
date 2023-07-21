@@ -29,7 +29,7 @@ public class SettingsScreen extends Form implements CommandListener {
 	private ChoiceGroup download = new ChoiceGroup(MahoMapsApp.text[54], Choice.MULTIPLE,
 			new String[] { MahoMapsApp.text[17] }, null);
 	private ChoiceGroup map = new ChoiceGroup(MahoMapsApp.text[153], Choice.EXCLUSIVE,
-			new String[] { MahoMapsApp.text[55], MahoMapsApp.text[154], MahoMapsApp.text[155] }, null);
+			new String[] { MahoMapsApp.text[55],  MahoMapsApp.text[167], MahoMapsApp.text[154], MahoMapsApp.text[155] }, null);
 	private ChoiceGroup proxyUsage = new ChoiceGroup(MahoMapsApp.text[19], Choice.MULTIPLE,
 			new String[] { MahoMapsApp.text[156], MahoMapsApp.text[157], }, null);
 	private TextField proxyServer = new TextField(MahoMapsApp.text[158], "", 256, TextField.URL);
