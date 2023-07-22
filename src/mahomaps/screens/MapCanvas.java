@@ -462,10 +462,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					break handling;
 				case KEY_NUM0:
 					// layer toggle
-					Settings.map++;
-					if (Settings.map >= TilesProvider.tilesUrls.length)
-						Settings.map = 0;
-					Settings.Save();
+					MahoMapsApp.BringSubScreen(new MapLayerSelectionScreen());
 					break handling;
 				}
 			} else {
