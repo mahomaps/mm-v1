@@ -58,13 +58,12 @@ public class TilesProvider implements Runnable {
 	public static final String[] tilesUrls = new String[] {
 			// scheme light
 			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=",
-			// scheme dark
-			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&theme=dark&lang=",
 			// sat
 			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
 			// hybrid
-			"http://nnp.nnchan.ru/mergedtile.php?lang="
-	};
+			"http://nnp.nnchan.ru/mergedtile.php?lang=",
+			// scheme dark
+			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&theme=dark&lang=" };
 
 	public TilesProvider(String lang) {
 		if (lang == null)
