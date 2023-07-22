@@ -65,6 +65,18 @@ public class TilesProvider implements Runnable {
 			// scheme dark
 			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&theme=dark&lang=" };
 
+	public static final int[] layerNames = new int[] { 55, 154, 155, 167 };
+
+	public static final String[] GetLayerNames() {
+		if (layerNames.length != tilesUrls.length)
+			throw new IllegalStateException("Not all tiles have names!");
+		String[] s = new String[layerNames.length];
+		for (int i = 0; i < s.length; i++) {
+			s[i] = MahoMapsApp.text[layerNames[i]];
+		}
+		return s;
+	}
+
 	public TilesProvider(String lang) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
