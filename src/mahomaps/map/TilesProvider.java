@@ -56,13 +56,26 @@ public class TilesProvider implements Runnable {
 	private Thread cacheTh;
 
 	public static final String[] tilesUrls = new String[] {
-			// scheme
+			// scheme light
 			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=",
 			// sat
 			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
 			// hybrid
-			"http://nnp.nnchan.ru/mergedtile.php?lang="
-	};
+			"http://nnp.nnchan.ru/mergedtile.php?lang=",
+			// scheme dark
+			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&theme=dark&lang=" };
+
+	public static final int[] layerNames = new int[] { 55, 154, 155, 167 };
+
+	public static final String[] GetLayerNames() {
+		if (layerNames.length != tilesUrls.length)
+			throw new IllegalStateException("Not all tiles have names!");
+		String[] s = new String[layerNames.length];
+		for (int i = 0; i < s.length; i++) {
+			s[i] = MahoMapsApp.text[layerNames[i]];
+		}
+		return s;
+	}
 
 	public TilesProvider(String lang) {
 		if (lang == null)

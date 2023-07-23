@@ -1,5 +1,6 @@
 package mahomaps.api;
 
+import cc.nnproject.json.*;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -7,13 +8,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
-
-import cc.nnproject.json.*;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
+
+
 
 public abstract class YmapsApiBase {
 
