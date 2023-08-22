@@ -22,7 +22,7 @@ public class UpdateScreen extends Form implements ItemCommandListener, CommandLi
 
 		append(text);
 		if (url != null) {
-			StringItem b = new StringItem(null, MahoMapsApp.text[4], Item.BUTTON);
+			StringItem b = new StringItem(null, MahoMapsApp.text[168], Item.BUTTON);
 			b.setLayout(Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_BEFORE);
 			b.addCommand(MahoMapsApp.openLink);
 			b.setDefaultCommand(MahoMapsApp.openLink);

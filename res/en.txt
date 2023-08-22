@@ -166,3 +166,4 @@ Opening hours
 Website
 Phone
 Scheme, dark theme
+Update
