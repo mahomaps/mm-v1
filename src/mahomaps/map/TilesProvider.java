@@ -211,6 +211,15 @@ public class TilesProvider implements Runnable {
 		}
 	}
 
+	private final Image tryLoad(TileId id) {
+		if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
+			return tryLoadFromFS(id);
+		} else if (Settings.cacheMode == Settings.CACHE_RMS) {
+			return tryLoadFromRMS(id);
+		}
+		return null;
+	}
+
 	public void RunNetwork() {
 		try {
 			// цикл обработки
