@@ -26,6 +26,13 @@ public abstract class MapOverlay extends UIElement {
 	 */
 	public abstract boolean OnPointTap(Geopoint p);
 
+	/**
+	 * When true, close button will be hidden when possible and softkey/gesture will be used instead.
+	 */
+	public boolean CloseButtonImplicit() {
+		return true;
+	}
+
 	public UIComposite content;
 
 	public void Paint(Graphics g, int x, int y, int w, int h) {
