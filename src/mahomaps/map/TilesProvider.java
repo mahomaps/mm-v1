@@ -185,11 +185,18 @@ public class TilesProvider implements Runnable {
 						}
 					}
 
-					Image img = null;
-					if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
-						img = tryLoadFromFS(tc);
-					} else if (Settings.cacheMode == Settings.CACHE_RMS) {
-						img = tryLoadFromRMS(tc);
+					Image img = tryLoad(tc);
+
+					// if tile is not cached...
+					if (img == null) {
+						// but we can't download it...
+						if (!Settings.allowDownload) {
+							// and cache lookup actually was attempted...
+							if (Settings.cacheMode != Settings.CACHE_DISABLED) {
+								// let's try lower zooms and upscale them.
+								img = tryLoadFallback(tc);
+							}
+						}
 					}
 
 					synchronized (tc) {
