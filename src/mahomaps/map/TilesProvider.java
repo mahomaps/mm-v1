@@ -23,6 +23,7 @@ import mahomaps.Settings;
 import mahomaps.api.YmapsApiBase;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import tube42.lib.imagelib.ImageUtils;
 import mahomaps.overlays.CacheFailedOverlay;
 
 public class TilesProvider implements Runnable {
@@ -218,6 +219,36 @@ public class TilesProvider implements Runnable {
 			return tryLoadFromRMS(id);
 		}
 		return null;
+	}
+
+	private final Image tryLoadFallback(TileId id) {
+		final int map = id.map;
+		int zoom = id.zoom;
+		int downscale = 1;
+		int x = id.x;
+		int y = id.y;
+		int xoff = 0;
+		int yoff = 0;
+		while (true) {
+			zoom -= 1;
+			if (zoom == 0 || downscale >= 64)
+				return null;
+			downscale *= 2;
+			if (x % 2 == 1)
+				xoff += (256 / downscale);
+			if (y % 2 == 1)
+				yoff += (256 / downscale);
+			x /= 2;
+			y /= 2;
+			Image raw = tryLoad(new TileId(x, y, zoom, map));
+			if (raw != null) {
+				int size = (256 / downscale);
+				Image cropped = ImageUtils.crop(raw, xoff, yoff, xoff + size, yoff + size);
+				raw = null; // to free heap
+				return ImageUtils.resize(cropped, 256, 256, true, false);
+			}
+		}
+
 	}
 
 	public void RunNetwork() {
