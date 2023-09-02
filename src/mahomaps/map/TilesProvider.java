@@ -340,6 +340,20 @@ public class TilesProvider implements Runnable {
 					}
 
 					Image img = Settings.allowDownload ? download(tc) : null;
+					boolean fallbackUsed = false;
+
+					// if nothing loaded
+					if (img == null) {
+						// if the cache available...
+						if (Settings.cacheMode != Settings.CACHE_DISABLED) {
+							// let's try lower zooms and upscale them.
+							// If download is forbidden, this happened in cache thread and this path won't
+							// run at all.
+							img = tryLoadFallback(tc);
+							if (img != null)
+								fallbackUsed = true;
+						}
+					}
 
 					boolean waitAfterError = false;
 
@@ -353,7 +367,13 @@ public class TilesProvider implements Runnable {
 							}
 						} else {
 							tc.img = img;
-							tc.state = TileCache.STATE_READY;
+							if (fallbackUsed) {
+								// image is present, but it's bad. We still want to download a proper one.
+								tc.state = TileCache.STATE_ERROR;
+								waitAfterError = true;
+							} else {
+								tc.state = TileCache.STATE_READY;
+							}
 							MahoMapsApp.GetCanvas().requestRepaint();
 						}
 					}
