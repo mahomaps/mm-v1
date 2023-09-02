@@ -235,26 +235,31 @@ public class TilesProvider implements Runnable {
 	private final Image tryLoadFallback(TileId id) {
 		final int map = id.map;
 		int zoom = id.zoom;
-		int downscale = 1;
+		int downscale = 1; // how small is required tile comparing to loaded one
 		int x = id.x;
 		int y = id.y;
-		int xoff = 0;
+		int xoff = 0; // in tile sizes
 		int yoff = 0;
 		while (true) {
 			zoom -= 1;
 			if (zoom < 0 || downscale >= 64)
 				return null;
-			downscale *= 2;
 			if (x % 2 == 1)
-				xoff += (256 / downscale);
+				xoff += downscale;
 			if (y % 2 == 1)
-				yoff += (256 / downscale);
+				yoff += downscale;
+			// at downscale of 2 above ops require 1, at 4 - 2 and so on
+			downscale *= 2;
 			x /= 2;
 			y /= 2;
 			Image raw = tryLoad(new TileId(x, y, zoom, map));
 			if (raw != null) {
-				int size = (256 / downscale);
-				Image cropped = ImageUtils.crop(raw, xoff, yoff, xoff + size, yoff + size);
+				int size = (256 / downscale); // of tile
+				// System.out.println("downscale: " + downscale + ", size: " + size);
+				// System.out.println("x: " + xoff + ", y: " + yoff);
+				int xoffp = xoff * size; // in pixels
+				int yoffp = yoff * size;
+				Image cropped = ImageUtils.crop(raw, xoffp, yoffp, xoffp + size, yoffp + size);
 				raw = null; // to free heap
 				return ImageUtils.resize(cropped, 256, 256, true, false);
 			}
