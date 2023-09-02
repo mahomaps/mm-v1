@@ -26,6 +26,8 @@ public class CacheManager extends Form implements CommandListener, ItemCommandLi
 		setCommandListener(this);
 		append(new StringItem(MahoMapsApp.text[71], getCacheType()));
 		append(new StringItem(MahoMapsApp.text[72], "" + tiles.GetCachedTilesCount()));
+		if (Settings.cacheMode == Settings.CACHE_FS)
+			append(new StringItem(MahoMapsApp.text[71], tiles.GetLocalPath()));
 		delAll.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		delAll.setDefaultCommand(sel);
 		delAll.setItemCommandListener(this);

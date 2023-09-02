@@ -78,6 +78,10 @@ public class TilesProvider implements Runnable {
 		return s;
 	}
 
+	public String GetLocalPath() {
+		return localPath;
+	}
+
 	public TilesProvider(String lang) {
 		if (lang == null)
 			throw new NullPointerException("Language must be non-null!");
