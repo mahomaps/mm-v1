@@ -242,7 +242,7 @@ public class TilesProvider implements Runnable {
 		int yoff = 0;
 		while (true) {
 			zoom -= 1;
-			if (zoom == 0 || downscale >= 64)
+			if (zoom < 0 || downscale >= 64)
 				return null;
 			downscale *= 2;
 			if (x % 2 == 1)
