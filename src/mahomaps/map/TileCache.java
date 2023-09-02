@@ -38,8 +38,17 @@ public class TileCache extends TileId {
 				throw new NullPointerException("Corrupted tile state!");
 			g.setColor(0, 0, 255);
 		} else {
+			int ax = tx + 128;
+			int ay = ty + 128 - (vo / 2);
+
+			g.setGrayScale(255);
+			g.drawString(GetState(), ax + 1, ay + 1, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(GetState(), ax - 1, ay + 1, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(GetState(), ax + 1, ay - 1, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(GetState(), ax - 1, ay - 1, Graphics.TOP | Graphics.HCENTER);
+
 			g.setGrayScale(0);
-			g.drawString(GetState(), tx + 128, ty + 128 - vo, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(GetState(), ax, ay, Graphics.TOP | Graphics.HCENTER);
 		}
 		if (Settings.drawDebugInfo) {
 			g.drawRect(tx, ty, 255, 255);
