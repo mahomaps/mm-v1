@@ -642,8 +642,7 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
-				+ "&z=" + tileId.zoom;
+		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y + "&z=" + tileId.zoom;
 		if (Settings.proxyTiles && url.startsWith("https")) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
