@@ -465,7 +465,6 @@ public class TilesProvider implements Runnable {
 			} catch (RuntimeException e1) {
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 		} catch (OutOfMemoryError e) {
 		} finally {
 			if (hc != null) {
