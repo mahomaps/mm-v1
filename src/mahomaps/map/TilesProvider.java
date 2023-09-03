@@ -383,7 +383,10 @@ public class TilesProvider implements Runnable {
 				}
 
 				if (idleCount != cache.size() || queueChanged)
+				{
+					Thread.yield();
 					continue;
+				}
 				downloadGate.Pass();
 			}
 		} catch (InterruptedException e) {
