@@ -214,9 +214,15 @@ public class TilesProvider implements Runnable {
 					synchronized (tc) {
 						if (img != null) {
 							tc.img = img;
+
 							// readCachedBeforeDownloading is still require server lookup
-							tc.state = tryDownloadAnyway ? TileCache.STATE_SERVER_PENDING : TileCache.STATE_READY;
-							MahoMapsApp.GetCanvas().requestRepaint();
+							if (tryDownloadAnyway) {
+								tc.state = TileCache.STATE_SERVER_PENDING;
+								downloadGate.Reset();
+							} else {
+								tc.state = TileCache.STATE_READY;
+								MahoMapsApp.GetCanvas().requestRepaint();
+							}
 						} else if (Settings.allowDownload) {
 							tc.state = TileCache.STATE_SERVER_PENDING;
 							downloadGate.Reset();
