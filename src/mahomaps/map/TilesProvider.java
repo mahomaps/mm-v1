@@ -190,15 +190,23 @@ public class TilesProvider implements Runnable {
 					}
 
 					Image img = tryLoad(tc);
+					boolean tryDownloadAnyway = false;
 
 					// if tile is not cached...
 					if (img == null) {
-						// but we can't download it...
-						if (!Settings.allowDownload) {
-							// and cache lookup actually was attempted...
-							if (Settings.cacheMode != Settings.CACHE_DISABLED) {
+						// and cache lookup actually was attempted...
+						if (Settings.cacheMode != Settings.CACHE_DISABLED) {
+							// but we can't download it
+							if (!Settings.allowDownload) {
 								// let's try lower zooms and upscale them.
 								img = tryLoadFallback(tc);
+							}
+							// or scaling explicitly allowed before downloading
+							else if (Settings.readCachedBeforeDownloading) {
+								// let's try lower zooms and upscale them.
+								img = tryLoadFallback(tc);
+								// but still attempt to download
+								tryDownloadAnyway = true;
 							}
 						}
 					}
@@ -206,7 +214,8 @@ public class TilesProvider implements Runnable {
 					synchronized (tc) {
 						if (img != null) {
 							tc.img = img;
-							tc.state = TileCache.STATE_READY;
+							// readCachedBeforeDownloading is still require server lookup
+							tc.state = tryDownloadAnyway ? TileCache.STATE_SERVER_PENDING : TileCache.STATE_READY;
 							MahoMapsApp.GetCanvas().requestRepaint();
 						} else if (Settings.allowDownload) {
 							tc.state = TileCache.STATE_SERVER_PENDING;
@@ -382,8 +391,7 @@ public class TilesProvider implements Runnable {
 						Thread.sleep(4000);
 				}
 
-				if (idleCount != cache.size() || queueChanged)
-				{
+				if (idleCount != cache.size() || queueChanged) {
 					Thread.yield();
 					continue;
 				}
