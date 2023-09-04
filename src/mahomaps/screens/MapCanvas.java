@@ -76,35 +76,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 							return;
 						}
 					}
-					for (int i = 0; i < 4; i++) {
-						if ((keysState & (1 << i)) != 0) {
-							int val;
-							if (repeatCount < 25) {
-								val = 2 * repeatCount;
-							} else {
-								val = 50;
-							}
-							switch (i) {
-							case 0:
-								state.yOffset += val;
-								break;
-							case 1:
-								state.yOffset -= val;
-								break;
-							case 2:
-								state.xOffset += val;
-								break;
-							case 3:
-								state.xOffset -= val;
-								break;
-							default:
-								return;
-							}
-							state.ClampOffset();
-							repeatCount++;
-							requestRepaint();
-						}
-					}
+					int val = Math.max(50, repeatCount * 2);
+					if ((keysState & 1) != 0)
+						state.yOffset += val;
+					if ((keysState & 2) != 0)
+						state.yOffset -= val;
+					if ((keysState & 4) != 0)
+						state.xOffset += val;
+					if ((keysState & 8) != 0)
+						state.xOffset -= val;
+					state.ClampOffset();
+					repeatCount++;
+					requestRepaint();
 				}
 			} catch (InterruptedException e) {
 			}
