@@ -60,8 +60,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private int lastOverlaysW;
 	public final FpsLimiter repaintGate = new FpsLimiter();
 	private Graphics cachedGraphics;
-
-	public Gate keysGate = new Gate(true);
 	/*
 	 * up down left right (1<< 0 1 2 3)
 	 */
@@ -70,27 +68,13 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private final Runnable repeatAction = new Runnable() {
 		public void run() {
 			try {
+				Thread.sleep(100); // wait a little before repeats
 				while (true) {
-					keysGate.Pass();
-					try {
-						Thread.sleep(50);
-						boolean holding = true;
-						boolean holded = false;
-						while (holding) {
-							holding = false;
-							for (int i = 0; i < 4; i++) {
-								if ((keysState & (1 << i)) != 0) {
-									_keyRepeated(-1 - i);
-									holding = true;
-								}
-							}
-							if (!holded && holding) {
-								holded = true;
-								Thread.sleep(200);
-							}
+					Thread.sleep(33); // interruption will throw here stopping the thread
+					for (int i = 0; i < 4; i++) {
+						if ((keysState & (1 << i)) != 0) {
+							_keyRepeated(-1 - i);
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
 				}
 			} catch (InterruptedException e) {
@@ -462,21 +446,25 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					keysState |= 1 << 0;
 					state.yOffset += 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				case DOWN:
 					keysState |= 1 << 1;
 					state.yOffset -= 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				case LEFT:
 					keysState |= 1 << 2;
 					state.xOffset += 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				case RIGHT:
 					keysState |= 1 << 3;
 					state.xOffset -= 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				}
 				switch (k) {
@@ -512,8 +500,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 		}
 		requestRepaint();
-
-		keysGate.Reset();
 	}
 
 	protected void keyRepeated(int k) {
@@ -558,15 +544,19 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		switch (ga) {
 		case UP:
 			keysState &= ~(1 << 0);
+			tryStopRepeatThread(false);
 			break;
 		case DOWN:
 			keysState &= ~(1 << 1);
+			tryStopRepeatThread(false);
 			break;
 		case LEFT:
 			keysState &= ~(1 << 2);
+			tryStopRepeatThread(false);
 			break;
 		case RIGHT:
 			keysState &= ~(1 << 3);
+			tryStopRepeatThread(false);
 			break;
 		}
 		repeatCount = 0;
@@ -678,6 +668,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	protected void hideNotify() {
 		hidden = true;
+		tryStopRepeatThread(true);
 	}
 
 	protected void showNotify() {
