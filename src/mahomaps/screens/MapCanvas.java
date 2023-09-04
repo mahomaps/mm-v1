@@ -337,7 +337,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void run() throws InterruptedException {
-		tryStartRepeatThread();
 		while (true) {
 			final RouteTracker rt = MahoMapsApp.route;
 			if (MahoMapsApp.paused || hidden) {
