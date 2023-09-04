@@ -340,8 +340,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void run() throws InterruptedException {
-		repeatThread = new Thread(repeatAction, "Key holder thread");
-		repeatThread.start();
+		tryStartRepeatThread();
 		while (true) {
 			final RouteTracker rt = MahoMapsApp.route;
 			if (MahoMapsApp.paused || hidden) {
@@ -516,7 +515,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		keysGate.Reset();
 	}
-	
+
 	protected void keyRepeated(int k) {
 	}
 
@@ -686,5 +685,23 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		hidden = false;
 		super.showNotify();
 		requestRepaint();
+	}
+
+	private final synchronized void tryStartRepeatThread() {
+		if (keysState != 0 && repeatThread == null) {
+			Thread t = new Thread(repeatAction, "Key repeat");
+			t.start();
+			repeatThread = t;
+		}
+	}
+
+	private final synchronized void tryStopRepeatThread(boolean force) {
+		if (keysState == 0 || force) {
+			Thread t = repeatThread;
+			if (t != null) {
+				t.interrupt();
+				repeatThread = null;
+			}
+		}
 	}
 }
