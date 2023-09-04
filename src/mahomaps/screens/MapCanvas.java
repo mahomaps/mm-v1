@@ -426,6 +426,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			if (mapFocused) {
 				switch (ga) {
 				case FIRE:
+					tryStopRepeatThread(true);
 					Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
 					if (s.IsValid() && MahoMapsApp.lastSearch == null) {
 						// немного костылей:
