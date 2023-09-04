@@ -62,7 +62,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private Graphics cachedGraphics;
 
 	public Gate keysGate = new Gate(true);
-	private boolean[] keysState = new boolean[4];
+	/*
+	 * up down left right (1<< 0 1 2 3)
+	 */
+	private int keysState = 0;
 	private Thread repeatThread;
 	private final Runnable repeatAction = new Runnable() {
 		public void run() {
@@ -75,8 +78,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 						boolean holded = false;
 						while (holding) {
 							holding = false;
-							for (int i = 0; i < keysState.length; i++) {
-								if (keysState[i]) {
+							for (int i = 0; i < 4; i++) {
+								if ((keysState & (1 << i)) != 0) {
 									_keyRepeated(-1 - i);
 									holding = true;
 								}
@@ -457,22 +460,22 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					}
 					break handling;
 				case UP:
-					keysState[0] = true;
+					keysState |= 1 << 0;
 					state.yOffset += 10;
 					state.ClampOffset();
 					break handling;
 				case DOWN:
-					keysState[1] = true;
+					keysState |= 1 << 1;
 					state.yOffset -= 10;
 					state.ClampOffset();
 					break handling;
 				case LEFT:
-					keysState[2] = true;
+					keysState |= 1 << 2;
 					state.xOffset += 10;
 					state.ClampOffset();
 					break handling;
 				case RIGHT:
-					keysState[3] = true;
+					keysState |= 1 << 3;
 					state.xOffset -= 10;
 					state.ClampOffset();
 					break handling;
@@ -553,18 +556,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			ga = getGameAction(k);
 		} catch (IllegalArgumentException e) {
 		}
-		switch(ga) {
+		switch (ga) {
 		case UP:
-			keysState[0] = false;
+			keysState &= ~(1 << 0);
 			break;
 		case DOWN:
-			keysState[1] = false;
+			keysState &= ~(1 << 1);
 			break;
 		case LEFT:
-			keysState[2] = false;
+			keysState &= ~(1 << 2);
 			break;
 		case RIGHT:
-			keysState[3] = false;
+			keysState &= ~(1 << 3);
 			break;
 		}
 		repeatCount = 0;
