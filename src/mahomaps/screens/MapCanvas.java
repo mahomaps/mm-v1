@@ -10,7 +10,6 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
 import mahomaps.FpsLimiter;
-import mahomaps.Gate;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.GeoUpdateThread;
@@ -79,7 +78,31 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					}
 					for (int i = 0; i < 4; i++) {
 						if ((keysState & (1 << i)) != 0) {
-							_keyRepeated(-1 - i);
+							int val;
+							if (repeatCount < 25) {
+								val = 2 * repeatCount;
+							} else {
+								val = 50;
+							}
+							switch (i) {
+							case 0:
+								state.yOffset += val;
+								break;
+							case 1:
+								state.yOffset -= val;
+								break;
+							case 2:
+								state.xOffset += val;
+								break;
+							case 3:
+								state.xOffset -= val;
+								break;
+							default:
+								return;
+							}
+							state.ClampOffset();
+							repeatCount++;
+							requestRepaint();
 						}
 					}
 				}
@@ -507,37 +530,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				}
 			}
 		}
-		requestRepaint();
-	}
-
-	protected void keyRepeated(int k) {
-	}
-
-	protected void _keyRepeated(int k) {
-		int val;
-		if (repeatCount < 25) {
-			val = 2 * repeatCount;
-		} else {
-			val = 50;
-		}
-		switch (k) {
-		case -1:
-			state.yOffset += val;
-			break;
-		case -2:
-			state.yOffset -= val;
-			break;
-		case -3:
-			state.xOffset += val;
-			break;
-		case -4:
-			state.xOffset -= val;
-			break;
-		default:
-			return;
-		}
-		state.ClampOffset();
-		repeatCount++;
 		requestRepaint();
 	}
 
