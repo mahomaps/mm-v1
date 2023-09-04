@@ -63,6 +63,37 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	public Gate keysGate = new Gate(true);
 	private boolean[] keysState = new boolean[4];
+	private Thread repeatThread;
+	private final Runnable repeatAction = new Runnable() {
+		public void run() {
+			try {
+				while (true) {
+					keysGate.Pass();
+					try {
+						Thread.sleep(50);
+						boolean holding = true;
+						boolean holded = false;
+						while (holding) {
+							holding = false;
+							for (int i = 0; i < keysState.length; i++) {
+								if (keysState[i]) {
+									_keyRepeated(-1 - i);
+									holding = true;
+								}
+							}
+							if (!holded && holding) {
+								holded = true;
+								Thread.sleep(200);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	};
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -306,36 +337,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	public void run() throws InterruptedException {
-		new Thread("Key holder thread") {
-			public void run() {
-				try {
-					while (true) {
-						keysGate.Pass();
-						try {
-							Thread.sleep(50);
-							boolean holding = true;
-							boolean holded = false;
-							while (holding) {
-								holding = false;
-								for (int i = 0; i < keysState.length; i++) {
-									if (keysState[i]) {
-										_keyRepeated(-1 - i);
-										holding = true;
-									}
-								}
-								if(!holded && holding) {
-									holded = true;
-									Thread.sleep(200);
-								}
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				} catch (InterruptedException e) {
-				}
-			}
-		}.start();
+		repeatThread = new Thread(repeatAction, "Key holder thread");
+		repeatThread.start();
 		while (true) {
 			final RouteTracker rt = MahoMapsApp.route;
 			if (MahoMapsApp.paused || hidden) {
