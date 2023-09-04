@@ -58,6 +58,40 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private int lastOverlaysW;
 	public final FpsLimiter repaintGate = new FpsLimiter();
 	private Graphics cachedGraphics;
+	/*
+	 * up down left right (1<< 0 1 2 3)
+	 */
+	private int keysState = 0;
+	private Thread repeatThread;
+	private final Runnable repeatAction = new Runnable() {
+		public void run() {
+			try {
+				Thread.sleep(200); // wait a little before repeats
+				while (true) {
+					Thread.sleep(16); // interruption will throw here stopping the thread
+					if (!mapFocused) {
+						synchronized (repeatAction) {
+							repeatThread = null;
+							return;
+						}
+					}
+					int val = Math.min(20, repeatCount / 3);
+					if ((keysState & 1) != 0)
+						state.yOffset += val;
+					if ((keysState & 2) != 0)
+						state.yOffset -= val;
+					if ((keysState & 4) != 0)
+						state.xOffset += val;
+					if ((keysState & 8) != 0)
+						state.xOffset -= val;
+					state.ClampOffset();
+					repeatCount++;
+					requestRepaint();
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	};
 
 	public MapCanvas(TilesProvider tiles) {
 		this.tiles = tiles;
@@ -383,6 +417,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			return;
 		}
 		if (k == -7 || k == -22) {
+			tryStopRepeatThread(true);
 			if (mapFocused) {
 				if (!UIElement.IsQueueEmpty()) {
 					mapFocused = false;
@@ -404,6 +439,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			if (mapFocused) {
 				switch (ga) {
 				case FIRE:
+					tryStopRepeatThread(true);
 					Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
 					if (s.IsValid() && MahoMapsApp.lastSearch == null) {
 						// немного костылей:
@@ -422,20 +458,28 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					}
 					break handling;
 				case UP:
+					keysState |= 1 << 0;
 					state.yOffset += 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				case DOWN:
+					keysState |= 1 << 1;
 					state.yOffset -= 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				case LEFT:
+					keysState |= 1 << 2;
 					state.xOffset += 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				case RIGHT:
+					keysState |= 1 << 3;
 					state.xOffset -= 10;
 					state.ClampOffset();
+					tryStartRepeatThread();
 					break handling;
 				}
 				switch (k) {
@@ -484,48 +528,30 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		requestRepaint();
 	}
 
-	protected void keyRepeated(int k) {
-		// "home" button
-		if (k == -12)
-			return;
-
-		UIElement.touchInput = false;
+	protected void keyReleased(int k) {
 		int ga = 0;
 		try {
 			ga = getGameAction(k);
-		} catch (IllegalArgumentException e) { // j2l moment
+		} catch (IllegalArgumentException e) {
 		}
-		if (mapFocused) {
-			int val;
-			if (repeatCount < 25) {
-				val = 2 * repeatCount;
-			} else {
-				val = 50;
-			}
-			switch (ga) {
-			case UP:
-				state.yOffset += val;
-				break;
-			case DOWN:
-				state.yOffset -= val;
-				break;
-			case LEFT:
-				state.xOffset += val;
-				break;
-			case RIGHT:
-				state.xOffset -= val;
-				break;
-			default:
-				return;
-			}
-			state.ClampOffset();
-			repeatCount++;
-			requestRepaint();
+		switch (ga) {
+		case UP:
+			keysState &= ~(1 << 0);
+			tryStopRepeatThread(false);
+			break;
+		case DOWN:
+			keysState &= ~(1 << 1);
+			tryStopRepeatThread(false);
+			break;
+		case LEFT:
+			keysState &= ~(1 << 2);
+			tryStopRepeatThread(false);
+			break;
+		case RIGHT:
+			keysState &= ~(1 << 3);
+			tryStopRepeatThread(false);
+			break;
 		}
-	}
-
-	protected void keyReleased(int k) {
-		repeatCount = 0;
 		requestRepaint();
 	}
 
@@ -635,6 +661,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	protected void hideNotify() {
 		hidden = true;
+		tryStopRepeatThread(true);
 	}
 
 	protected void showNotify() {
@@ -642,5 +669,29 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		hidden = false;
 		super.showNotify();
 		requestRepaint();
+	}
+
+	private final void tryStartRepeatThread() {
+		synchronized (repeatAction) {
+			if (keysState != 0 && repeatThread == null) {
+				Thread t = new Thread(repeatAction, "Key repeat");
+				t.setPriority(Thread.MAX_PRIORITY);
+				repeatCount = 0;
+				t.start();
+				repeatThread = t;
+			}
+		}
+	}
+
+	private final void tryStopRepeatThread(boolean force) {
+		synchronized (repeatAction) {
+			if (keysState == 0 || force) {
+				Thread t = repeatThread;
+				if (t != null) {
+					t.interrupt();
+					repeatThread = null;
+				}
+			}
+		}
 	}
 }
