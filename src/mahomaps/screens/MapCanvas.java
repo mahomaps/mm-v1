@@ -71,6 +71,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				Thread.sleep(100); // wait a little before repeats
 				while (true) {
 					Thread.sleep(33); // interruption will throw here stopping the thread
+					if (!mapFocused) {
+						synchronized (repeatAction) {
+							repeatThread = null;
+							return;
+						}
+					}
 					for (int i = 0; i < 4; i++) {
 						if ((keysState & (1 << i)) != 0) {
 							_keyRepeated(-1 - i);
@@ -508,33 +514,31 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void _keyRepeated(int k) {
-		if (mapFocused) {
-			int val;
-			if (repeatCount < 25) {
-				val = 2 * repeatCount;
-			} else {
-				val = 50;
-			}
-			switch (k) {
-			case -1:
-				state.yOffset += val;
-				break;
-			case -2:
-				state.yOffset -= val;
-				break;
-			case -3:
-				state.xOffset += val;
-				break;
-			case -4:
-				state.xOffset -= val;
-				break;
-			default:
-				return;
-			}
-			state.ClampOffset();
-			repeatCount++;
-			requestRepaint();
+		int val;
+		if (repeatCount < 25) {
+			val = 2 * repeatCount;
+		} else {
+			val = 50;
 		}
+		switch (k) {
+		case -1:
+			state.yOffset += val;
+			break;
+		case -2:
+			state.yOffset -= val;
+			break;
+		case -3:
+			state.xOffset += val;
+			break;
+		case -4:
+			state.xOffset -= val;
+			break;
+		default:
+			return;
+		}
+		state.ClampOffset();
+		repeatCount++;
+		requestRepaint();
 	}
 
 	protected void keyReleased(int k) {
@@ -680,20 +684,24 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		requestRepaint();
 	}
 
-	private final synchronized void tryStartRepeatThread() {
-		if (keysState != 0 && repeatThread == null) {
-			Thread t = new Thread(repeatAction, "Key repeat");
-			t.start();
-			repeatThread = t;
+	private final void tryStartRepeatThread() {
+		synchronized (repeatAction) {
+			if (keysState != 0 && repeatThread == null) {
+				Thread t = new Thread(repeatAction, "Key repeat");
+				t.start();
+				repeatThread = t;
+			}
 		}
 	}
 
-	private final synchronized void tryStopRepeatThread(boolean force) {
-		if (keysState == 0 || force) {
-			Thread t = repeatThread;
-			if (t != null) {
-				t.interrupt();
-				repeatThread = null;
+	private final void tryStopRepeatThread(boolean force) {
+		synchronized (repeatAction) {
+			if (keysState == 0 || force) {
+				Thread t = repeatThread;
+				if (t != null) {
+					t.interrupt();
+					repeatThread = null;
+				}
 			}
 		}
 	}
