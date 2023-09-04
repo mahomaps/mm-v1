@@ -66,16 +66,16 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	private final Runnable repeatAction = new Runnable() {
 		public void run() {
 			try {
-				Thread.sleep(100); // wait a little before repeats
+				Thread.sleep(200); // wait a little before repeats
 				while (true) {
-					Thread.sleep(33); // interruption will throw here stopping the thread
+					Thread.sleep(16); // interruption will throw here stopping the thread
 					if (!mapFocused) {
 						synchronized (repeatAction) {
 							repeatThread = null;
 							return;
 						}
 					}
-					int val = Math.max(50, repeatCount * 2);
+					int val = Math.min(20, repeatCount / 3);
 					if ((keysState & 1) != 0)
 						state.yOffset += val;
 					if ((keysState & 2) != 0)
@@ -553,7 +553,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			tryStopRepeatThread(false);
 			break;
 		}
-		repeatCount = 0;
 		requestRepaint();
 	}
 
@@ -677,6 +676,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		synchronized (repeatAction) {
 			if (keysState != 0 && repeatThread == null) {
 				Thread t = new Thread(repeatAction, "Key repeat");
+				repeatCount = 0;
 				t.start();
 				repeatThread = t;
 			}
