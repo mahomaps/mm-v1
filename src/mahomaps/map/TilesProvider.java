@@ -23,6 +23,7 @@ import mahomaps.Settings;
 import mahomaps.api.YmapsApiBase;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import tube42.lib.imagelib.ImageUtils;
 import mahomaps.overlays.CacheFailedOverlay;
 
 public class TilesProvider implements Runnable {
@@ -75,6 +76,10 @@ public class TilesProvider implements Runnable {
 			s[i] = MahoMapsApp.text[layerNames[i]];
 		}
 		return s;
+	}
+
+	public String GetLocalPath() {
+		return localPath;
 	}
 
 	public TilesProvider(String lang) {
@@ -184,18 +189,40 @@ public class TilesProvider implements Runnable {
 						}
 					}
 
-					Image img = null;
-					if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
-						img = tryLoadFromFS(tc);
-					} else if (Settings.cacheMode == Settings.CACHE_RMS) {
-						img = tryLoadFromRMS(tc);
+					Image img = tryLoad(tc);
+					boolean tryDownloadAnyway = false;
+
+					// if tile is not cached...
+					if (img == null) {
+						// and cache lookup actually was attempted...
+						if (Settings.cacheMode != Settings.CACHE_DISABLED) {
+							// but we can't download it
+							if (!Settings.allowDownload) {
+								// let's try lower zooms and upscale them.
+								img = tryLoadFallback(tc);
+							}
+							// or scaling explicitly allowed before downloading
+							else if (Settings.readCachedBeforeDownloading) {
+								// let's try lower zooms and upscale them.
+								img = tryLoadFallback(tc);
+								// but still attempt to download
+								tryDownloadAnyway = true;
+							}
+						}
 					}
 
 					synchronized (tc) {
 						if (img != null) {
 							tc.img = img;
-							tc.state = TileCache.STATE_READY;
-							MahoMapsApp.GetCanvas().requestRepaint();
+
+							// readCachedBeforeDownloading is still require server lookup
+							if (tryDownloadAnyway) {
+								tc.state = TileCache.STATE_SERVER_PENDING;
+								downloadGate.Reset();
+							} else {
+								tc.state = TileCache.STATE_READY;
+								MahoMapsApp.GetCanvas().requestRepaint();
+							}
 						} else if (Settings.allowDownload) {
 							tc.state = TileCache.STATE_SERVER_PENDING;
 							downloadGate.Reset();
@@ -209,6 +236,50 @@ public class TilesProvider implements Runnable {
 			}
 		} catch (InterruptedException e) {
 		}
+	}
+
+	private final Image tryLoad(TileId id) {
+		if (Settings.cacheMode == Settings.CACHE_FS && localPath != null) {
+			return tryLoadFromFS(id);
+		} else if (Settings.cacheMode == Settings.CACHE_RMS) {
+			return tryLoadFromRMS(id);
+		}
+		return null;
+	}
+
+	private final Image tryLoadFallback(TileId id) {
+		final int map = id.map;
+		int zoom = id.zoom;
+		int downscale = 1; // how small is required tile comparing to loaded one
+		int x = id.x;
+		int y = id.y;
+		int xoff = 0; // in tile sizes
+		int yoff = 0;
+		while (true) {
+			zoom -= 1;
+			if (zoom < 0 || downscale >= 64)
+				return null;
+			if (x % 2 == 1)
+				xoff += downscale;
+			if (y % 2 == 1)
+				yoff += downscale;
+			// at downscale of 2 above ops require 1, at 4 - 2 and so on
+			downscale *= 2;
+			x /= 2;
+			y /= 2;
+			Image raw = tryLoad(new TileId(x, y, zoom, map));
+			if (raw != null) {
+				int size = (256 / downscale); // of tile
+				// System.out.println("downscale: " + downscale + ", size: " + size);
+				// System.out.println("x: " + xoff + ", y: " + yoff);
+				int xoffp = xoff * size; // in pixels
+				int yoffp = yoff * size;
+				Image cropped = ImageUtils.crop(raw, xoffp, yoffp, xoffp + size, yoffp + size);
+				raw = null; // to free heap
+				return ImageUtils.resize(cropped, 256, 256, true, false);
+			}
+		}
+
 	}
 
 	public void RunNetwork() {
@@ -284,6 +355,20 @@ public class TilesProvider implements Runnable {
 					}
 
 					Image img = Settings.allowDownload ? download(tc) : null;
+					boolean fallbackUsed = false;
+
+					// if nothing loaded
+					if (img == null) {
+						// if the cache available...
+						if (Settings.cacheMode != Settings.CACHE_DISABLED) {
+							// let's try lower zooms and upscale them.
+							// If download is forbidden, this happened in cache thread and this path won't
+							// run at all.
+							img = tryLoadFallback(tc);
+							if (img != null)
+								fallbackUsed = true;
+						}
+					}
 
 					boolean waitAfterError = false;
 
@@ -297,7 +382,13 @@ public class TilesProvider implements Runnable {
 							}
 						} else {
 							tc.img = img;
-							tc.state = TileCache.STATE_READY;
+							if (fallbackUsed) {
+								// image is present, but it's bad. We still want to download a proper one.
+								tc.state = TileCache.STATE_ERROR;
+								waitAfterError = true;
+							} else {
+								tc.state = TileCache.STATE_READY;
+							}
 							MahoMapsApp.GetCanvas().requestRepaint();
 						}
 					}
@@ -306,8 +397,10 @@ public class TilesProvider implements Runnable {
 						Thread.sleep(4000);
 				}
 
-				if (idleCount != cache.size() || queueChanged)
+				if (idleCount != cache.size() || queueChanged) {
+					Thread.yield();
 					continue;
+				}
 				downloadGate.Pass();
 			}
 		} catch (InterruptedException e) {
@@ -389,7 +482,6 @@ public class TilesProvider implements Runnable {
 			} catch (RuntimeException e1) {
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 		} catch (OutOfMemoryError e) {
 		} finally {
 			if (hc != null) {
@@ -586,8 +678,7 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
-				+ "&z=" + tileId.zoom;
+		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y + "&z=" + tileId.zoom;
 		if (Settings.proxyTiles && url.startsWith("https")) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
