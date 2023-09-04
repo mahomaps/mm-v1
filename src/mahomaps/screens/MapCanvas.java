@@ -404,6 +404,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			return;
 		}
 		if (k == -7 || k == -22) {
+			tryStopRepeatThread(true);
 			if (mapFocused) {
 				if (!UIElement.IsQueueEmpty()) {
 					mapFocused = false;
