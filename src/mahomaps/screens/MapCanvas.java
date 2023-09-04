@@ -676,6 +676,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		synchronized (repeatAction) {
 			if (keysState != 0 && repeatThread == null) {
 				Thread t = new Thread(repeatAction, "Key repeat");
+				t.setPriority(Thread.MAX_PRIORITY);
 				repeatCount = 0;
 				t.start();
 				repeatThread = t;
