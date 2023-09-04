@@ -25,8 +25,9 @@ public class Settings {
 	public static int uiSize = 0;
 	public static int apiLang = 0;
 	public static int uiLang = 0;
-	public static boolean bbNetworkChoosen;
 	public static boolean bbWifi;
+	public static boolean firstLaunch = true;
+	public static int map;
 
 	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
 
@@ -35,11 +36,33 @@ public class Settings {
 	public static final int CACHE_DISABLED = 0;
 
 	/**
+	 * Telemetry flags
+	 * <ul>
+	 * <li>1 - about screen
+	 * <li>2 - others screen
+	 * <li>4 - settings screen
+	 * <li>8 - geolocation
+	 * <li>16 - search
+	 * <li>32 - route build by foot
+	 * <li>64 - route build by auto
+	 * <li>128 - route build by PT
+	 * <li>256 - route follow
+	 * <li>512 - route details
+	 * </ul>
+	 */
+	public static int usageFlags = 0;
+
+	public static synchronized void PushUsageFlag(int flag) {
+		usageFlags |= flag;
+		Save();
+	}
+
+	/**
 	 * Читает настройки приложения. Вызывает загрузку локализации.
 	 *
 	 * @return False, если чтение неудачно.
 	 */
-	public static boolean Read() {
+	public static synchronized boolean Read() {
 		try {
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
 			byte[] d = null;
@@ -63,11 +86,14 @@ public class Settings {
 			cacheMode = j.getInt("cache", 1);
 			proxyTiles = j.getBoolean("proxy_tiles");
 			proxyApi = j.getBoolean("proxy_api");
+			proxyServer = j.getString("proxy_server", proxyServer);
 			uiSize = j.getInt("ui_size", 0);
 			apiLang = j.getInt("lang", 0);
 			uiLang = j.getInt("ui_lang", 0);
-			bbNetworkChoosen = j.getBoolean("bb_network");
-			bbWifi = j.getBoolean("bb_wifi");
+			bbWifi = j.getBoolean("bb_wifi", false);
+			firstLaunch = j.getBoolean("1", true);
+			usageFlags = j.getInt("tm", 0);
+			map = j.getInt("map", 0);
 			return true;
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -103,15 +129,18 @@ public class Settings {
 		j.put("cache", cacheMode);
 		j.put("proxy_tiles", proxyTiles);
 		j.put("proxy_api", proxyApi);
+		j.put("proxy_server", proxyServer);
 		j.put("ui_size", uiSize);
 		j.put("lang", apiLang);
 		j.put("ui_lang", uiLang);
-		j.put("bb_network", bbNetworkChoosen);
 		j.put("bb_wifi", bbWifi);
+		j.put("1", firstLaunch);
+		j.put("tm", usageFlags);
+		j.put("map", map);
 		return j.toString();
 	}
 
-	public static void Save() {
+	public static synchronized void Save() {
 		try {
 			byte[] d = Serialize().getBytes();
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
@@ -157,6 +186,9 @@ public class Settings {
 		}
 	}
 
+	/**
+	 * Gets language string for use in API requests.
+	 */
 	public static String GetLangString() {
 		switch (apiLang) {
 		case 0:
@@ -170,6 +202,9 @@ public class Settings {
 		}
 	}
 
+	/**
+	 * Gets language string for localisation files.
+	 */
 	public static String GetUiLangFile() {
 		switch (uiLang) {
 		case 0:
@@ -179,6 +214,8 @@ public class Settings {
 			return new String(new char[] { 'e', 'n' });
 		case 2:
 			return new String(new char[] { 'f', 'r' });
+		case 3:
+			return new String(new char[] { 'a', 'r' });
 		}
 	}
 }

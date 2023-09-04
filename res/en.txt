@@ -53,7 +53,7 @@ Debug info
 Save tiles
 File system
 Download tiles
-Scheme, bright pallete
+Scheme, light theme
 Control buttons size (restart needed)
 Auto
 Tiles & search language (restart needed)
@@ -120,3 +120,50 @@ Cancel
 To enter route, your geolocation must be detected.
 Failed to build route.
 Not enough memory.
+Initialization
+Paint thread
+Caching failure
+Check available memory.
+By car
+By foot
+By p.t.
+Choose points on map.
+Choose departure point.
+Choose destination.
+From me
+To me
+Loading route...
+API access refused
+Reset your session via menu.
+To bookmarks
+By underground
+By suburban train
+Route is finished.
+Route finish
+Return to route
+Proceed to route start
+By public transport
+Take public transport
+Unknown segment
+Go on foot
+Bookmarks
+Delete
+Rename
+Bookmark name?
+Toggle geolocation view
+Map layer
+Satellite
+Hybrid
+Proxy tiles
+Proxy API
+Proxy prefix
+Check internet connection.
+Try to close other apps or restart this one.
+Name
+Description
+Coords
+Opening hours
+Website
+Phone
+Scheme, dark theme
+Update

@@ -1,11 +1,8 @@
 package mahomaps.overlays;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Vector;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
@@ -14,9 +11,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Item;
 
-import cc.nnproject.json.JSONObject;
-
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 import mahomaps.api.Http403Exception;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
@@ -47,7 +43,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		this.b = b;
 		this.method = method;
 		ShowAB();
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Загружаем маршрут...") });
+		content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[134]) });
 		Thread th = new Thread(this, "Route api request");
 		th.start();
 	}
@@ -66,24 +62,22 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void run() {
 		try {
-			JSONObject jo = MahoMapsApp.api.Route(a, b, method);
-			Dump(jo);
-			route = new Route(jo);
+			route = new Route(MahoMapsApp.api.Route(a, b, method));
 			LoadRoute();
 		} catch (IOException e) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[111]),
 					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Http403Exception e) {
-			content = new FillFlowContainer(new UIElement[] { new SimpleText("Отказ в доступе к API."),
-					new SimpleText("Сбросьте сессию в меню"), new SimpleText("и повторите попытку."),
-					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
+			content = new FillFlowContainer(
+					new UIElement[] { new SimpleText(MahoMapsApp.text[135]), new SimpleText(MahoMapsApp.text[136]),
+							new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Exception e) {
 			e.printStackTrace();
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[120]),
 					new SimpleText(e.getClass().getName()), new Button(MahoMapsApp.text[38], 1, this) });
 		} catch (OutOfMemoryError e) {
-			content = new FillFlowContainer(
-					new UIElement[] { new SimpleText(MahoMapsApp.text[121]), new Button(MahoMapsApp.text[38], 1, this) });
+			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[121]),
+					new Button(MahoMapsApp.text[38], 1, this) });
 		} finally {
 			InvalidateSize();
 		}
@@ -91,11 +85,11 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void LoadRoute() {
 		// route field must be non-null here!
-		ColumnsContainer cols = new ColumnsContainer(
-				new UIElement[] { new Button(MahoMapsApp.text[113], 3, this), new Button(MahoMapsApp.text[114], 4, this) });
-		content = new FillFlowContainer(new UIElement[] { new SimpleText("Маршрут " + Type(method)),
-				new SimpleText(route.distance + ", " + route.time), new Button(MahoMapsApp.text[115], 5, this), cols,
-				new Button(MahoMapsApp.text[38], 0, this) });
+		ColumnsContainer cols = new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[113], 3, this),
+				new Button(MahoMapsApp.text[114], 4, this) });
+		content = new FillFlowContainer(
+				new UIElement[] { new SimpleText(Type(method)), new SimpleText(route.distance + ", " + route.time),
+						new Button(MahoMapsApp.text[115], 5, this), cols, new Button(MahoMapsApp.text[38], 0, this) });
 		MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 	}
 
@@ -150,6 +144,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 				f.addCommand(MahoMapsApp.back);
 				f.setCommandListener(this);
 				MahoMapsApp.BringSubScreen(f);
+				Settings.PushUsageFlag(512);
 			}
 			break;
 		case 4:
@@ -170,12 +165,12 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 					rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
 					MahoMapsApp.route = rt;
 					UIElement.Deselect();
+					Settings.PushUsageFlag(256);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else {
-				Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[119], null,
-						AlertType.WARNING);
+				Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[119], null, AlertType.WARNING);
 				a1.setTimeout(Alert.FOREVER);
 				MahoMapsApp.BringSubScreen(a1, mc);
 			}
@@ -186,11 +181,11 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	private static String Type(int t) {
 		switch (t) {
 		case YmapsApi.ROUTE_AUTO:
-			return "на авто";
+			return MahoMapsApp.text[126];
 		case YmapsApi.ROUTE_BYFOOT:
-			return "пешком";
+			return MahoMapsApp.text[127];
 		case YmapsApi.ROUTE_TRANSPORT:
-			return "на транспорте";
+			return MahoMapsApp.text[144];
 		}
 		return "";
 	}
@@ -201,30 +196,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 			Close();
 		}
 		MahoMapsApp.BringMap();
-	}
-
-	public static void Dump(JSONObject j) {
-		FileConnection fc = null;
-		try {
-			// String base = "file:///root/";
-			String base = System.getProperty("fileconn.dir.photos");
-			fc = (FileConnection) Connector.open(base + "route" + System.currentTimeMillis() + ".json");
-			if (!fc.exists())
-				fc.create();
-			else
-				fc.truncate(0);
-			OutputStream stream = fc.openOutputStream();
-			stream.write(j.toString().getBytes("UTF-8"));
-			stream.flush();
-			stream.close();
-		} catch (Exception e) {
-		} finally {
-			try {
-				if (fc != null)
-					fc.close();
-			} catch (IOException e) {
-			}
-		}
 	}
 
 }

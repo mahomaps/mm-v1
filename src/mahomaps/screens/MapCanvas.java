@@ -41,7 +41,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public Geopoint geolocation;
 
 	// input states
-	private boolean touch = hasPointerEvents();
 	private boolean mapFocused = true;
 	private int repeatCount = 0;
 	int startPx, startPy;
@@ -104,6 +103,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		searchBox.addCommand(search);
 		searchBox.setCommandListener(this);
 
+		UIElement.touchInput = hasPointerEvents();
+
 		controls = new ControlButtonsContainer(this);
 
 		CheckApiAcsess();
@@ -148,7 +149,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		drawMap(g, w, h);
 		drawOverlay(g, w, h);
 		UIElement.CommitInputQueue();
-		if (UIElement.IsQueueEmpty() && !touch && !mapFocused) {
+		if (UIElement.IsQueueEmpty() && !UIElement.touchInput && !mapFocused) {
 			mapFocused = true;
 			UIElement.Deselect();
 			requestRepaint();
@@ -180,7 +181,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			int x = xo - trX * 256;
 			int xi = tx - trX;
 			while (x < w / 2) {
-				TileCache tile = tiles.getTile(new TileId(xi, yi, ms.zoom));
+				TileCache tile = tiles.getTile(new TileId(xi, yi, ms.zoom, Settings.map));
 				if (tile != null)
 					tile.paint(g, x, y);
 				x += 256;
@@ -198,7 +199,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			geolocation.paint(g, ms);
 		}
 
-		if (!touch) {
+		if (!UIElement.touchInput) {
 			g.setColor(0xff0000);
 
 			g.drawLine(-6, 0, -2, 0);
@@ -227,7 +228,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			throw new RuntimeException("geo infa ebanulas " + e.toString());
 		}
 
-		final boolean t = touch;
+		final boolean t = UIElement.touchInput;
 		final RouteTracker rt = MahoMapsApp.route;
 
 		int fh = f.getHeight();
@@ -373,6 +374,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (geo == null) {
 			geo = new GeoUpdateThread(geolocation, this);
 			geo.start();
+			Settings.PushUsageFlag(8);
 		} else if (geo.DrawPoint()) {
 			state = MapState.FocusAt(geolocation);
 		} else if (geo.state == GeoUpdateThread.STATE_UNAVAILABLE) {
@@ -389,7 +391,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (k == -12)
 			return;
 
-		touch = false;
+		UIElement.touchInput = false;
 
 		if (MahoMapsApp.route != null) {
 			// когда маршрут ведётся, можно только изменять масштаб и закрывать маршрут.
@@ -482,19 +484,30 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					break handling;
 				}
 				switch (k) {
-				case KEY_NUM3:
-				case KEY_POUND:
-					state = state.ZoomOut();
-					break handling;
 				case KEY_NUM1:
-				case KEY_STAR:
-					state = state.ZoomIn();
+					ShowGeo();
+					break handling;
+				case KEY_NUM3:
+					// geo status toggle
+					Settings.showGeo++;
+					if (Settings.showGeo > 2)
+						Settings.showGeo = 0;
 					break handling;
 				case KEY_NUM7:
 					BeginTextSearch();
 					break handling;
 				case KEY_NUM9:
-					ShowGeo();
+					MahoMapsApp.BringSubScreen(new BookmarksScreen());
+					break handling;
+				case KEY_STAR:
+					state = state.ZoomIn();
+					break handling;
+				case KEY_POUND:
+					state = state.ZoomOut();
+					break handling;
+				case KEY_NUM0:
+					// layer toggle
+					MahoMapsApp.BringSubScreen(new MapLayerSelectionScreen());
 					break handling;
 				}
 			} else {
@@ -545,7 +558,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
-		touch = true;
+		UIElement.touchInput = true;
 		mapFocused = true;
 		if (n == 0) {
 			UIElement.InvokePressEvent(x, y);
@@ -637,6 +650,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				overlays.CloseOverlay(SelectOverlay.ID);
 				Geopoint sa = GetSearchAnchor();
 				MahoMapsApp.BringSubScreen(new SearchLoader(searchBox.getString(), sa));
+				Settings.PushUsageFlag(16);
 			}
 		}
 	}

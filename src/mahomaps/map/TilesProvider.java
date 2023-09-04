@@ -23,6 +23,7 @@ import mahomaps.Settings;
 import mahomaps.api.YmapsApiBase;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
 import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import mahomaps.overlays.CacheFailedOverlay;
 
 public class TilesProvider implements Runnable {
 
@@ -53,6 +54,28 @@ public class TilesProvider implements Runnable {
 
 	private Thread networkTh;
 	private Thread cacheTh;
+
+	public static final String[] tilesUrls = new String[] {
+			// scheme light
+			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=",
+			// sat
+			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
+			// hybrid
+			"http://nnp.nnchan.ru/mergedtile.php?lang=",
+			// scheme dark
+			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&theme=dark&lang=" };
+
+	public static final int[] layerNames = new int[] { 55, 154, 155, 167 };
+
+	public static final String[] GetLayerNames() {
+		if (layerNames.length != tilesUrls.length)
+			throw new IllegalStateException("Not all tiles have names!");
+		String[] s = new String[layerNames.length];
+		for (int i = 0; i < s.length; i++) {
+			s[i] = MahoMapsApp.text[layerNames[i]];
+		}
+		return s;
+	}
 
 	public TilesProvider(String lang) {
 		if (lang == null)
@@ -300,15 +323,12 @@ public class TilesProvider implements Runnable {
 	 * @throws InterruptedException Если поток прерван.
 	 */
 	private Image download(TileId id) throws InterruptedException {
-
 		HttpConnection hc = null;
 		FileConnection fc = null;
 		try {
 			hc = (HttpConnection) Connector.open(getUrl(id) + MahoMapsApp.getConnectionParams());
 			int len = (int) hc.getLength();
-			if (len <= 0)
-				throw new IOException("Empty responce");
-			ByteArrayOutputStream blob = new ByteArrayOutputStream(len);
+			ByteArrayOutputStream blob = len <= 0 ? new ByteArrayOutputStream() : new ByteArrayOutputStream(len);
 			byte[] buf = new byte[8192];
 			InputStream s = hc.openInputStream();
 			while (true) {
@@ -336,7 +356,8 @@ public class TilesProvider implements Runnable {
 						MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
 						Settings.cacheMode = Settings.CACHE_DISABLED;
 					} catch (IOException e) {
-						// TODO: Выводить на экран алерт что закэшить не удалось
+						MahoMapsApp.Overlays().PushOverlay(new CacheFailedOverlay());
+						Settings.cacheMode = Settings.CACHE_DISABLED;
 					} finally {
 						if (fc != null)
 							fc.close();
@@ -534,7 +555,7 @@ public class TilesProvider implements Runnable {
 		while (x >= max)
 			x -= max;
 
-		tileId = new TileId(x, tileId.y, tileId.zoom);
+		tileId = new TileId(x, tileId.y, tileId.zoom, tileId.map);
 
 		TileCache cached = null;
 
@@ -565,20 +586,20 @@ public class TilesProvider implements Runnable {
 	}
 
 	private String getUrl(TileId tileId) {
-		String url = "https://core-renderer-tiles.maps.yandex.net/tiles?l=map&lang=" + lang + "&x=" + tileId.x + "&y="
-				+ tileId.y + "&z=" + tileId.zoom;
-		if (Settings.proxyTiles) {
+		String url = tilesUrls[tileId.map] + lang + "&x=" + tileId.x + "&y=" + tileId.y
+				+ "&z=" + tileId.zoom;
+		if (Settings.proxyTiles && url.startsWith("https")) {
 			return Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		return url;
 	}
 
 	private String getFileName(TileId id) {
-		return localPath + "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
+		return localPath + getRmsName(id);
 	}
 
 	private String getRmsName(TileId id) {
-		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom;
+		return "tile_" + lang + "_" + id.x + "_" + id.y + "_" + id.zoom + (id.map > 0 ? "_" + id.map : "");
 	}
 
 	public int GetCachedTilesCount() {

@@ -9,6 +9,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import mahomaps.MahoMapsApp;
+import mahomaps.Settings;
 
 public class OtherAppsScreen extends Form implements CommandListener, ItemCommandListener {
 
@@ -33,6 +34,8 @@ public class OtherAppsScreen extends Form implements CommandListener, ItemComman
 		appendLink(nm);
 		appendLink(kem);
 		appendLink(j2l);
+
+		Settings.PushUsageFlag(2);
 	}
 
 	public void commandAction(Command c, Displayable d) {

@@ -9,6 +9,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.TextField;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
@@ -25,16 +26,17 @@ public class SettingsScreen extends Form implements CommandListener {
 			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[17] }, null);
 	private ChoiceGroup cache = new ChoiceGroup(MahoMapsApp.text[52], Choice.POPUP,
 			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[53], "RMS" }, null);
-	private ChoiceGroup download = new ChoiceGroup(MahoMapsApp.text[54], Choice.POPUP,
-			new String[] { MahoMapsApp.text[18], MahoMapsApp.text[55], }, null);
-	private ChoiceGroup proxyTiles = new ChoiceGroup(MahoMapsApp.text[19], Choice.POPUP,
-			new String[] { MahoMapsApp.text[18], "nnchan.ru", }, null);
+	private ChoiceGroup download = new ChoiceGroup(MahoMapsApp.text[54], Choice.MULTIPLE,
+			new String[] { MahoMapsApp.text[17] }, null);
+	private ChoiceGroup proxyUsage = new ChoiceGroup(MahoMapsApp.text[19], Choice.MULTIPLE,
+			new String[] { MahoMapsApp.text[156], MahoMapsApp.text[157], }, null);
+	private TextField proxyServer = new TextField(MahoMapsApp.text[158], "", 256, TextField.URL);
 	private ChoiceGroup uiSize = new ChoiceGroup(MahoMapsApp.text[56], Choice.POPUP,
 			new String[] { MahoMapsApp.text[57], "50x50", "30x30" }, null);
 	private ChoiceGroup lang = new ChoiceGroup(MahoMapsApp.text[58], Choice.POPUP,
 			new String[] { MahoMapsApp.text[59], MahoMapsApp.text[60], MahoMapsApp.text[61] }, null);
 	private ChoiceGroup uiLang = new ChoiceGroup(MahoMapsApp.text[62], Choice.POPUP,
-			new String[] { "Русский", "English", "Français" }, null);
+			new String[] { "Русский", "English", "Français", "العربية" }, null);
 	private ChoiceGroup bbNetwork = new ChoiceGroup(MahoMapsApp.text[63], Choice.EXCLUSIVE,
 			new String[] { MahoMapsApp.text[64], "Wi-Fi" }, null);
 
@@ -69,13 +71,13 @@ public class SettingsScreen extends Form implements CommandListener {
 		geoStatus.setSelectedIndex(Settings.showGeo, true);
 		tileInfo.setSelectedIndex(Settings.drawDebugInfo ? 1 : 0, true);
 		cache.setSelectedIndex(Settings.cacheMode, true);
-		download.setSelectedIndex(Settings.allowDownload ? 1 : 0, true);
-		proxyTiles.setSelectedIndex(Settings.proxyTiles ? 1 : 0, true);
-		// апи отслеживается отдельно, однако предполагается что оно включено вместе с
-		// тайлами.
+		download.setSelectedIndex(0, Settings.allowDownload);
+		proxyUsage.setSelectedIndex(0, Settings.proxyTiles);
+		proxyUsage.setSelectedIndex(1, Settings.proxyApi);
 		uiSize.setSelectedIndex(Settings.uiSize, true);
 		lang.setSelectedIndex(Settings.apiLang, true);
 		uiLang.setSelectedIndex(Settings.uiLang, true);
+		proxyServer.setString(Settings.proxyServer);
 
 		append(focusZoom);
 		append(geoLook);
@@ -83,7 +85,8 @@ public class SettingsScreen extends Form implements CommandListener {
 		append(tileInfo);
 		append(cache);
 		append(download);
-		append(proxyTiles);
+		append(proxyUsage);
+		append(proxyServer);
 		append(uiSize);
 		append(lang);
 		append(uiLang);
@@ -99,9 +102,9 @@ public class SettingsScreen extends Form implements CommandListener {
 		Settings.showGeo = geoStatus.getSelectedIndex();
 		Settings.drawDebugInfo = tileInfo.getSelectedIndex() == 1;
 		Settings.cacheMode = cache.getSelectedIndex();
-		Settings.allowDownload = download.getSelectedIndex() == 1;
-		Settings.proxyTiles = proxyTiles.getSelectedIndex() == 1;
-		Settings.proxyApi = proxyTiles.getSelectedIndex() == 1;
+		Settings.allowDownload = download.isSelected(0);
+		Settings.proxyTiles = proxyUsage.isSelected(0);
+		Settings.proxyApi = proxyUsage.isSelected(1);
 		Settings.uiSize = uiSize.getSelectedIndex();
 		Settings.apiLang = lang.getSelectedIndex();
 		Settings.uiLang = uiLang.getSelectedIndex();
@@ -111,6 +114,7 @@ public class SettingsScreen extends Form implements CommandListener {
 		if (Settings.allowDownload) {
 			MahoMapsApp.tiles.ForceMissingDownload();
 		}
+		Settings.proxyServer = proxyServer.getString();
 	}
 
 	public void commandAction(Command c, Displayable d) {
@@ -118,7 +122,8 @@ public class SettingsScreen extends Form implements CommandListener {
 			Apply();
 			if (!MahoMapsApp.TryInitFSCache(false))
 				return;
-			Settings.Save();
+			// triggers settings save
+			Settings.PushUsageFlag(4);
 			MahoMapsApp.BringMenu();
 		}
 	}

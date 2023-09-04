@@ -1,5 +1,6 @@
 package mahomaps.route;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 
 public class WalkingSegment extends RouteSegment {
@@ -26,7 +27,7 @@ public class WalkingSegment extends RouteSegment {
 	}
 
 	public String GetType() {
-		return "Пешком";
+		return MahoMapsApp.text[127];
 	}
 
 	public String GetDescription() {
@@ -34,7 +35,7 @@ public class WalkingSegment extends RouteSegment {
 	}
 
 	public String GetAction() {
-		return "Идите пешком";
+		return MahoMapsApp.text[147];
 	}
 
 	public Geopoint GetAnchor() {

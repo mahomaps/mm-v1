@@ -30,7 +30,7 @@ Menu
 Choix
 Aux panneaux
 Retour à la carte
-fermer l'itinéraire
+Fermer l'itinéraire
 Site
 Discuter
 J2ME client raster Ya.Maps.
@@ -120,3 +120,50 @@ Annuler
 La géolocalisation est nécessaire pour démarrer l'itinéraire.
 Échec de la création de l'itinéraire.
 Pas assez de mémoire.
+Initialisation
+Fil de rendu
+Échec de la cache
+Vérifiez la mémoire libre.
+En voiture
+À pied
+En transports en commun
+Sélectionnez des points sur la carte.
+Sélectionnez un point de départ.
+Choisissez une destination.
+De moi
+Avant moi
+Chargement de l'itinéraire...
+Accès à l'API refusé
+Réinitialisez la session dans le menu.
+Vers les signets
+Métro
+Dans un train de banlieue
+Itinéraire terminé.
+Fin de parcours
+Remettez-vous sur la bonne voie
+Procéder au départ
+Dans les transports
+Montez-vouz dans les transports
+Segment inconnu
+Aller à pied
+Signets
+Supprimer
+Renommer
+Nom du signet ?
+Basculer l'affichage de l'emplacement
+Couche de carte
+Satellite
+Hybride
+Tuiles proxy
+API proxy
+Préfixe proxy
+Vérifiez votre connection internet.
+Essayez de fermer d'autres applications ou redémarrez celle-ci.
+Nom
+Description
+Coordonnées
+Mode de fonctionnement
+Site Internet
+Téléphone
+Schéma, palette sombre
+Mettre à jour

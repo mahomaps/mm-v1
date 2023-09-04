@@ -37,19 +37,19 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 			MahoMapsApp.BringSubScreen(new SearchScreen(query, point, arr));
 		} catch (IOException e) {
 			deleteAll();
-			append(new StringItem(MahoMapsApp.text[111], "Проверьте подключение к интернету."));
+			append(new StringItem(MahoMapsApp.text[111], MahoMapsApp.text[159]));
 			append(new StringItem(MahoMapsApp.text[24], e.getMessage()));
 			e.printStackTrace();
 		} catch (Http403Exception e) {
 			deleteAll();
-			append(new StringItem("Отказ в доступе к API", "Попробуйте сбросить сессию в меню."));
+			append(new StringItem(MahoMapsApp.text[135], MahoMapsApp.text[136]));
 		} catch (Exception e) {
 			deleteAll();
 			append(new StringItem(e.getClass().getName(), e.getMessage()));
 			e.printStackTrace();
 		} catch (OutOfMemoryError e) {
 			deleteAll();
-			append(new StringItem(MahoMapsApp.text[121], "Попробуйте закрыть другие приложения или перезапустить это."));
+			append(new StringItem(MahoMapsApp.text[121], MahoMapsApp.text[160]));
 		}
 		addCommand(MahoMapsApp.back);
 	}

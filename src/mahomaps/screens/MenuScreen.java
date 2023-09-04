@@ -15,8 +15,9 @@ public class MenuScreen extends List implements CommandListener {
 
 	public MenuScreen(TilesProvider tiles) {
 		super("MahoMaps v1", Choice.IMPLICIT,
-				new String[] { MahoMapsApp.text[9], MahoMapsApp.text[10], MahoMapsApp.text[11], MahoMapsApp.text[69],
-						MahoMapsApp.text[12], MahoMapsApp.text[13], MahoMapsApp.text[0] },
+				new String[] { MahoMapsApp.text[148], MahoMapsApp.text[153], MahoMapsApp.text[9], MahoMapsApp.text[10],
+						MahoMapsApp.text[11], MahoMapsApp.text[69], MahoMapsApp.text[12], MahoMapsApp.text[13],
+						MahoMapsApp.text[0] },
 				null);
 		this.tiles = tiles;
 		addCommand(MahoMapsApp.back);
@@ -30,18 +31,22 @@ public class MenuScreen extends List implements CommandListener {
 			} else if (c == SELECT_COMMAND) {
 				int sel = getSelectedIndex();
 				if (sel == 0) {
-					MahoMapsApp.BringSubScreen(new APIReconnectForm());
+					MahoMapsApp.BringSubScreen(new BookmarksScreen());
 				} else if (sel == 1) {
-					MahoMapsApp.BringSubScreen(new KeyboardHelpScreen());
+					MahoMapsApp.BringSubScreen(new MapLayerSelectionScreen());
 				} else if (sel == 2) {
-					MahoMapsApp.BringSubScreen(new SettingsScreen());
+					MahoMapsApp.BringSubScreen(new APIReconnectForm());
 				} else if (sel == 3) {
-					MahoMapsApp.BringSubScreen(new CacheManager(tiles));
+					MahoMapsApp.BringSubScreen(new KeyboardHelpScreen());
 				} else if (sel == 4) {
-					MahoMapsApp.BringSubScreen(new AboutScreen());
+					MahoMapsApp.BringSubScreen(new SettingsScreen());
 				} else if (sel == 5) {
-					MahoMapsApp.BringSubScreen(new OtherAppsScreen());
+					MahoMapsApp.BringSubScreen(new CacheManager(tiles));
 				} else if (sel == 6) {
+					MahoMapsApp.BringSubScreen(new AboutScreen());
+				} else if (sel == 7) {
+					MahoMapsApp.BringSubScreen(new OtherAppsScreen());
+				} else if (sel == 8) {
 					MahoMapsApp.Exit();
 				}
 			}

@@ -23,34 +23,34 @@ public class SearchResultScreen extends Form implements CommandListener {
 		JSONObject props = obj.getObject("properties");
 		JSONArray point = obj.getObject("geometry").getArray("coordinates");
 		String name = props.getNullableString("name");
-		StringItem nameItem = new StringItem("Название", name);
+		StringItem nameItem = new StringItem(MahoMapsApp.text[161], name);
 		nameItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(nameItem);
 		String descr = props.getString("description", null);
 		if (descr != null) {
-			StringItem descrItem = new StringItem("Описание", descr);
+			StringItem descrItem = new StringItem(MahoMapsApp.text[162], descr);
 			descrItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 			append(descrItem);
 		}
-		StringItem coordsItem = new StringItem("Координаты", point.getDouble(1) + " " + point.getDouble(0));
+		StringItem coordsItem = new StringItem(MahoMapsApp.text[163], point.getDouble(1) + " " + point.getDouble(0));
 		coordsItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 		append(coordsItem);
 		JSONObject org = props.getNullableObject("CompanyMetaData");
 		if (org != null) {
 			JSONObject hours = org.getNullableObject("Hours");
 			if (hours != null) {
-				StringItem hoursItem = new StringItem("Режим работы", hours.getNullableString("text"));
+				StringItem hoursItem = new StringItem(MahoMapsApp.text[164], hours.getNullableString("text"));
 				hoursItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 				append(hoursItem);
 			}
 			if (org.getNullableString("url") != null) {
-				StringItem urlItem = new StringItem("Сайт", org.getNullableString("url"));
+				StringItem urlItem = new StringItem(MahoMapsApp.text[165], org.getNullableString("url"));
 				urlItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 				append(urlItem);
 			}
 			JSONArray phones = org.getNullableArray("Phones");
 			if (phones != null && phones.size() != 0) {
-				StringItem phonesItem = new StringItem("Телефон", phones.getObject(0).getNullableString("formatted"));
+				StringItem phonesItem = new StringItem(MahoMapsApp.text[166], phones.getObject(0).getNullableString("formatted"));
 				phonesItem.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE);
 				append(phonesItem);
 			}
