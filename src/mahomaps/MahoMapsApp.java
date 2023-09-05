@@ -44,8 +44,8 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static String[] text;
 
 	// info cache
-	public static final String platform = System.getProperty("microedition.platform");
-	public static boolean bb = platform.toLowerCase().indexOf("blackberry") != -1;
+	public static final String platform;
+	public static final boolean bb;
 	public static String version;
 	public static String commit;
 	public static boolean paused;
@@ -61,6 +61,15 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static Command no;
 	public static Command yes;
 	public static Command toMap;
+
+	static {
+		platform = System.getProperty("microedition.platform");
+		if (platform == null) {
+			bb = false;
+		} else {
+			bb = platform.toLowerCase().indexOf("blackberry") != -1;
+		}
+	}
 
 	public MahoMapsApp() {
 		display = Display.getDisplay(this);
