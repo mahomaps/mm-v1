@@ -67,12 +67,10 @@ public class TileCache extends TileId {
 			return "";
 		if (state > STATE_MISSING)
 			return "";
-		return STATE_DESCRIPTION[state];
+		return MahoMapsApp.text[STATE_DESCRIPTION[state]];
 	}
 
-	public static final String[] STATE_DESCRIPTION = new String[] { MahoMapsApp.text[97], MahoMapsApp.text[98],
-			MahoMapsApp.text[99], MahoMapsApp.text[100], MahoMapsApp.text[94], MahoMapsApp.text[88],
-			MahoMapsApp.text[101], MahoMapsApp.text[102] };
+	public static final int[] STATE_DESCRIPTION = new int[] { 97, 98, 99, 100, 94, 88, 101, 102 };
 
 	public static final int STATE_CACHE_PENDING = 0;
 	public static final int STATE_CACHE_LOADING = 1;
