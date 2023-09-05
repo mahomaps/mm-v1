@@ -150,8 +150,7 @@ public class GeoUpdateThread extends Thread {
 	 */
 	public final static int STATE_OK = 2;
 
-	public final static String[] states = new String[] { MahoMapsApp.text[93], MahoMapsApp.text[93],
-			MahoMapsApp.text[94], MahoMapsApp.text[88], MahoMapsApp.text[95], MahoMapsApp.text[96] };
+	public final static int[] states = new int[] { 93, 93, 94, 88, 95, 96 };
 
 	// для безопасных вызовов
 	class LocationAPI {

@@ -284,14 +284,14 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		Vector v = new Vector();
 
 		if (geo.state == GeoUpdateThread.STATE_UNSUPPORTED) {
-			v.addElement(GeoUpdateThread.states[geo.state]);
+			v.addElement(MahoMapsApp.text[GeoUpdateThread.states[geo.state]]);
 			return v;
 		}
 
 		// статус и время
 		int passed = (int) ((System.currentTimeMillis() - geo.lastUpdateTime) / 1000);
 		if (geo.state != GeoUpdateThread.STATE_OK) {
-			v.addElement(GeoUpdateThread.states[geo.state]);
+			v.addElement(MahoMapsApp.text[GeoUpdateThread.states[geo.state]]);
 			v.addElement(MahoMapsApp.text[83] + passed + MahoMapsApp.text[84]);
 		} else if (passed >= 5) {
 			v.addElement(MahoMapsApp.text[85] + passed + MahoMapsApp.text[86]);
