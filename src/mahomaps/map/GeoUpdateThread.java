@@ -33,7 +33,7 @@ public class GeoUpdateThread extends Thread {
 		try {
 			Class.forName("javax.microedition.location.LocationProvider");
 			try {
-				locationAPI = new LocationAPI();
+				locationAPI = (ILocationAPI) Class.forName("mahomaps.map.LocationAPI").newInstance();
 				locationAPI.setThread(this);
 			} catch (Exception e) {
 				state = e.toString().indexOf("LocationException") != -1 ? STATE_UNAVAILABLE : STATE_UNSUPPORTED;
