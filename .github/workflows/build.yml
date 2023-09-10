@@ -24,6 +24,11 @@ jobs:
         with:
           name: obf.zip
           path: ${{ github.workspace }}/mm_v1_obf.jar
+      - name: Upload no_geo jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: obf.zip
+          path: ${{ github.workspace }}/mm_v1_no_geo.jar
       - name: Upload obf mappings
         uses: actions/upload-artifact@v2
         with:
