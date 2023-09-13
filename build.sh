@@ -96,6 +96,16 @@ fi
 
 echo "Build done!" ./${APP}.jar
 
+echo "Removing location classes..."
+rm ./classes/mahomaps/map/LocationAPI*
+
+echo "Jaring preverified class files..."
+${JAR} cmf ${MANIFEST} ${APP}_no_geo.jar -C ./classes .
+
+if [ -d ${RES} ] ; then
+  ${JAR} uf ${APP}_no_geo.jar -C ${RES} .
+fi
+
 echo Optimizing ${APP}
 chmod +x ${PROGUARD}
 touch cf.cfg
