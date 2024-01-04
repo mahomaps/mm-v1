@@ -191,31 +191,46 @@ public class GeoUpdateThread extends Thread {
 
 			public void locationUpdated(LocationProvider provider, Location location) {
 				// определение кол-ва спутников
-				String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
-				if (nmea != null) {
-					String[] sequence = split(nmea, '$');
-					int s1 = -1;
-					int s2 = -1;
-					for (int i = sequence.length - 1; i >= 0; i--) {
-						String[] sentence = split(sequence[i], ',');
-						if (sentence[0].endsWith("GGA")) {
-							try {
-								s1 = Integer.parseInt(sentence[7]);
-							} catch (Exception e) {
-								s1 = -1;
-							}
-							s2 = Math.max(s2, s1);
-						} else if (sentence[0].endsWith("GSV")) {
-							try {
-								s2 = Math.max(s2, Integer.parseInt(sentence[3]));
-							} catch (Exception e) {
+				satellites: {
+					// парамы из патча для symbian^3 https://github.com/shinovon/Symbian3JSR179Mod
+					try {
+						String s1 = location.getExtraInfo("satelliteNumInView");
+						String s2 = location.getExtraInfo("satelliteNumUsed");
+						if (s1 != null && s2 != null) {
+							totalSattelitesInView = Integer.parseInt(s1);
+							sattelites = Integer.parseInt(s2);
+							break satellites;
+						}
+					} catch (Exception e) {}
+					// парс сырых nmea данных
+					String nmea = location.getExtraInfo("application/X-jsr179-location-nmea");
+					if (nmea != null) {
+						String[] sequence = split(nmea, '$');
+						int s1 = -1;
+						int s2 = -1;
+						for (int i = sequence.length - 1; i >= 0; i--) {
+							String s = sequence[i];
+							if (s.indexOf('*') != -1) s = s.substring(0, s.lastIndexOf('*'));
+							String[] sentence = split(s, ',');
+							if (sentence[0].endsWith("GGA")) {
+								try {
+									s1 = Integer.parseInt(sentence[7]);
+								} catch (Exception e) {
+									s1 = -1;
+								}
+								s2 = Math.max(s2, s1);
+							} else if (sentence[0].endsWith("GSV")) {
+								try {
+									s2 = Math.max(s2, Integer.parseInt(sentence[3]));
+								} catch (Exception e) {
+								}
 							}
 						}
+						sattelites = s1;
+						totalSattelitesInView = s2;
+					} else {
+						totalSattelitesInView = sattelites = -1;
 					}
-					sattelites = s1;
-					totalSattelitesInView = s2;
-				} else {
-					totalSattelitesInView = sattelites = -1;
 				}
 				String s = "";
 				int t = location.getLocationMethod();
