@@ -263,7 +263,7 @@ public class GeoUpdateThread extends Thread {
 						positionPoint.lon = coordinates.getLongitude();
 						positionPoint.color = Geopoint.COLOR_RED;
 						state = STATE_OK;
-						lastUpdateTime = System.currentTimeMillis();
+						lastUpdateTime = location.getTimestamp();
 						MahoMapsApp.GetCanvas().requestRepaint();
 					} else {
 						state = STATE_UNAVAILABLE;
