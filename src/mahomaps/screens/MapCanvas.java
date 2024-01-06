@@ -294,7 +294,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			v.addElement(MahoMapsApp.text[GeoUpdateThread.states[geo.state]]);
 			v.addElement(MahoMapsApp.text[83] + passed + MahoMapsApp.text[84]);
 		} else if (passed >= 5) {
-			v.addElement(MahoMapsApp.text[85] + passed + MahoMapsApp.text[86]);
+			v.addElement(MahoMapsApp.text[85] + (passed < 24 * 60 * 60 ? passed + MahoMapsApp.text[86] : ""));
 		}
 
 		// метод и спутники
