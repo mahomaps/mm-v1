@@ -48,6 +48,10 @@ public class RouteFollowOverlay extends MapOverlay implements IButtonHandler, Co
 		return false;
 	}
 
+	public boolean CloseButtonImplicit() {
+		return false;
+	}
+
 	public void OnButtonTap(UIElement sender, int uid) {
 		if (uid == 0) {
 			Alert a1 = new Alert("MahoMaps v1", MahoMapsApp.text[112], null, AlertType.WARNING);

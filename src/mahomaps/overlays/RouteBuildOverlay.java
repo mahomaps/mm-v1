@@ -30,16 +30,20 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 	private void Update() {
 		v.removeAllElements();
 		if (a != null && b != null) {
+			// everything is set
 			v.addElement(a);
 			v.addElement(b);
-			content = new FillFlowContainer(new UIElement[] { new ColumnsContainer(new UIElement[] {
-					new Button(MahoMapsApp.text[126], 1, this), new Button(MahoMapsApp.text[127], 2, this), new Button(MahoMapsApp.text[128], 3, this)
+			content = new FillFlowContainer(
+					new UIElement[] { new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[126], 1, this),
+							new Button(MahoMapsApp.text[127], 2, this), new Button(MahoMapsApp.text[128], 3, this)
 
 					}), new Button(MahoMapsApp.text[118], 0, this) });
 		} else if (a == null && b == null) {
+			// nothing is set
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[129]),
 					new Button(MahoMapsApp.text[118], 0, this) });
 		} else {
+			// A or B set but not both
 			String s;
 			Button bt;
 			if (b == null) {
@@ -51,7 +55,8 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 				bt = new Button(MahoMapsApp.text[132], 11, this);
 				v.addElement(b);
 			}
-			content = new FillFlowContainer(new UIElement[] { new SimpleText(s), bt, new Button(MahoMapsApp.text[118], 0, this) });
+			content = new FillFlowContainer(
+					new UIElement[] { new SimpleText(s), bt, new Button(MahoMapsApp.text[118], 0, this) });
 		}
 	}
 
@@ -82,8 +87,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	private static void NotifyNoGeo() {
-		Alert a = new Alert(MahoMapsApp.text[116], MahoMapsApp.text[117], null,
-				AlertType.WARNING);
+		Alert a = new Alert(MahoMapsApp.text[116], MahoMapsApp.text[117], null, AlertType.WARNING);
 		a.setTimeout(4000);
 		MahoMapsApp.BringSubScreen(a, MahoMapsApp.GetCanvas());
 	}
@@ -97,6 +101,10 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	public boolean OnPointTap(Geopoint p) {
+		return false;
+	}
+
+	public boolean CloseButtonImplicit() {
 		return false;
 	}
 

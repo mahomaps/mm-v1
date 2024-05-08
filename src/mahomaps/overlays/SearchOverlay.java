@@ -32,7 +32,10 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		this.list = list;
 
 		SetNullSelection();
+	}
 
+	public boolean CloseButtonImplicit() {
+		return false;
 	}
 
 	public void SetNullSelection() {

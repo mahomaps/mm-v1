@@ -7,6 +7,7 @@ import mahomaps.map.Geopoint;
 import mahomaps.screens.BookmarksScreen;
 import mahomaps.screens.SearchLoader;
 import mahomaps.ui.Button;
+import mahomaps.ui.CloseButton;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -31,7 +32,7 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 				new SimpleText(p.toString()), new Button(MahoMapsApp.text[103], 1, this),
 				new Button(MahoMapsApp.text[137], 4, this), new ColumnsContainer(new UIElement[] {
 						new Button(MahoMapsApp.text[104], 2, this), new Button(MahoMapsApp.text[105], 3, this) }),
-				new Button(MahoMapsApp.text[38], 0, this) });
+				new CloseButton(this) });
 	}
 
 	public String GetId() {
