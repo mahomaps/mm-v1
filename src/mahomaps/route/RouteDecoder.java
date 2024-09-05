@@ -147,7 +147,7 @@ public class RouteDecoder {
 					throw new IllegalArgumentException();
 			}
 			final JSONObject segmd = props.getObject("SegmentMetaData");
-			final String descr = segmd.getString("text");
+			String descr = segmd.getString("text");
 			int dist = 0;
 			{
 				JSONObject dj = segmd.getNullableObject("Distance");
@@ -169,6 +169,15 @@ public class RouteDecoder {
 				} else if (trt.equals("underground")) {
 					arr[i] = new MetroSegment(descr, sv, line[sv]);
 				} else {
+					JSONArray f = js.getNullableArray("features");
+					if (f != null && f.size() > 0) {
+						JSONObject t = f.getObject(f.size() - 1);
+						if (t.has("properties")
+								&& (t = t.getObject("properties")).has("StopMetaData")
+								&& (t = t.getObject("StopMetaData")).has("name")) {
+							descr = descr.concat("\nОстановка: ").concat(t.getString("name"));
+						}
+					}
 					arr[i] = new TransportSegment(descr, sv, line[sv]);
 				}
 				continue;
