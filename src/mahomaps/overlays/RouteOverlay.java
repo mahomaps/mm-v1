@@ -22,6 +22,7 @@ import mahomaps.route.RouteSegment;
 import mahomaps.route.RouteTracker;
 import mahomaps.screens.MapCanvas;
 import mahomaps.ui.Button;
+import mahomaps.ui.CloseButton;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -35,6 +36,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	private Geopoint b;
 	private final int method;
 	Route route;
+	boolean allowClose = false;
 
 	private boolean anchorsShown = false;
 
@@ -58,6 +60,10 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public boolean OnPointTap(Geopoint p) {
 		return false;
+	}
+
+	public boolean CloseButtonImplicit() {
+		return allowClose;
 	}
 
 	public void run() {
@@ -87,9 +93,10 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		// route field must be non-null here!
 		ColumnsContainer cols = new ColumnsContainer(new UIElement[] { new Button(MahoMapsApp.text[113], 3, this),
 				new Button(MahoMapsApp.text[114], 4, this) });
+		allowClose = true;
 		content = new FillFlowContainer(
 				new UIElement[] { new SimpleText(Type(method)), new SimpleText(route.distance + ", " + route.time),
-						new Button(MahoMapsApp.text[115], 5, this), cols, new Button(MahoMapsApp.text[38], 0, this) });
+						new Button(MahoMapsApp.text[115], 5, this), cols, new CloseButton(this) });
 		MahoMapsApp.GetCanvas().line = new Line(a, route.points);
 	}
 

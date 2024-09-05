@@ -6,6 +6,7 @@ import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.screens.SettingsScreen;
 import mahomaps.ui.Button;
+import mahomaps.ui.CloseButton;
 import mahomaps.ui.ColumnsContainer;
 import mahomaps.ui.FillFlowContainer;
 import mahomaps.ui.IButtonHandler;
@@ -15,8 +16,8 @@ import mahomaps.ui.UIElement;
 public class TileCacheForbiddenOverlay extends MapOverlay implements IButtonHandler {
 	public TileCacheForbiddenOverlay() {
 		content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[44]),
-				new SimpleText(MahoMapsApp.text[45]), new ColumnsContainer(new UIElement[] {
-						new Button(MahoMapsApp.text[41], 1, this), new Button(MahoMapsApp.text[38], 0, this) }) });
+				new SimpleText(MahoMapsApp.text[45]), new ColumnsContainer(
+						new UIElement[] { new Button(MahoMapsApp.text[41], 1, this), new CloseButton(this) }) });
 	}
 
 	public String GetId() {
