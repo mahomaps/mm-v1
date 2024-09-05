@@ -53,17 +53,17 @@ public final class YmapsApi extends YmapsApiBase {
 
 	public final JSONArray Search(String text, Geopoint around, double zone)
 			throws JSONException, IOException, Http403Exception {
-		JSONArray j = (JSON.getObject(GetUtf(GetSearchUrl(text, around, zone)))).getArray("features");
-		return j;
+		JSONObject j = JSON.getObject(GetUtf(GetSearchUrl(text, around, zone)));
+		if (!j.has("features")) throw new Http403Exception();
+		return j.getArray("features");
 	}
 
-	public final JSONObject Route(Geopoint a, Geopoint b, int type)
+	public final JSONArray Routes(Geopoint a, Geopoint b, int type)
 			throws JSONException, IOException, Http403Exception {
 		JSONArray j = (JSON.getObject(GetUtf(GetRouteUrl(a, b, type)))).getArray("features");
 		if (j.size() == 0)
 			throw new ConnectionNotFoundException();
-		JSONObject j1 = j.getObject(0).getArray("features").getObject(0);
-		return j1;
+		return j.getObject(0).getArray("features");
 	}
 
 	public static final int ROUTE_BYFOOT = 1;

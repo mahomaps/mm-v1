@@ -35,6 +35,7 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 	private Geopoint b;
 	private final int method;
 	Route route;
+	private int tries;
 
 	private boolean anchorsShown = false;
 
@@ -62,12 +63,20 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 
 	public void run() {
 		try {
-			route = new Route(MahoMapsApp.api.Route(a, b, method));
+			if (tries != 0) {
+				MahoMapsApp.api.RefreshToken();
+			}
+			// TODO route variant selection
+			route = new Route(MahoMapsApp.api.Routes(a, b, method).getObject(0));
 			LoadRoute();
 		} catch (IOException e) {
 			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[111]),
 					new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
 		} catch (Http403Exception e) {
+			if (tries++ == 0) {
+				run();
+				return;
+			}
 			content = new FillFlowContainer(
 					new UIElement[] { new SimpleText(MahoMapsApp.text[135]), new SimpleText(MahoMapsApp.text[136]),
 							new Button(MahoMapsApp.text[37], 2, this), new Button(MahoMapsApp.text[38], 0, this) });
