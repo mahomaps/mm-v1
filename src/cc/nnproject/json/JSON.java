@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021-2024 Arman Jussupgaliyev
+Copyright (c) 2021-2025 Arman Jussupgaliyev
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,17 @@ SOFTWARE.
 */
 package cc.nnproject.json;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
 /**
  * JSON Library compatible with CLDC 1.1 & JDK 1.1<br>
  * Usage:<p><code>JSONObject obj = JSON.getObject(str);</code></p>
- * <b>Use with proguard argument</b>: <p><code>-optimizations !code/simplification/object</code>
+ * <b>When using proguard, add</b>: <p><code>-optimizations !code/simplification/object</code>
  * @author Shinovon
- * @version 2.2
+ * @version 2.4
  */
 public final class JSON {
 
@@ -39,7 +41,7 @@ public final class JSON {
 	// identation for formatting
 	static final String FORMAT_TAB = "  ";
 	
-	// used for storing nulls, get methods must return real null
+	// used internally for storing nulls, get methods must return real null
 	public static final Object json_null = new Object();
 	
 	public static final Boolean TRUE = new Boolean(true);
@@ -85,13 +87,15 @@ public final class JSON {
 
 	static Object parseJSON(String str) throws JSONException {
 		char first = str.charAt(0);
-		int length = str.length() - 1;
-		char last = str.charAt(length);
-		switch(first) {
+		int length;
+		char last = str.charAt(length = str.length() - 1);
+		if (last <= ' ')
+			last = (str = str.trim()).charAt(length = str.length() - 1);
+		switch (first) {
 		case '"': { // string
 			if (last != '"')
 				throw new JSONException("Unexpected end of text");
-			if(str.indexOf('\\') != -1) {
+			if (str.indexOf('\\') != -1) {
 				char[] chars = str.substring(1, length).toCharArray();
 				str = null;
 				int l = chars.length;
@@ -224,7 +228,7 @@ public final class JSON {
 					char c = ((String) value).charAt(0);
 					// leave JSONString as value to parse it later, if its object or array and nested parsing is disabled
 					value = parse_members || (c != '{' && c != '[') ?
-							parseJSON((String) value) : new JSONString((String) value);
+							parseJSON((String) value) : new String[] {(String) value};
 					if (object) {
 						((JSONObject) res)._put(key, value);
 						key = null;
@@ -261,7 +265,7 @@ public final class JSON {
 				} catch (Exception e) {}
 			}
 			throw new JSONException("Couldn't be parsed: " + str);
-//			return new JSONString(str);
+//			return new String[](str);
 		}
 	}
 	
@@ -315,8 +319,8 @@ public final class JSON {
 
 	static double getDouble(Object o) throws JSONException {
 		try {
-			if (o instanceof JSONString)
-				return Double.parseDouble(((JSONString) o).str);
+			if (o instanceof String[])
+				return Double.parseDouble(((String[]) o)[0]);
 			if (o instanceof Integer)
 				return ((Integer) o).intValue();
 			if (o instanceof Long)
@@ -329,8 +333,8 @@ public final class JSON {
 
 	static int getInt(Object o) throws JSONException {
 		try {
-			if (o instanceof JSONString)
-				return Integer.parseInt(((JSONString) o).str);
+			if (o instanceof String[])
+				return Integer.parseInt(((String[]) o)[0]);
 			if (o instanceof Integer)
 				return ((Integer) o).intValue();
 			if (o instanceof Long)
@@ -343,8 +347,8 @@ public final class JSON {
 
 	static long getLong(Object o) throws JSONException {
 		try {
-			if (o instanceof JSONString)
-				return Long.parseLong(((JSONString) o).str);
+			if (o instanceof String[])
+				return Long.parseLong(((String[]) o)[0]);
 			if (o instanceof Integer)
 				return ((Integer) o).longValue();
 			if (o instanceof Long)
@@ -353,6 +357,52 @@ public final class JSON {
 				return ((Double) o).longValue();
 		} catch (Throwable e) {}
 		throw new JSONException("Cast to long failed: " + o);
+	}
+
+	public static void writeString(OutputStream out, String s) throws IOException {
+		int len = s.length();
+		for (int i = 0; i < len; ++i) {
+			char c = s.charAt(i);
+			switch (c) {
+			case '"':
+			case '\\':
+				out.write((byte) '\\');
+				out.write((byte) c);
+				break;
+			case '\b':
+				out.write((byte) '\\');
+				out.write((byte) 'b');
+				break;
+			case '\f':
+				out.write((byte) '\\');
+				out.write((byte) 'f');
+				break;
+			case '\n':
+				out.write((byte) '\\');
+				out.write((byte) 'n');
+				break;
+			case '\r':
+				out.write((byte) '\\');
+				out.write((byte) 'r');
+				break;
+			case '\t':
+				out.write((byte) '\\');
+				out.write((byte) 't');
+				break;
+			default:
+				if (c < 32 || c > 255) {
+					out.write((byte) '\\');
+					out.write((byte) 'u');
+					String u = Integer.toHexString(c);
+					for (int z = u.length(); z < 4; z++) {
+						out.write((byte) '0');
+					}
+					out.write(u.getBytes());
+				} else {
+					out.write((byte) c);
+				}
+			}
+		}
 	}
 
 }
