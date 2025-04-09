@@ -1,3 +1,8 @@
+/*
+Copyright (c) 2023 Fyodor Ryzhov
+Copyright (c) 2023 Arman Jussupgaliyev
+Copyright (c) 2023 Petrprogs
+*/
 package mahomaps.screens;
 
 import java.io.IOException;

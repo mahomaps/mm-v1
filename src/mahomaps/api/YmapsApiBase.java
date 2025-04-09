@@ -1,3 +1,8 @@
+/*
+Copyright (c) 2023 Fyodor Ryzhov
+Copyright (c) 2023 Arman Jussupgaliyev
+Copyright (c) 2023 Petrprogs
+*/
 package mahomaps.api;
 
 import cc.nnproject.json.*;
@@ -12,8 +17,6 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
-
-
 
 public abstract class YmapsApiBase {
 

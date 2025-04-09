@@ -1,3 +1,7 @@
+/*
+Copyright (c) 2023 Petrprogs
+Copyright (c) 2023 Fyodor Ryzhov
+*/
 package mahomaps.overlays;
 
 import java.util.Vector;

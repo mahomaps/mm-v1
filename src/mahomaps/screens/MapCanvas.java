@@ -1,3 +1,7 @@
+/*
+Copyright (c) 2023 Fyodor Ryzhov
+Copyright (c) 2023-2024 Arman Jussupgaliyev
+*/
 package mahomaps.screens;
 
 import java.util.Vector;

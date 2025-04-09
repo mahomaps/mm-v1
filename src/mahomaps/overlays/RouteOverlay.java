@@ -1,3 +1,7 @@
+/*
+Copyright (c) 2023 Fyodor Ryzhov
+Copyright (c) 2023-2024 Arman Jussupgaliyev
+*/
 package mahomaps.overlays;
 
 import java.io.IOException;
