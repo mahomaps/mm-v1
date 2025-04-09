@@ -1,3 +1,7 @@
+/*
+Copyright (c) 2023 Fyodor Ryzhov
+Copyright (c) 2023 Arman Jussupgaliyev
+*/
 package mahomaps;
 
 import javax.microedition.rms.RecordStore;

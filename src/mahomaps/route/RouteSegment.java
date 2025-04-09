@@ -1,3 +1,6 @@
+/*
+Copyright (c) 2023 Fyodor Ryzhov
+*/
 package mahomaps.route;
 
 import javax.microedition.lcdui.Item;

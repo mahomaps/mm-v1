@@ -1,3 +1,7 @@
+/*
+Copyright (c) 2023 Arman Jussupgaliyev
+Copyright (c) 2023 Fyodor Ryzhov
+*/
 package mahomaps.map;
 
 import java.util.Vector;
