@@ -18,6 +18,8 @@ public abstract class MapOverlay extends UIElement {
 
 	public abstract Vector GetPoints();
 
+	public abstract int GetName();
+
 	/**
 	 * Обрабатывает нажатие на точку оверлея.
 	 *

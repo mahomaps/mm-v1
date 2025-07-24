@@ -67,6 +67,21 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		}
 	}
 
+	public int GetName() {
+		if (a != null && b != null) {
+			return 116;
+		} else if (a == null && b == null) {
+			return 129;
+		} else {
+			// one point selected
+			if (b == null) {
+				return 131;
+			} else {
+				return 130;
+			}
+		}
+	}
+
 	public void SetA(Geopoint p) {
 		a = new Geopoint(p.lat, p.lon);
 		a.type = Geopoint.ROUTE_A;

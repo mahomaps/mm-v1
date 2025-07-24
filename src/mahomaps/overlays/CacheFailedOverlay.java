@@ -31,6 +31,10 @@ public class CacheFailedOverlay extends MapOverlay implements IButtonHandler {
 		return false;
 	}
 
+	public int GetName() {
+		return 124;
+	}
+
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
 		case 0:

@@ -31,6 +31,10 @@ public class TileDownloadForbiddenOverlay extends MapOverlay implements IButtonH
 		return false;
 	}
 
+	public int GetName() {
+		return 42;
+	}
+
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
 		case 0:

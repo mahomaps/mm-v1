@@ -28,6 +28,10 @@ public class NoApiTokenOverlay extends MapOverlay implements IButtonHandler {
 		return EMPTY_VECTOR;
 	}
 
+	public int GetName() {
+		return 39;
+	}
+
 	public boolean OnPointTap(Geopoint p) {
 		return false;
 	}

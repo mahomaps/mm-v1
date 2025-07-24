@@ -61,6 +61,10 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 		return false;
 	}
 
+	public int GetName() {
+		return 116;
+	}
+
 	public void run() {
 		try {
 			if (tries != 0) {

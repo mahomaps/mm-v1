@@ -31,6 +31,10 @@ public class TileCacheForbiddenOverlay extends MapOverlay implements IButtonHand
 		return false;
 	}
 
+	public int GetName() {
+		return 44;
+	}
+
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
 		case 0:

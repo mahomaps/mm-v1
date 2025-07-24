@@ -42,6 +42,10 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 		return v;
 	}
 
+	public int GetName() {
+		return 103;
+	}
+
 	public boolean OnPointTap(Geopoint p) {
 		return false;
 	}

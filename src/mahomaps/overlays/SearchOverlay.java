@@ -99,6 +99,10 @@ public class SearchOverlay extends MapOverlay implements IButtonHandler {
 		return points;
 	}
 
+	public int GetName() {
+		return 27;
+	}
+
 	public boolean OnPointTap(Geopoint p) {
 		if (p.color == Geopoint.COLOR_RED || p.object == null)
 			return false;
