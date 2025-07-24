@@ -652,9 +652,12 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void sizeChanged(int w, int h) {
-		cachedGraphics = null;
-		super.sizeChanged(w, h);
-		requestRepaint();
+		try {
+			cachedGraphics = null;
+			requestRepaint();
+		} catch (Exception ex) {
+			// Somehow 9.2 manages to get nullref here (calling event on non-initialized object? Who knows.)
+		}
 	}
 
 	protected void hideNotify() {
@@ -665,7 +668,6 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	protected void showNotify() {
 		cachedGraphics = null;
 		hidden = false;
-		super.showNotify();
 		requestRepaint();
 	}
 
