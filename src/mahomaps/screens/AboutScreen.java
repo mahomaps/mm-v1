@@ -13,7 +13,6 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import mahomaps.MahoMapsApp;
-import mahomaps.Settings;
 
 public class AboutScreen extends Form implements CommandListener, ItemCommandListener {
 
@@ -21,11 +20,8 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 	StringItem chat = new StringItem(MahoMapsApp.text[34], "t.me/nnmidletschat", Item.HYPERLINK);
 	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
 
-	int i1, i2, i3, i4;
-
 	public AboutScreen() {
 		super(MahoMapsApp.text[12]);
-		SetF();
 		setCommandListener(this);
 		addCommand(MahoMapsApp.back);
 		try {
@@ -45,11 +41,8 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			} catch (Throwable e) {
 			}
 		}
-		SetI();
 		add(new StringItem("Предложил", "GingerFox87"));
 		add(new StringItem("Тимлид", "Feodor0090 (aka sym_ansel)"));
-		add(new StringItem("Поддержать нас рублём",
-				s(i1) + " " + s(i2) + " " + s(i3) + " " + s(i4)));
 		add(new StringItem("Программирование", "Feodor0090 (aka sym_ansel)\nShinovon"));
 		add(new StringItem("Дизайн", "MuseCat"));
 		add(new StringItem("Прокси", "Shinovon\nrehdzi"));
@@ -73,36 +66,11 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 			append(i);
 		} catch (IOException e) {
 		}
-		add(new StringItem(MahoMapsApp.text[67], "Powered by butthurt from nnchat\n292 labs (tm)"));
-		add(new StringItem(MahoMapsApp.text[68],
-				"Гитхаб Анселя:\ngithub.com/Feodor0090\n" + "Канал Анселя:\nt.me/sym_ansel_blog\n"
-						+ "Борда rehdzi:\nnnchan.ru\n" + "Канал Димы:\nt.me/blogprostodimonich\n"
-						+ "Канал Лиса:\nt.me/GingerFox87_blog\n" + "Игра Выполя:\nt.me/mobap_game\n"));
-	}
-
-	private static String s(int i) {
-		String s = String.valueOf(i);
-		while(s.length() < 4) s = "0" + s;
-		return s;
 	}
 
 	private void add(StringItem item) {
 		item.setLayout(Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_LEFT);
 		append(item);
-	}
-
-	private void SetI() {
-		i1 = 5536;
-		i2 = 9141;
-		i3 = 0062;
-		i4 = 0677;
-	}
-
-	private void SetF() {
-		i1 = 1;
-		i2 = 2;
-		i3 = 3;
-		i4 = 4;
 	}
 
 	public void commandAction(Command c, Displayable d) {

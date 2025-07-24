@@ -16,7 +16,7 @@ public class MenuScreen extends List implements CommandListener {
 	public MenuScreen(TilesProvider tiles) {
 		super("MahoMaps v1", Choice.IMPLICIT,
 				new String[] { MahoMapsApp.text[148], MahoMapsApp.text[153], MahoMapsApp.text[9], MahoMapsApp.text[10],
-						MahoMapsApp.text[11], MahoMapsApp.text[69], MahoMapsApp.text[12], MahoMapsApp.text[13],
+						MahoMapsApp.text[11], MahoMapsApp.text[69], MahoMapsApp.text[12],
 						MahoMapsApp.text[0] },
 				null);
 		this.tiles = tiles;
@@ -44,9 +44,7 @@ public class MenuScreen extends List implements CommandListener {
 					MahoMapsApp.BringSubScreen(new CacheManager(tiles));
 				} else if (sel == 6) {
 					MahoMapsApp.BringSubScreen(new AboutScreen());
-				} else if (sel == 7) {
-					MahoMapsApp.BringSubScreen(new OtherAppsScreen());
-				} else if (sel == 8) {
+				}else if (sel == 8) {
 					MahoMapsApp.Exit();
 				}
 			}
