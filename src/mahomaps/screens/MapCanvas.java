@@ -389,7 +389,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (k == -12)
 			return;
 
-		UIElement.touchInput = false;
+		UIElement.SetTouchInput(false);
 
 		if (MahoMapsApp.route != null) {
 			// когда маршрут ведётся, можно только изменять масштаб и закрывать маршрут.
@@ -555,7 +555,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	}
 
 	protected void pointerPressed(int x, int y, int n) {
-		UIElement.touchInput = true;
+		UIElement.SetTouchInput(true);
 		mapFocused = true;
 		if (n == 0) {
 			UIElement.InvokePressEvent(x, y);

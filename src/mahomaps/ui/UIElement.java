@@ -1,5 +1,7 @@
 package mahomaps.ui;
 
+import mahomaps.MahoMapsApp;
+
 import java.util.Vector;
 
 import javax.microedition.lcdui.Graphics;
@@ -134,5 +136,13 @@ public abstract class UIElement {
 			}
 		}
 		return false;
+	}
+
+	public static void SetTouchInput(boolean state) {
+		boolean match = state == touchInput;
+		touchInput = state;
+		if (!match) {
+			MahoMapsApp.Overlays().InvalidateAllOverlaysHeight();
+		}
 	}
 }

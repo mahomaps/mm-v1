@@ -5,9 +5,11 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.map.Geopoint;
 import mahomaps.map.MapState;
 import mahomaps.screens.MapCanvas;
+import mahomaps.ui.UIElement;
 
 public final class OverlaysManager {
 
@@ -105,6 +107,17 @@ public final class OverlaysManager {
 	public void InvalidateOverlayHeight(MapOverlay o) {
 		synchronized (overlays) {
 			o.Paint(dummyBuffer.getGraphics(), 0, 0, map.getWidth(), map.getHeight());
+			RecalcOverlaysHeight();
+		}
+		map.requestRepaint();
+	}
+
+	public void InvalidateAllOverlaysHeight() {
+		synchronized (overlays) {
+			for (int i = 0; i < overlays.size(); i++) {
+				MapOverlay mo = (MapOverlay) overlays.elementAt(i);
+				mo.Paint(dummyBuffer.getGraphics(), 0, 0, map.getWidth(), map.getHeight());
+			}
 			RecalcOverlaysHeight();
 		}
 		map.requestRepaint();
