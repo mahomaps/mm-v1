@@ -124,7 +124,7 @@ public class SettingsScreen extends Form implements CommandListener {
 			Apply();
 			if (!MahoMapsApp.TryInitFSCache(false))
 				return;
-			// triggers settings save
+			Settings.Save();
 			MahoMapsApp.BringMenu();
 		}
 	}
