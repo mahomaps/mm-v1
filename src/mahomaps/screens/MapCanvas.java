@@ -199,7 +199,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			geolocation.paint(g, ms);
 		}
 
-		if (!UIElement.touchInput) {
+		if (!UIElement.touchInput && mapFocused) {
 			g.setColor(0xff0000);
 
 			g.drawLine(-6, 0, -2, 0);
