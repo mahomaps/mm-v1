@@ -4,3 +4,5 @@
 build.properties
 .mtj
 .settings
+.idea/runConfigurations
+proguard.cfg
