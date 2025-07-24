@@ -153,7 +153,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 				f.addCommand(MahoMapsApp.back);
 				f.setCommandListener(this);
 				MahoMapsApp.BringSubScreen(f);
-				Settings.PushUsageFlag(512);
 			}
 			break;
 		case 4:
@@ -174,7 +173,6 @@ public class RouteOverlay extends MapOverlay implements Runnable, IButtonHandler
 					rt.SpoofGeolocation(MahoMapsApp.GetCanvas());
 					MahoMapsApp.route = rt;
 					UIElement.Deselect();
-					Settings.PushUsageFlag(256);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

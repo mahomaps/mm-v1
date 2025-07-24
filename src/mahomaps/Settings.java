@@ -40,28 +40,6 @@ public class Settings {
 	public static final int CACHE_DISABLED = 0;
 
 	/**
-	 * Telemetry flags
-	 * <ul>
-	 * <li>1 - about screen
-	 * <li>2 - others screen
-	 * <li>4 - settings screen
-	 * <li>8 - geolocation
-	 * <li>16 - search
-	 * <li>32 - route build by foot
-	 * <li>64 - route build by auto
-	 * <li>128 - route build by PT
-	 * <li>256 - route follow
-	 * <li>512 - route details
-	 * </ul>
-	 */
-	public static int usageFlags = 0;
-
-	public static synchronized void PushUsageFlag(int flag) {
-		usageFlags |= flag;
-		Save();
-	}
-
-	/**
 	 * Читает настройки приложения. Вызывает загрузку локализации.
 	 *
 	 * @return False, если чтение неудачно.
@@ -96,7 +74,6 @@ public class Settings {
 			uiLang = j.getInt("ui_lang", 0);
 			bbWifi = j.getBoolean("bb_wifi", false);
 			firstLaunch = j.getBoolean("1", true);
-			usageFlags = j.getInt("tm", 0);
 			map = j.getInt("map", 0);
 			readCachedBeforeDownloading = j.getBoolean("upscale", false);
 			return true;
@@ -140,7 +117,6 @@ public class Settings {
 		j.put("ui_lang", uiLang);
 		j.put("bb_wifi", bbWifi);
 		j.put("1", firstLaunch);
-		j.put("tm", usageFlags);
 		j.put("map", map);
 		j.put("upscale", readCachedBeforeDownloading);
 		return j.toString();

@@ -48,8 +48,8 @@ public class UpdateCheckThread extends Thread {
 			hasGeo = true;
 		} catch (Exception e) {
 		}
-		String url = "http://nnp.nnchan.ru:80/mahomaps/check.php?v=1." + MahoMapsApp.version + "&gt=" + Settings.geoLook
-				+ "&geo=" + (hasGeo ? 1 : 0) + "&uf=" + Settings.usageFlags + "&device=" + YmapsApiBase.EncodeUrl(dev);
+		String url = "http://nnp.nnchan.ru:80/mahomaps/check.php?v=1." + MahoMapsApp.version
+				+ "&geo=" + (hasGeo ? 1 : 0) + "&device=" + YmapsApiBase.EncodeUrl(dev);
 		System.out.println("GET " + url);
 		HttpConnection hc = null;
 		InputStream is = null;
@@ -64,8 +64,6 @@ public class UpdateCheckThread extends Thread {
 			while ((len = is.read(buf)) != -1) {
 				o.write(buf, 0, len);
 			}
-			Settings.usageFlags = 0;
-			Settings.Save();
 			String str = new String(o.toByteArray(), "UTF-8");
 			o.close();
 			if (r == 200) {
