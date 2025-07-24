@@ -107,7 +107,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			return;
 		}
 		if (uid == 10) {
-			if (m.geo.DrawPoint()) {
+			if (m.geo != null && m.geo.DrawPoint()) {
 				SetB(m.geolocation);
 			} else {
 				NotifyNoGeo();
@@ -115,7 +115,7 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			return;
 		}
 		if (uid == 11) {
-			if (m.geo.DrawPoint()) {
+			if (m.geo != null && m.geo.DrawPoint()) {
 				SetA(m.geolocation);
 			} else {
 				NotifyNoGeo();
