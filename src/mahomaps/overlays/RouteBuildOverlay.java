@@ -32,13 +32,19 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		if (a != null && b != null) {
 			v.addElement(a);
 			v.addElement(b);
-			content = new FillFlowContainer(new UIElement[] { new ColumnsContainer(new UIElement[] {
-					new Button(MahoMapsApp.text[126], 1, this), new Button(MahoMapsApp.text[127], 2, this), new Button(MahoMapsApp.text[128], 3, this)
-
-					}), new Button(MahoMapsApp.text[118], 0, this) });
+			content = new FillFlowContainer(new UIElement[]{
+					new ColumnsContainer(new UIElement[]{
+							new Button(MahoMapsApp.text[126], 1, this),
+							new Button(MahoMapsApp.text[127], 2, this),
+							new Button(MahoMapsApp.text[128], 3, this)
+					}),
+					new Button(MahoMapsApp.text[118], 0, this)
+			});
 		} else if (a == null && b == null) {
-			content = new FillFlowContainer(new UIElement[] { new SimpleText(MahoMapsApp.text[129]),
-					new Button(MahoMapsApp.text[118], 0, this) });
+			content = new FillFlowContainer(new UIElement[]{
+					new SimpleText(MahoMapsApp.text[129]),
+					new Button(MahoMapsApp.text[118], 0, this)
+			});
 		} else {
 			String s;
 			Button bt;
@@ -51,7 +57,13 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 				bt = new Button(MahoMapsApp.text[132], 11, this);
 				v.addElement(b);
 			}
-			content = new FillFlowContainer(new UIElement[] { new SimpleText(s), bt, new Button(MahoMapsApp.text[118], 0, this) });
+			content = new FillFlowContainer(new UIElement[]{
+					new SimpleText(s),
+					new ColumnsContainer(new UIElement[]{
+							bt,
+							new Button(MahoMapsApp.text[118], 0, this)
+					})
+			});
 		}
 	}
 
@@ -128,15 +140,15 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 			return;
 		int method = 0;
 		switch (uid) {
-		case 1:
-			method = YmapsApi.ROUTE_AUTO;
-			break;
-		case 2:
-			method = YmapsApi.ROUTE_BYFOOT;
-			break;
-		case 3:
-			method = YmapsApi.ROUTE_TRANSPORT;
-			break;
+			case 1:
+				method = YmapsApi.ROUTE_AUTO;
+				break;
+			case 2:
+				method = YmapsApi.ROUTE_BYFOOT;
+				break;
+			case 3:
+				method = YmapsApi.ROUTE_TRANSPORT;
+				break;
 		}
 
 		MahoMapsApp.Overlays().PushOverlay(new RouteOverlay(a, b, method));
