@@ -41,7 +41,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public Geopoint geolocation;
 
 	// input states
-	private boolean mapFocused = true;
+	public boolean mapFocused = true;
 	private int repeatCount = 0;
 	int startPx, startPy;
 	int lastPx, lastPy;
@@ -419,6 +419,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			tryStopRepeatThread(true);
 			if (mapFocused) {
 				if (!UIElement.IsQueueEmpty()) {
+					overlays.InvalidateAllOverlaysHeight();
 					mapFocused = false;
 					UIElement.SelectDown();
 				}
