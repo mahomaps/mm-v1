@@ -100,7 +100,7 @@ echo Optimizing ${APP}
 chmod +x ${PROGUARD}
 touch cf.cfg
 
-cat proguard.basecfg > cf.cfg
+cat proguard.cfg > cf.cfg
 echo "-injars ./${APP}.jar" >> cf.cfg
 echo "-outjar ./${APP}_obf.jar" >> cf.cfg
 echo "-printseeds ./${APP}_obf_seeds.txt" >> cf.cfg
