@@ -5,4 +5,4 @@ build.properties
 .mtj
 .settings
 .idea/runConfigurations
-local-proguard.cfg
+proguard-local.cfg
