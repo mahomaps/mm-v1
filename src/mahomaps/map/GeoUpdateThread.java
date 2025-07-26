@@ -14,7 +14,7 @@ public class GeoUpdateThread extends Thread {
 	 * Состояние получения геопозиции. Одно из state-значений.
 	 */
 	public int state;
-	private LocationAPI locationAPI;
+	private ILocationAPI locationAPI;
 	public boolean loop = true;
 	public long lastUpdateTime = System.currentTimeMillis();
 	public String method = null;
@@ -33,7 +33,8 @@ public class GeoUpdateThread extends Thread {
 		try {
 			Class.forName("javax.microedition.location.LocationProvider");
 			try {
-				locationAPI = new LocationAPI(this);
+				locationAPI = (ILocationAPI) Class.forName("mahomaps.map.LocationAPI").newInstance();
+				locationAPI.setThread(this);
 			} catch (Exception e) {
 				state = e.toString().indexOf("LocationException") != -1 ? STATE_UNAVAILABLE : STATE_UNSUPPORTED;
 				e.printStackTrace();

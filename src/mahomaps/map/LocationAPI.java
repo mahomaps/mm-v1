@@ -10,12 +10,11 @@ import javax.microedition.location.LocationProvider;
 /**
  * Обёртка для "безопасных" вызовов к жср179
  */
-public class LocationAPI {
-	private final GeoUpdateThread geoUpdateThread;
+public class LocationAPI implements ILocationAPI {
+	private GeoUpdateThread geoUpdateThread;
 	public LocationProvider locationProvider;
 
-	public LocationAPI(GeoUpdateThread geoUpdateThread) throws Exception {
-		this.geoUpdateThread = geoUpdateThread;
+	public LocationAPI() throws Exception {
 		locationProvider = LocationProvider.getInstance(null);
 	}
 
@@ -27,6 +26,10 @@ public class LocationAPI {
 		if (coordinates == null)
 			return null;
 		return new double[]{coordinates.getLatitude(), coordinates.getLongitude()};
+	}
+
+	public void setThread(GeoUpdateThread geoUpdateThread) {
+		this.geoUpdateThread = geoUpdateThread;
 	}
 
 	public void setupListener() {
