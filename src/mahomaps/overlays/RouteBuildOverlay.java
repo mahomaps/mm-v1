@@ -151,8 +151,6 @@ public class RouteBuildOverlay extends MapOverlay implements IButtonHandler {
 		}
 		if (a == null || b == null)
 			return;
-		if (!MahoMapsApp.GetCanvas().CheckApiAcsess())
-			return;
 		int method = 0;
 		switch (uid) {
 			case 1:

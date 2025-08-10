@@ -27,11 +27,11 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 		selection.color = Geopoint.COLOR_RED;
 		v.addElement(selection);
 
-		content = new FillFlowContainer(new UIElement[] {
+		content = new FillFlowContainer(new UIElement[]{
 				new SimpleText(p.toString()), new Button(MahoMapsApp.text[103], 1, this),
-				new Button(MahoMapsApp.text[137], 4, this), new ColumnsContainer(new UIElement[] {
-						new Button(MahoMapsApp.text[104], 2, this), new Button(MahoMapsApp.text[105], 3, this) }),
-				new Button(MahoMapsApp.text[38], 0, this) });
+				new Button(MahoMapsApp.text[137], 4, this), new ColumnsContainer(new UIElement[]{
+				new Button(MahoMapsApp.text[104], 2, this), new Button(MahoMapsApp.text[105], 3, this)}),
+				new Button(MahoMapsApp.text[38], 0, this)});
 	}
 
 	public String GetId() {
@@ -52,26 +52,24 @@ public class SelectOverlay extends MapOverlay implements IButtonHandler {
 
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
-		case 0:
-			Close();
-			break;
-		case 1:
-			if (MahoMapsApp.GetCanvas().CheckApiAcsess()) {
+			case 0:
+				Close();
+				break;
+			case 1:
 				Close();
 				MahoMapsApp.BringSubScreen(new SearchLoader(selection.toString(), selection));
-			}
-			break;
-		case 2:
-			Close();
-			RouteBuildOverlay.Get().SetA(selection);
-			break;
-		case 3:
-			Close();
-			RouteBuildOverlay.Get().SetB(selection);
-			break;
-		case 4:
-			BookmarksScreen.BeginAdd(selection, null);
-			break;
+				break;
+			case 2:
+				Close();
+				RouteBuildOverlay.Get().SetA(selection);
+				break;
+			case 3:
+				Close();
+				RouteBuildOverlay.Get().SetB(selection);
+				break;
+			case 4:
+				BookmarksScreen.BeginAdd(selection, null);
+				break;
 		}
 	}
 }

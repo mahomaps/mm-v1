@@ -20,7 +20,6 @@ import mahomaps.map.MapState;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
-import mahomaps.overlays.NoApiTokenOverlay;
 import mahomaps.overlays.OverlaysManager;
 import mahomaps.overlays.SelectOverlay;
 import mahomaps.overlays.TileCacheForbiddenOverlay;
@@ -110,24 +109,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 		controls = new ControlButtonsContainer(this);
 
-		CheckApiAcsess();
 		if (Settings.cacheMode == Settings.CACHE_DISABLED)
 			overlays.PushOverlay(new TileCacheForbiddenOverlay());
 		if (!Settings.allowDownload)
 			overlays.PushOverlay(new TileDownloadForbiddenOverlay());
-	}
-
-	/**
-	 * Проверяет есть ли доступ к апи. Выводит окно предупреждения.
-	 * 
-	 * @return False если нету.
-	 */
-	public boolean CheckApiAcsess() {
-		if (MahoMapsApp.api.token == null) {
-			overlays.PushOverlay(new NoApiTokenOverlay());
-			return false;
-		}
-		return true;
 	}
 
 	public Geopoint GetSearchAnchor() {
@@ -401,18 +386,18 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		if (MahoMapsApp.route != null) {
 			// когда маршрут ведётся, можно только изменять масштаб и закрывать маршрут.
 			switch (k) {
-			case -7:
-			case -22:
-				MahoMapsApp.route.overlay.OnButtonTap(null, 0);
-				break;
-			case KEY_NUM1:
-			case KEY_STAR:
-				state = state.ZoomOut();
-				break;
-			case KEY_NUM3:
-			case KEY_POUND:
-				state = state.ZoomIn();
-				break;
+				case -7:
+				case -22:
+					MahoMapsApp.route.overlay.OnButtonTap(null, 0);
+					break;
+				case KEY_NUM1:
+				case KEY_STAR:
+					state = state.ZoomOut();
+					break;
+				case KEY_NUM3:
+				case KEY_POUND:
+					state = state.ZoomIn();
+					break;
 			}
 			requestRepaint();
 			return;
@@ -437,7 +422,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			requestRepaint();
 			return;
 		}
-		handling: {
+		handling:
+		{
 			int ga = 0;
 			try {
 				ga = getGameAction(k);
@@ -445,90 +431,90 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			}
 			if (mapFocused) {
 				switch (ga) {
-				case FIRE:
-					tryStopRepeatThread(true);
-					Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
-					if (s.IsValid() && MahoMapsApp.lastSearch == null) {
-						// немного костылей:
-						// сбрасываем ввод
-						UIElement.CommitInputQueue();
-						// добавляем оверлей, он переотрисовывается заполняя очередь ввода
-						overlays.PushOverlay(new SelectOverlay(s));
-						// применяем очередь
-						UIElement.CommitInputQueue();
-						// снятие фокуса с карты
-						mapFocused = false;
-						// выбор кнопки
-						UIElement.SelectDown();
-						// после нажатия кнопки канва перерисует себя, вернув очередь ввода в адекватное
-						// состояние
-					}
-					break handling;
-				case UP:
-					keysState |= 1 << 0;
-					state.yOffset += 10;
-					state.ClampOffset();
-					tryStartRepeatThread();
-					break handling;
-				case DOWN:
-					keysState |= 1 << 1;
-					state.yOffset -= 10;
-					state.ClampOffset();
-					tryStartRepeatThread();
-					break handling;
-				case LEFT:
-					keysState |= 1 << 2;
-					state.xOffset += 10;
-					state.ClampOffset();
-					tryStartRepeatThread();
-					break handling;
-				case RIGHT:
-					keysState |= 1 << 3;
-					state.xOffset -= 10;
-					state.ClampOffset();
-					tryStartRepeatThread();
-					break handling;
+					case FIRE:
+						tryStopRepeatThread(true);
+						Geopoint s = Geopoint.GetAtCoords(state, 0, 0);
+						if (s.IsValid() && MahoMapsApp.lastSearch == null) {
+							// немного костылей:
+							// сбрасываем ввод
+							UIElement.CommitInputQueue();
+							// добавляем оверлей, он переотрисовывается заполняя очередь ввода
+							overlays.PushOverlay(new SelectOverlay(s));
+							// применяем очередь
+							UIElement.CommitInputQueue();
+							// снятие фокуса с карты
+							mapFocused = false;
+							// выбор кнопки
+							UIElement.SelectDown();
+							// после нажатия кнопки канва перерисует себя, вернув очередь ввода в адекватное
+							// состояние
+						}
+						break handling;
+					case UP:
+						keysState |= 1 << 0;
+						state.yOffset += 10;
+						state.ClampOffset();
+						tryStartRepeatThread();
+						break handling;
+					case DOWN:
+						keysState |= 1 << 1;
+						state.yOffset -= 10;
+						state.ClampOffset();
+						tryStartRepeatThread();
+						break handling;
+					case LEFT:
+						keysState |= 1 << 2;
+						state.xOffset += 10;
+						state.ClampOffset();
+						tryStartRepeatThread();
+						break handling;
+					case RIGHT:
+						keysState |= 1 << 3;
+						state.xOffset -= 10;
+						state.ClampOffset();
+						tryStartRepeatThread();
+						break handling;
 				}
 				switch (k) {
-				case KEY_NUM1:
-					ShowGeo();
-					break handling;
-				case KEY_NUM3:
-					// geo status toggle
-					Settings.showGeo++;
-					if (Settings.showGeo > 2)
-						Settings.showGeo = 0;
-					break handling;
-				case KEY_NUM7:
-					BeginTextSearch();
-					break handling;
-				case KEY_NUM9:
-					MahoMapsApp.BringSubScreen(new BookmarksScreen());
-					break handling;
-				case KEY_STAR:
-					state = state.ZoomIn();
-					break handling;
-				case KEY_POUND:
-					state = state.ZoomOut();
-					break handling;
-				case KEY_NUM0:
-					// layer toggle
-					MahoMapsApp.BringSubScreen(new MapLayerSelectionScreen());
-					break handling;
+					case KEY_NUM1:
+						ShowGeo();
+						break handling;
+					case KEY_NUM3:
+						// geo status toggle
+						Settings.showGeo++;
+						if (Settings.showGeo > 2)
+							Settings.showGeo = 0;
+						break handling;
+					case KEY_NUM7:
+						BeginTextSearch();
+						break handling;
+					case KEY_NUM9:
+						MahoMapsApp.BringSubScreen(new BookmarksScreen());
+						break handling;
+					case KEY_STAR:
+						state = state.ZoomIn();
+						break handling;
+					case KEY_POUND:
+						state = state.ZoomOut();
+						break handling;
+					case KEY_NUM0:
+						// layer toggle
+						MahoMapsApp.BringSubScreen(new MapLayerSelectionScreen());
+						break handling;
 				}
 			} else {
 				switch (ga) {
-				case FIRE:
-					UIElement.TriggerSelected();
-					break;
-				case UP:
-				case LEFT:
-					UIElement.SelectUp();
-					break;
-				case DOWN:
-				case RIGHT:
-					UIElement.SelectDown();
-					break;
+					case FIRE:
+						UIElement.TriggerSelected();
+						break;
+					case UP:
+					case LEFT:
+						UIElement.SelectUp();
+						break;
+					case DOWN:
+					case RIGHT:
+						UIElement.SelectDown();
+						break;
 				}
 			}
 		}
@@ -542,22 +528,22 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		} catch (IllegalArgumentException e) {
 		}
 		switch (ga) {
-		case UP:
-			keysState &= ~(1 << 0);
-			tryStopRepeatThread(false);
-			break;
-		case DOWN:
-			keysState &= ~(1 << 1);
-			tryStopRepeatThread(false);
-			break;
-		case LEFT:
-			keysState &= ~(1 << 2);
-			tryStopRepeatThread(false);
-			break;
-		case RIGHT:
-			keysState &= ~(1 << 3);
-			tryStopRepeatThread(false);
-			break;
+			case UP:
+				keysState &= ~(1 << 0);
+				tryStopRepeatThread(false);
+				break;
+			case DOWN:
+				keysState &= ~(1 << 1);
+				tryStopRepeatThread(false);
+				break;
+			case LEFT:
+				keysState &= ~(1 << 2);
+				tryStopRepeatThread(false);
+				break;
+			case RIGHT:
+				keysState &= ~(1 << 3);
+				tryStopRepeatThread(false);
+				break;
 		}
 		requestRepaint();
 	}
@@ -602,7 +588,8 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	protected void pointerReleased(int x, int y, int n) {
 		if (n != 0)
 			return;
-		handling: {
+		handling:
+		{
 			if (dragActive) {
 				dragActive = false;
 				break handling;
@@ -640,11 +627,10 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 	public void BeginTextSearch() {
 		if (MahoMapsApp.route != null)
 			return;
-		if (CheckApiAcsess()) {
-			if (MahoMapsApp.lastSearch == null) {
-				MahoMapsApp.BringSubScreen(searchBox);
-			}
+		if (MahoMapsApp.lastSearch == null) {
+			MahoMapsApp.BringSubScreen(searchBox);
 		}
+
 	}
 
 	public void commandAction(Command c, Displayable d) {
