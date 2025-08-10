@@ -30,8 +30,6 @@ public final class TileCache extends TileId {
 			g.drawImage(i, tx, ty, 0);
 		}
 		if (state == STATE_READY) {
-			if (img == null) // wtf!?
-				throw new NullPointerException("Corrupted tile state!");
 			g.setColor(0, 0, 255);
 		} else {
 			int ax = tx + 128;
