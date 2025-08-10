@@ -44,7 +44,7 @@ public class MenuScreen extends List implements CommandListener {
 					MahoMapsApp.BringSubScreen(new CacheManager(tiles));
 				} else if (sel == 6) {
 					MahoMapsApp.BringSubScreen(new AboutScreen());
-				}else if (sel == 8) {
+				} else if (sel == 7) {
 					MahoMapsApp.Exit();
 				}
 			}
