@@ -390,13 +390,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				case -22:
 					MahoMapsApp.route.overlay.OnButtonTap(null, 0);
 					break;
-				case KEY_NUM1:
 				case KEY_STAR:
-					state = state.ZoomOut();
-					break;
-				case KEY_NUM3:
-				case KEY_POUND:
 					state = state.ZoomIn();
+					break;
+				case KEY_POUND:
+					state = state.ZoomOut();
 					break;
 			}
 			requestRepaint();
