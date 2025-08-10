@@ -19,21 +19,22 @@ Yandex.Maps client for MIDP2-capable devices.
 - JSR-75
 - A lot of RAM
 - **A lot** of space in persistent memory
-- JSR-179 (optional)
-- HTTPS support (optional)
+- JSR-179 (optional, for geolocation)
+- HTTPS support (optional, for proxy-less operation)
 
 ### Recommended system tweaks
 
-On symbian 9.x, it's recommended to install a patch to allow access to file system without confirmation popups.
+- A patch to allow access to file system without confirmation popups ([example for S60](https://nnproject.cc/jrtsecuritypatch/))
+- On Symbian ^3 and higher: [nnproject's J9 patch pack](https://nnproject.cc/jrtpatches/) (better GPS, http and RMS)
 
 ### How to make geolocation work?
 
 - On Symbian 9.x / ^3 disable **all location sources except unassisted GPS**.
-- **Disable A-GPS**. On non-symbian devices it may be called as "geolocation server", "internet support", "supplement server" or something like that.
-- Let your device perform a cold start: request geolocation in any app (MahoMaps, Google Maps, Ovi Maps, Sports tracker, anything else) and keep the device under clear sky. It is desirable that the horizon is visible. Wait until it catches sattelites. May take a while.
-- Once you are sure that GPS receiver works okay, you may try to enable A-GPS to increase accuracy and startup time. We recommend using `supl.google.com` as supplement server. `supl.nokia.com` is dead!
+- Again, **disable A-GPS**. On non-symbian devices it may be called as "geolocation server", "internet support", "supplement server" or something like that.
+- Let your device perform a cold start: request geolocation in any app (MahoMaps, Google Maps, Ovi Maps, Sports tracker, anything else) and keep the device under clear sky. It is desirable that the horizon is visible. Wait until it catches satellites. May take a while.
+- Once you are sure that GPS receiver works okay, **it's recommended to enable A-GPS back** to increase accuracy and startup time. We recommend using `supl.grapheneos.org` as supplement server. `supl.nokia.com` is dead! For some people `supl.google.com` also works. On S40/S60 devices make sure to bind a correct access point.
 - If you experience issues, try disabling A-GPS.
-- If you device can't catch sattelites even in good weather, check that its GPS receiver is operable.
+- If your device can't catch satellites even in good weather, check that its GPS receiver is operable.
 
 ## Tested systems
 
@@ -46,9 +47,13 @@ On symbian 9.x, it's recommended to install a patch to allow access to file syst
 - [KEmulator nnmod](https://nnp.nnchan.ru/kem/)
 - [J2ME Loader](https://github.com/nikita36078/J2ME-Loader)
 
+## Editing source code
+
+There are Eclipse MTJ and [KEmulator/IDEA](https://github.com/shinovon/KEmulator/blob/main/IdeaSupport.md) projects, use what you wish.
+
 ## Build without IDE
 
-### Github actions
+### GitHub actions
 
 We have an action which builds the app on git pushes. You can pull latest builds from it, check "checks" section of your pull request or commit info.
 
