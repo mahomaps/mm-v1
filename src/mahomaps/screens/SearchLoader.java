@@ -12,7 +12,7 @@ import javax.microedition.lcdui.StringItem;
 import cc.nnproject.json.*;
 
 import mahomaps.MahoMapsApp;
-import mahomaps.api.Http403Exception;
+import mahomaps.api.AccessErrorException;
 import mahomaps.map.Geopoint;
 
 public class SearchLoader extends Form implements Runnable, CommandListener {
@@ -20,7 +20,6 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 	private Thread th;
 	public final String query;
 	public final Geopoint point;
-	private int tries;
 
 	public SearchLoader(String query, Geopoint point) {
 		super(query);
@@ -34,9 +33,6 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 	public void run() {
 		append(new Gauge(MahoMapsApp.text[14], false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
 		try {
-			if (tries != 0) {
-				MahoMapsApp.api.RefreshToken();
-			}
 			JSONArray arr = MahoMapsApp.api.Search(query, point, 0.1d);
 			MahoMapsApp.BringSubScreen(new SearchScreen(query, point, arr));
 		} catch (IOException e) {
@@ -44,13 +40,6 @@ public class SearchLoader extends Form implements Runnable, CommandListener {
 			append(new StringItem(MahoMapsApp.text[111], MahoMapsApp.text[159]));
 			append(new StringItem(MahoMapsApp.text[24], e.getMessage()));
 			e.printStackTrace();
-		} catch (Http403Exception e) {
-			deleteAll();
-			if (tries++ == 0) {
-				run();
-				return;
-			}
-			append(new StringItem(MahoMapsApp.text[135], MahoMapsApp.text[136]));
 		} catch (Exception e) {
 			deleteAll();
 			append(new StringItem(e.getClass().getName(), e.getMessage()));

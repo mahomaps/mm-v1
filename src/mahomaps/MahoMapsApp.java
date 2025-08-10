@@ -146,12 +146,6 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		}
 		api.TryRead(); // catch(Throwable) inside
 		try {
-			if (api.token == null)
-				api.RefreshToken();
-		} catch (Throwable e) {
-			// network or OOM errors
-		}
-		try {
 			menu = new MenuScreen(tiles); // nothing to fail
 			canvas = new MapCanvas(tiles); // hz
 			tiles.Start(); // OOM
@@ -167,11 +161,11 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		try {
 			(new UpdateCheckThread()).start();
 		} catch (Throwable t) {
-			// OOM
+			// OOM, ignore
 		}
 		try {
 			canvas.run();
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ignoreThenExit) {
 		} catch (Throwable t) {
 			Form f = new Form(MahoMapsApp.text[88], new Item[] { new StringItem(MahoMapsApp.text[123], t.toString()) });
 			f.addCommand(exit);

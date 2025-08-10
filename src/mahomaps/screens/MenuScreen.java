@@ -15,9 +15,9 @@ public class MenuScreen extends List implements CommandListener {
 
 	public MenuScreen(TilesProvider tiles) {
 		super("MahoMaps v1", Choice.IMPLICIT,
-				new String[] { MahoMapsApp.text[148], MahoMapsApp.text[153], MahoMapsApp.text[9], MahoMapsApp.text[10],
+				new String[]{MahoMapsApp.text[148], MahoMapsApp.text[153], MahoMapsApp.text[9], MahoMapsApp.text[10],
 						MahoMapsApp.text[11], MahoMapsApp.text[69], MahoMapsApp.text[12],
-						MahoMapsApp.text[0] },
+						MahoMapsApp.text[0]},
 				null);
 		this.tiles = tiles;
 		addCommand(MahoMapsApp.back);

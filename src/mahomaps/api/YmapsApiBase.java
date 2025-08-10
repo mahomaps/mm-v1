@@ -1,6 +1,7 @@
 package mahomaps.api;
 
 import cc.nnproject.json.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -10,9 +11,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
-
 
 
 public abstract class YmapsApiBase {
@@ -21,7 +22,7 @@ public abstract class YmapsApiBase {
 
 	private final Hashtable cookies = new Hashtable();
 
-	protected final String GetToken(String key) throws Exception {
+	protected final String GetToken(String key) throws IOException {
 		HttpConnection hc = null;
 		InputStream raw = null;
 		InputStreamReader stream = null;
@@ -96,7 +97,7 @@ public abstract class YmapsApiBase {
 		}
 	}
 
-	protected String GetUtf(String url) throws IOException, Http403Exception, SecurityException {
+	protected String GetUtf(String url) throws IOException, AccessErrorException, SecurityException {
 		if (Settings.proxyApi) {
 			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
@@ -112,7 +113,7 @@ public abstract class YmapsApiBase {
 			int r = hc.getResponseCode();
 			AcceptCookies(hc);
 			if (r == 403 || r == 401)
-				throw new Http403Exception();
+				throw new AccessErrorException();
 			is = hc.openInputStream();
 			o = new ByteArrayOutputStream();
 			byte[] buf = new byte[256];
@@ -134,6 +135,14 @@ public abstract class YmapsApiBase {
 				hc.close();
 			if (o != null)
 				o.close();
+		}
+	}
+
+	public void CheckAccessError(JSONObject obj) throws AccessErrorException {
+		if (obj.has("statusCode")) {
+			int code = obj.getInt("statusCode");
+			if (code == 401 || code == 403)
+				throw new AccessErrorException();
 		}
 	}
 

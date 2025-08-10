@@ -14,15 +14,20 @@ public final class YmapsApi extends YmapsApiBase {
 
 	private static final String RMS_NAME = "mm_v1_api";
 
-	public final String key = "d81964d6-b80c-46ed-9b29-d980a45d32f9";
+	public static final String key = "d81964d6-b80c-46ed-9b29-d980a45d32f9";
 
 	public String token = null;
 
-	public final synchronized void RefreshToken() throws Exception {
+	public final synchronized void RefreshToken() throws IOException {
 		token = null;
 		token = GetToken(key);
 		Save();
 	}
+
+	public final synchronized void RefreshTokenIfNull() throws IOException {
+		if (token == null) RefreshToken();
+	}
+
 
 	private final String GetSearchUrl(String text, Geopoint around, double zone) {
 		String[] cs = around.GetRounded();
@@ -35,16 +40,16 @@ public final class YmapsApi extends YmapsApiBase {
 	private final String GetRouteUrl(Geopoint a, Geopoint b, int type) {
 		String typeS = "";
 		switch (type) {
-		case ROUTE_BYFOOT:
-			typeS = "&rtt=pd";
-			break;
-		case ROUTE_AUTO:
-			break;
-		case ROUTE_TRANSPORT:
-			typeS = "&rtt=mt";
-			break;
-		default:
-			throw new IllegalArgumentException();
+			case ROUTE_BYFOOT:
+				typeS = "&rtt=pd";
+				break;
+			case ROUTE_AUTO:
+				break;
+			case ROUTE_TRANSPORT:
+				typeS = "&rtt=mt";
+				break;
+			default:
+				throw new IllegalArgumentException();
 		}
 		return "https://api-maps.yandex.ru/services/route/2.0/?lang=" + Settings.GetLangString() + "&token=" + token
 				+ "&rll=" + a.lon + "%2C" + a.lat + "~" + b.lon + "%2C" + b.lat + "&rtm=dtr&results=1&apikey=" + key
@@ -52,18 +57,34 @@ public final class YmapsApi extends YmapsApiBase {
 	}
 
 	public final JSONArray Search(String text, Geopoint around, double zone)
-			throws JSONException, IOException, Http403Exception {
-		JSONObject j = JSON.getObject(GetUtf(GetSearchUrl(text, around, zone)));
-		if (!j.has("features")) throw new Http403Exception();
-		return j.getArray("features");
+			throws JSONException, IOException {
+		RefreshTokenIfNull();
+		try {
+			String response = GetUtf(GetSearchUrl(text, around, zone));
+			JSONObject j = JSON.getObject(response);
+			CheckAccessError(j);
+			return j.getArray("features");
+		} catch (AccessErrorException ex) {
+			RefreshToken();
+			return Search(text, around, zone);
+		}
 	}
 
 	public final JSONArray Routes(Geopoint a, Geopoint b, int type)
-			throws JSONException, IOException, Http403Exception {
-		JSONArray j = (JSON.getObject(GetUtf(GetRouteUrl(a, b, type)))).getArray("features");
-		if (j.size() == 0)
-			throw new ConnectionNotFoundException();
-		return j.getObject(0).getArray("features");
+			throws JSONException, IOException {
+		RefreshTokenIfNull();
+		try {
+			String response = GetUtf(GetRouteUrl(a, b, type));
+			JSONObject j = JSON.getObject(response);
+			CheckAccessError(j);
+			JSONArray ja = j.getArray("features");
+			if (ja.size() == 0)
+				throw new ConnectionNotFoundException();
+			return ja.getObject(0).getArray("features");
+		} catch (AccessErrorException ex) {
+			RefreshToken();
+			return Routes(a, b, type);
+		}
 	}
 
 	public static final int ROUTE_BYFOOT = 1;
