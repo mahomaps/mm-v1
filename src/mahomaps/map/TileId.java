@@ -13,4 +13,8 @@ public class TileId {
 		this.zoom = zoom;
 		this.map = map;
 	}
+
+	public final boolean is(TileId id) {
+		return id.x == x && id.y == y && id.zoom == zoom && id.map == map;
+	}
 }

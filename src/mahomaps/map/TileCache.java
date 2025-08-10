@@ -7,7 +7,7 @@ import javax.microedition.lcdui.Image;
 import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 
-public class TileCache extends TileId {
+public final class TileCache extends TileId {
 
 	public Image img;
 	public volatile int state = 0;
@@ -19,10 +19,6 @@ public class TileCache extends TileId {
 
 	public TileCache(TileId id) {
 		super(id.x, id.y, id.zoom, id.map);
-	}
-
-	public boolean is(TileId id) {
-		return id.x == x && id.y == y && id.zoom == zoom && id.map == map;
 	}
 
 	public void paint(Graphics g, int tx, int ty) {
