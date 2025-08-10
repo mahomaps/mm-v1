@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module type="JAVA_MODULE" version="4">
+  <component LANGUAGE_LEVEL="JDK_1_3" inherit-compiler-output="true" name="NewModuleRootManager">
+    <exclude-output/>
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder isTestSource="false" url="file://$MODULE_DIR$/src"/>
+      <sourceFolder type="java-resource" url="file://$MODULE_DIR$/res"/>
+      <excludeFolder url="file://$MODULE_DIR$/deployed"/>
+    </content>
+    <orderEntry type="inheritedJdk"/>
+    <orderEntry forTests="false" type="sourceFolder"/>
+  </component>
+</module>

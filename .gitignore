@@ -7,3 +7,4 @@ build.properties
 .idea/runConfigurations
 proguard-local.cfg
 .idea/uiDesigner.xml
+proguard-local.cfg
