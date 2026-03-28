@@ -8,3 +8,6 @@ build.properties
 proguard-local.cfg
 .idea/uiDesigner.xml
 proguard-local.cfg
+/tmpclasses
+./mm_v1_obf_map.txt
+./mm_v1_obf_seeds.txt

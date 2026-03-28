@@ -29,7 +29,8 @@ public class DeviceControlInvoker {
 			return;
 		}
 		try {
-			DeviceControl.resetUserInactivityTime();
+			//DeviceControl.resetUserInactivityTime();
+			DeviceControl.setLights(0, 100);
 		} catch (Throwable e) {
 		}
 	}
