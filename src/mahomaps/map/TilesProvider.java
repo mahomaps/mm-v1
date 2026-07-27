@@ -67,7 +67,7 @@ public class TilesProvider implements Runnable {
 			// sat
 			"https://core-sat.maps.yandex.net/tiles?l=sat&lang=",
 			// hybrid
-			"http://nnp.nnchan.ru/mergedtile.php?lang=",
+			"http://nnproject.cc/mergedtile.php?lang=",
 			// scheme dark
 			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&client_id=yandex-web-maps&experimental_use_metapoi=1&experimental_metapoi_combined_tiles=true&experimental_ranking_mode_name=default-web-ranking&experimental_mm_local_rubricpoi_min_zoom=13&experimental_mm_local_photopoi_min_zoom=13&experimental_mm_photopoi_min_zoom=13&experimental_mm_rubricpoi_min_zoom=13&maptype=future_map&theme=dark&lang=" };
 

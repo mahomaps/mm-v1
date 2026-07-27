@@ -37,7 +37,7 @@ public class Settings {
 	 */
 	public static boolean readCachedBeforeDownloading = false;
 
-	public static String proxyServer = "http://nnp.nnchan.ru:80/mahoproxy.php?u=";
+	public static String proxyServer = "http://nnproject.cc:80/mahoproxy.php?u=";
 
 	public static final int CACHE_FS = 1;
 	public static final int CACHE_RMS = 2;

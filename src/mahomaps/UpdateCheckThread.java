@@ -52,7 +52,7 @@ public class UpdateCheckThread extends Thread {
 			hasGeo = true;
 		} catch (Exception e) {
 		}
-		String url = "http://nnp.nnchan.ru:80/mahomaps/check.php?v=1." + MahoMapsApp.version
+		String url = "http://nnproject.cc:80/mahomaps/check.php?v=1." + MahoMapsApp.version
 				+ "&geo=" + (hasGeo ? 1 : 0) + "&device=" + YmapsApiBase.EncodeUrl(dev);
 		System.out.println("GET " + url);
 		HttpConnection hc = null;

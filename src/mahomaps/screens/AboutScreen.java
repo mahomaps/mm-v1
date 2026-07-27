@@ -20,7 +20,7 @@ import mahomaps.MahoMapsApp;
 
 public class AboutScreen extends Form implements CommandListener, ItemCommandListener {
 
-	StringItem website = new StringItem(MahoMapsApp.text[33], "nnp.nnchan.ru", Item.HYPERLINK);
+	StringItem website = new StringItem(MahoMapsApp.text[33], "nnproject.cc", Item.HYPERLINK);
 	StringItem chat = new StringItem(MahoMapsApp.text[34], "t.me/nnmidletschat", Item.HYPERLINK);
 	StringItem gh = new StringItem("GitHub", "github.com/mahomaps", Item.HYPERLINK);
 
@@ -86,9 +86,9 @@ public class AboutScreen extends Form implements CommandListener, ItemCommandLis
 	public void commandAction(Command c, Item item) {
 		if (c == MahoMapsApp.openLink) {
 			if (item == website) {
-				MahoMapsApp.open("http://nnp.nnchan.ru");
+				MahoMapsApp.open("http://nnproject.cc");
 			} else if (item == chat) {
-				MahoMapsApp.open("http://mp.nnchan.ru/chat.php?c=nnmidletschat");
+				MahoMapsApp.open("http://mp.nnproject.cc/chat.php?c=nnmidletschat");
 			} else if (item == gh) {
 				MahoMapsApp.open("https://github.com/mahomaps");
 			}
