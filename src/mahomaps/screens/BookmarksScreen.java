@@ -55,14 +55,14 @@ public class BookmarksScreen extends List implements CommandListener {
 	private static JSONArray read() {
 		try {
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
-			byte[] d = null;
-			if (r.getNumRecords() > 0) {
-				d = r.getRecord(1);
+			byte[] d;
+			try {
+				d = r.getRecord(r.getNextRecordID() - 1);
+			} finally {
+				r.closeRecordStore();
 			}
-			r.closeRecordStore();
 
-			if (d == null)
-				return JSON.getArray("[]");
+			if (d == null) return JSON.getArray("[]");
 
 			return JSON.getArray(new String(d, "UTF-8"));
 		} catch (Throwable e) {
@@ -104,10 +104,15 @@ public class BookmarksScreen extends List implements CommandListener {
 		try {
 			byte[] d = arr.toString().getBytes("UTF-8");
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
-			if (r.getNumRecords() == 0)
-				r.addRecord(new byte[1], 0, 1);
-			r.setRecord(1, d, 0, d.length);
-			r.closeRecordStore();
+			try {
+				try {
+					if (r.getNumRecords() != 0)
+						r.deleteRecord(r.getNextRecordID() - 1);
+				} catch (Exception ignored) {}
+				r.addRecord(d, 0, d.length);
+			} finally {
+				r.closeRecordStore();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

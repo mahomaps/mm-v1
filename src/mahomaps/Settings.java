@@ -52,10 +52,12 @@ public class Settings {
 		try {
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
 			byte[] d = null;
-			if (r.getNumRecords() > 0) {
-				d = r.getRecord(1);
+			try {
+				if (r.getNumRecords() != 0)
+					d = r.getRecord(r.getNextRecordID() - 1);
+			} finally {
+				r.closeRecordStore();
 			}
-			r.closeRecordStore();
 
 			// parse
 			if (d == null) {
@@ -130,12 +132,15 @@ public class Settings {
 		try {
 			byte[] d = Serialize().getBytes();
 			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
-
-			if (r.getNumRecords() == 0) {
-				r.addRecord(new byte[1], 0, 1);
+			try {
+				try {
+					if (r.getNumRecords() != 0)
+						r.deleteRecord(r.getNextRecordID() - 1);
+				} catch (Exception ignored) {}
+				r.addRecord(d, 0, d.length);
+			} finally {
+				r.closeRecordStore();
 			}
-			r.setRecord(1, d, 0, d.length);
-			r.closeRecordStore();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -144,11 +149,12 @@ public class Settings {
 	public static MapState ReadStateOrDefault() {
 		try {
 			RecordStore r = RecordStore.openRecordStore(POS_RMS_NAME, true);
-			byte[] d = null;
-			if (r.getNumRecords() > 0) {
-				d = r.getRecord(1);
+			byte[] d;
+			try {
+				d = r.getRecord(r.getNextRecordID() - 1);
+			} finally {
+				r.closeRecordStore();
 			}
-			r.closeRecordStore();
 
 			if (d != null) {
 				return MapState.Decode(new String(d));
@@ -163,10 +169,15 @@ public class Settings {
 		try {
 			byte[] d = ms.Encode().getBytes();
 			RecordStore r = RecordStore.openRecordStore(POS_RMS_NAME, true);
-			if (r.getNumRecords() == 0)
-				r.addRecord(new byte[1], 0, 1);
-			r.setRecord(1, d, 0, d.length);
-			r.closeRecordStore();
+			try {
+				try {
+					if (r.getNumRecords() != 0)
+						r.deleteRecord(r.getNextRecordID() - 1);
+				} catch (Exception ignored) {}
+				r.addRecord(d, 0, d.length);
+			} finally {
+				r.closeRecordStore();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
