@@ -62,11 +62,11 @@ public class BookmarksScreen extends List implements CommandListener {
 				r.closeRecordStore();
 			}
 
-			if (d == null) return JSON.getArray("[]");
+			if (d == null) return new JSONArray();
 
 			return JSON.getArray(new String(d, "UTF-8"));
 		} catch (Throwable e) {
-			return JSON.getArray("[]");
+			return new JSONArray();
 		}
 	}
 
