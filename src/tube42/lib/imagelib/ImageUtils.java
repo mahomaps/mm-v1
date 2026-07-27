@@ -100,20 +100,25 @@ public final class ImageUtils
         int [] buffer = new int[w1 * 2];
         
         for(int offset = 0, i = 0; i < h2; i++) {
-            org.getRGB( buffer, 0, w1, 0, i * 2, w1, 2); // get two lines from the original
-            
-            int o1 = 0, o2 = 1;
-            int o3 = w1, o4 = w1 + 1;
-            
-            for(int j = 0; j < w2; j++) {
-                data[offset ++] = ColorUtils.mix( buffer[o1], buffer[o2],
-                          buffer[o3], buffer[o4]);            
-                o1 += 2;
-                o2 += 2;
-                o3 += 2;
-                o4 += 2;
-            }
-        }
+			org.getRGB( buffer, 0, w1, 0, i * 2, w1, 2); // get two lines from the original
+			
+			int o1 = 0, o2 = 1;
+			int o3 = w1, o4 = w1 + 1;
+			
+			for(int j = 0; j < w2; j++) {
+				data[offset ++] = ((
+						((buffer[o1] & 0x00FF00FF) + (buffer[o2] & 0x00FF00FF) + (buffer[o3] & 0x00FF00FF) + (buffer[o4] & 0x00FF00FF)) >> 2
+						) & 0x00FF00FF) | ((
+						((buffer[o1] & 0xFF00FF00) >>> 2) + ((buffer[o2] & 0xFF00FF00) >>> 2) + 
+						((buffer[o3] & 0xFF00FF00) >>> 2) + ((buffer[o4] & 0xFF00FF00) >>> 2) 
+						) & 0xFF00FF00);
+						//mix( buffer[o1], buffer[o2], buffer[o3], buffer[o4]);			
+				o1 += 2;
+				o2 += 2;
+				o3 += 2;
+				o4 += 2;
+			}
+		}
         
         Image tmp = Image.createRGBImage(data, w2, h2, true);
         data = null; // can this help GC at this point?
