@@ -488,6 +488,8 @@ public class TilesProvider implements Runnable {
 				Settings.allowDownload = false;
 			} catch (RuntimeException e1) {
 			}
+		} catch (IOException e) {
+			MahoMapsApp.lastException = e;
 		} catch (Exception e) {
 		} catch (OutOfMemoryError e) {
 		} finally {
@@ -529,6 +531,7 @@ public class TilesProvider implements Runnable {
 				try {
 					return Image.createImage(b, 0, b.length);
 				} catch (RuntimeException e) {
+					MahoMapsApp.lastException = e;
 					return null; //битый жипег может дать IllArgEx
 				}
 			} catch (SecurityException e) {
@@ -575,6 +578,7 @@ public class TilesProvider implements Runnable {
 				try {
 					return Image.createImage(b, 0, b.length);
 				} catch (RuntimeException e) {
+					MahoMapsApp.lastException = e;
 					return null; //битый жипег может дать IllArgEx
 				}
 			}

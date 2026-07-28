@@ -210,9 +210,11 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 		Font f = Font.getFont(0, 0, 8);
 		g.setColor(0);
 		g.setFont(f);
-		if (Settings.drawDebugInfo)
+		if (Settings.drawDebugInfo) {
 			g.drawString(state.toString(), 0, 0, 0);
-
+			if (MahoMapsApp.lastException != null)
+				g.drawString(MahoMapsApp.lastException.toString(), 0, 30, 0);
+		}
 		try {
 			controls.info = GetGeoInfo();
 		} catch (Exception e) {

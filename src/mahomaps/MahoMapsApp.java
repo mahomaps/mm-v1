@@ -67,6 +67,9 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 	public static Command yes;
 	public static Command toMap;
 
+	// debug
+	public static Throwable lastException;
+
 	static {
 		platform = System.getProperty("microedition.platform");
 		if (platform == null) {
