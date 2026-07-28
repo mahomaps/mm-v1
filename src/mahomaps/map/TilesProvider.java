@@ -61,7 +61,7 @@ public class TilesProvider implements Runnable {
 	private Thread networkTh;
 	private Thread cacheTh;
 
-	public static final String[] tilesUrls = new String[] {
+	public static final String[] tilesUrls = new String[]{
 			// scheme light
 			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&client_id=yandex-web-maps&experimental_use_metapoi=1&experimental_metapoi_combined_tiles=true&experimental_ranking_mode_name=default-web-ranking&experimental_mm_local_rubricpoi_min_zoom=13&experimental_mm_local_photopoi_min_zoom=13&experimental_mm_photopoi_min_zoom=13&experimental_mm_rubricpoi_min_zoom=13&maptype=future_map&lang=",
 			// sat
@@ -71,7 +71,7 @@ public class TilesProvider implements Runnable {
 			// scheme dark
 			"https://core-renderer-tiles.maps.yandex.net/tiles?l=map&client_id=yandex-web-maps&experimental_use_metapoi=1&experimental_metapoi_combined_tiles=true&experimental_ranking_mode_name=default-web-ranking&experimental_mm_local_rubricpoi_min_zoom=13&experimental_mm_local_photopoi_min_zoom=13&experimental_mm_photopoi_min_zoom=13&experimental_mm_rubricpoi_min_zoom=13&maptype=future_map&theme=dark&lang=" };
 
-	public static final int[] layerNames = new int[] { 55, 154, 155, 167 };
+	public static final int[] layerNames = new int[]{55, 154, 155, 167};
 
 	public static final String[] GetLayerNames() {
 		if (layerNames.length != tilesUrls.length)
@@ -526,7 +526,11 @@ public class TilesProvider implements Runnable {
 				s.close();
 				byte[] b = o.toByteArray();
 				o.close();
-				return Image.createImage(b, 0, b.length);
+				try {
+					return Image.createImage(b, 0, b.length);
+				} catch (RuntimeException e) {
+					return null; //битый жипег может дать IllArgEx
+				}
 			} catch (SecurityException e) {
 				MahoMapsApp.Overlays().PushOverlay(new TileCacheForbiddenOverlay());
 				Settings.cacheMode = Settings.CACHE_DISABLED;
@@ -568,7 +572,11 @@ public class TilesProvider implements Runnable {
 			}
 
 			if (b != null) {
-				return Image.createImage(b, 0, b.length);
+				try {
+					return Image.createImage(b, 0, b.length);
+				} catch (RuntimeException e) {
+					return null; //битый жипег может дать IllArgEx
+				}
 			}
 
 			return null;
