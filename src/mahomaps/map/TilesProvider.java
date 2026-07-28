@@ -466,9 +466,11 @@ public class TilesProvider implements Runnable {
 				synchronized (cacheAccessLock) {
 					try {
 						RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
-						if (r.getNumRecords() == 0)
-							r.addRecord(new byte[1], 0, 1);
-						r.setRecord(1, blobc, 0, blobc.length);
+						try {
+							if (r.getNumRecords() != 0)
+								r.deleteRecord(r.getNextRecordID() - 1);
+						} catch (Exception ignored) {}
+						r.addRecord(blobc, 0, blobc.length);
 						r.closeRecordStore();
 					} catch (RecordStoreFullException e) {
 						// TODO: Выводить алерт что место закончилось
@@ -554,10 +556,11 @@ public class TilesProvider implements Runnable {
 			byte[] b = null;
 			try {
 				RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
-				if (r.getNumRecords() > 0) {
-					b = r.getRecord(1);
+				try {
+					b = r.getRecord(r.getNextRecordID() - 1);
+				} finally {
+					r.closeRecordStore();
 				}
-				r.closeRecordStore();
 			} catch (RecordStoreNotOpenException e) {
 				e.printStackTrace();
 			} catch (RecordStoreException e) {
