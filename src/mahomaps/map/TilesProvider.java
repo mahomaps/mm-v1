@@ -559,7 +559,7 @@ public class TilesProvider implements Runnable {
 		synchronized (cacheAccessLock) {
 			byte[] b = null;
 			try {
-				RecordStore r = RecordStore.openRecordStore(getRmsName(id), true);
+				RecordStore r = RecordStore.openRecordStore(getRmsName(id), false);
 				try {
 					b = r.getRecord(r.getNextRecordID() - 1);
 				} finally {

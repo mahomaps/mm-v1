@@ -123,7 +123,7 @@ public final class YmapsApi extends YmapsApiBase {
 
 	public final synchronized void TryRead() {
 		try {
-			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
+			RecordStore r = RecordStore.openRecordStore(RMS_NAME, false);
 			byte[] d;
 			try {
 				d = r.getRecord(r.getNextRecordID() - 1);

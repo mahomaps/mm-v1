@@ -54,7 +54,7 @@ public class BookmarksScreen extends List implements CommandListener {
 
 	private static JSONArray read() {
 		try {
-			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
+			RecordStore r = RecordStore.openRecordStore(RMS_NAME, false);
 			byte[] d;
 			try {
 				d = r.getRecord(r.getNextRecordID() - 1);

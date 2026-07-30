@@ -50,7 +50,7 @@ public class Settings {
 	 */
 	public static synchronized boolean Read() {
 		try {
-			RecordStore r = RecordStore.openRecordStore(RMS_NAME, true);
+			RecordStore r = RecordStore.openRecordStore(RMS_NAME, false);
 			byte[] d = null;
 			try {
 				if (r.getNumRecords() != 0)
@@ -148,7 +148,7 @@ public class Settings {
 
 	public static MapState ReadStateOrDefault() {
 		try {
-			RecordStore r = RecordStore.openRecordStore(POS_RMS_NAME, true);
+			RecordStore r = RecordStore.openRecordStore(POS_RMS_NAME, false);
 			byte[] d;
 			try {
 				d = r.getRecord(r.getNextRecordID() - 1);
