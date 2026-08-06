@@ -98,7 +98,7 @@ public abstract class YmapsApiBase {
 	}
 
 	protected String GetUtf(String url) throws IOException, AccessErrorException, SecurityException {
-		if (Settings.proxyApi) {
+		if (Settings.proxyApi && !url.startsWith("http://192.168.") && !url.startsWith("http://localhost")) {
 			url = Settings.proxyServer + YmapsApiBase.EncodeUrl(url);
 		}
 		System.out.println("GET " + url);
