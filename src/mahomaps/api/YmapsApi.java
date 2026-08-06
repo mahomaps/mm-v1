@@ -41,6 +41,11 @@ public final class YmapsApi extends YmapsApiBase {
 				+ key + "&text=" + EncodeUrl(text) + "&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
 	}
 
+	private final String GetVisibleVehiclesUrl(Geopoint around, double zone){
+		String[] cs = around.GetRounded();
+		return "http://localhost:5249/ym/mt/vt?lang=ru&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
+	}
+
 	private final String GetRouteUrl(Geopoint a, Geopoint b, int type) {
 		String typeS = "";
 		switch (type) {
