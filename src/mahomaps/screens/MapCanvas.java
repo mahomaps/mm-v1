@@ -208,12 +208,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	private void drawOverlay(Graphics g, int w, int h) {
 		Font f = Font.getFont(0, 0, 8);
-		g.setColor(0);
 		g.setFont(f);
+		g.setColor(-1);
+		String expText = "ЭКСПЕРИМЕНТАЛЬНО";
+		g.fillRect(0, f.getHeight() * 2, f.stringWidth(expText) + 10, f.getHeight());
+		g.setColor(255, 0, 0);
+		g.drawString(expText, 5, f.getHeight() * 2, 0);
+		g.setColor(0);
 		if (Settings.drawDebugInfo) {
 			g.drawString(state.toString(), 0, 0, 0);
 			if (MahoMapsApp.lastException != null)
-				g.drawString(MahoMapsApp.lastException.toString(), 0, 30, 0);
+				g.drawString(MahoMapsApp.lastException.toString(), 0, f.getHeight(), 0);
 		}
 		try {
 			controls.info = GetGeoInfo();
