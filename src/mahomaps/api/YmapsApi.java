@@ -47,6 +47,10 @@ public final class YmapsApi extends YmapsApiBase {
 		return "http://localhost:5249/ym/mt/vt?lang=ru&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
 	}
 
+	private final String GetActiveThreadUrl(String tid, String lid, String vid) {
+		return "http://localhost:5249/ym/mt/vt?lang=ru&tid=" + tid + "&lid=" + lid + "&vid=" + vid;
+	}
+
 	private final String GetRouteUrl(Geopoint a, Geopoint b, int type) {
 		String typeS = "";
 		switch (type) {
