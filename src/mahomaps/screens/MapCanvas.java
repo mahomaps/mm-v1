@@ -119,7 +119,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			overlays.PushOverlay(new TileDownloadForbiddenOverlay());
 	}
 
-	public Geopoint GetSearchAnchor() {
+	public Geopoint GetSearchAnchor(boolean preferGeo) {
 		if (geo != null && geo.DrawPoint()) {
 			return geolocation;
 		}
@@ -648,7 +648,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				MahoMapsApp.BringMap();
 			} else {
 				overlays.CloseOverlay(SelectOverlay.ID);
-				Geopoint sa = GetSearchAnchor();
+				Geopoint sa = GetSearchAnchor(true);
 				MahoMapsApp.BringSubScreen(new SearchLoader(searchBox.getString(), sa));
 			}
 		}

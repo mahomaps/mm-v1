@@ -6,6 +6,7 @@ package mahomaps.map;
 
 import java.io.IOException;
 
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -27,6 +28,8 @@ public class Geopoint {
 	public int color;
 
 	public Object object;
+
+	public String label;
 
 	public static Image locationIcons;
 	public static Image commonPs;
@@ -87,39 +90,66 @@ public class Geopoint {
 		int px = GetScreenX(ms);
 		int py = GetScreenY(ms);
 		int s;
+		if (type >= POI_SELECT && type <= POI_SEARCH) {
+			String l = label;
+			if (l != null) {
+				Font f = Font.getFont(0, 0, 8);
+				g.setFont(f);
+				int labelW = f.stringWidth(l);
+				g.setColor(-1);
+				int textX = commonPs.getWidth() / 8 + 4;
+				int textY = py - 28 - f.getHeight() / 2;
+				g.fillRect(px, textY, textX + labelW + 2, f.getHeight());
+				switch (color) {
+					case 0:
+						g.setColor(200, 0, 0);
+						break;
+					case 1:
+						g.setColor(0, 200, 0);
+						break;
+					case 3:
+						g.setColor(0, 0, 200);
+						break;
+					default:
+						g.setColor(0);
+						break;
+				}
+				g.drawString(l, px + textX, textY, 0);
+			}
+		}
 		switch (type) {
-		case POI_SELECT:
-			s = commonPs.getWidth() / 4;
-			g.drawRegion(commonPs, s * color, 80, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
-			break;
-		case POI_MARK:
-			s = commonPs.getWidth() / 4;
-			g.drawRegion(commonPs, s * color, 40, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
-			break;
-		case POI_SEARCH:
-			s = commonPs.getWidth() / 4;
-			g.drawRegion(commonPs, s * color, 0, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
-			break;
-		case LOCATION:
-			s = locationIcons.getWidth() / 2;
-			g.drawRegion(locationIcons, color == 0 ? 0 : s, s * Settings.geoLook, s, s, 0, px, py,
-					Graphics.VCENTER | Graphics.HCENTER);
-			break;
-		case ROUTE_A:
-			g.drawRegion(route, 0, 0, route.getWidth() / 3, route.getHeight(), 0, px, py,
-					Graphics.BOTTOM | Graphics.HCENTER);
-			break;
-		case ROUTE_B:
-			s = route.getWidth() / 3;
-			g.drawRegion(route, s, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
-			break;
-		case ROUTE_C:
-			s = route.getWidth() / 3;
-			g.drawRegion(route, s * 2, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
-			break;
-		case ROUTE_VERTEX:
-			g.setColor(0xff0000);
-			g.fillRect(px - 2, py - 2, 4, 4);
+			case POI_SELECT:
+				s = commonPs.getWidth() / 4;
+				g.drawRegion(commonPs, s * color, 80, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+				break;
+			case POI_MARK:
+				s = commonPs.getWidth() / 4;
+				g.drawRegion(commonPs, s * color, 40, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+				break;
+			case POI_SEARCH:
+				s = commonPs.getWidth() / 4;
+				g.drawRegion(commonPs, s * color, 0, s, 40, 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+				break;
+			case LOCATION:
+				s = locationIcons.getWidth() / 2;
+				g.drawRegion(locationIcons, color == 0 ? 0 : s, s * Settings.geoLook, s, s, 0, px, py,
+						Graphics.VCENTER | Graphics.HCENTER);
+				break;
+			case ROUTE_A:
+				g.drawRegion(route, 0, 0, route.getWidth() / 3, route.getHeight(), 0, px, py,
+						Graphics.BOTTOM | Graphics.HCENTER);
+				break;
+			case ROUTE_B:
+				s = route.getWidth() / 3;
+				g.drawRegion(route, s, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+				break;
+			case ROUTE_C:
+				s = route.getWidth() / 3;
+				g.drawRegion(route, s * 2, 0, s, route.getHeight(), 0, px, py, Graphics.BOTTOM | Graphics.HCENTER);
+				break;
+			case ROUTE_VERTEX:
+				g.setColor(0xff0000);
+				g.fillRect(px - 2, py - 2, 4, 4);
 		}
 	}
 
