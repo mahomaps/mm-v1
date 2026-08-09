@@ -7,6 +7,7 @@ public class VisibleVehicle {
 	public YGeometry[] routeSegments;
 	public int[] routeDurations;
 	public JSONObject source;
+
 	public static VisibleVehicle decode(JSONObject j) {
 		VisibleVehicle v = new VisibleVehicle();
 		JSONArray rsArr = j.getArray("routeSegments");
@@ -15,7 +16,7 @@ public class VisibleVehicle {
 		v.routeDurations = new int[rsArr.size()];
 		for (int i = 0; i < rsArr.size(); i++) {
 			v.routeSegments[i] = YGeometry.decode(rsArr.getObject(i));
-			v.routeDurations[i] = durArr.getInt(i);
+			v.routeDurations[i] = durArr.getInt(i) * 10;
 		}
 		v.source = j;
 		return v;
