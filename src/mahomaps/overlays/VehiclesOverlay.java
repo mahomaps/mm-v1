@@ -46,7 +46,7 @@ public static boolean isVisible = false;
 
 	public synchronized void Update() {
 		Geopoint center = MahoMapsApp.GetCanvas().GetSearchAnchor(false);
-		JSONArray a = MahoMapsApp.api.Vehicles(center, 0.3d);
+		JSONArray a = MahoMapsApp.api.Vehicles(center, 0.04d);
 		v.removeAllElements();
 		for (int i = 0; i < a.size(); i++) {
 			JSONObject obj = a.getObject(i);
