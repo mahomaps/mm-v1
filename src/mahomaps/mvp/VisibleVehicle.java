@@ -3,10 +3,10 @@ package mahomaps.mvp;
 import cc.nnproject.json.JSONArray;
 import cc.nnproject.json.JSONObject;
 
-class VisibleVehicle {
+public class VisibleVehicle {
 	public YGeometry[] routeSegments;
 	public int[] routeDurations;
-
+	public JSONObject source;
 	public static VisibleVehicle decode(JSONObject j) {
 		VisibleVehicle v = new VisibleVehicle();
 		JSONArray rsArr = j.getArray("routeSegments");
@@ -17,6 +17,7 @@ class VisibleVehicle {
 			v.routeSegments[i] = YGeometry.decode(rsArr.getObject(i));
 			v.routeDurations[i] = durArr.getInt(i);
 		}
+		v.source = j;
 		return v;
 	}
 
