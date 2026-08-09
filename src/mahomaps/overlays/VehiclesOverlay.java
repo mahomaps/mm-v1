@@ -5,8 +5,11 @@ import cc.nnproject.json.JSONObject;
 import mahomaps.MahoMapsApp;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
+import mahomaps.screens.MenuScreen;
 import mahomaps.ui.*;
 
+import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.StringItem;
 import java.util.Vector;
 
 public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
@@ -43,7 +46,7 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
 			double lat = coords.getDouble(1);
 			double lon = coords.getDouble(0);
 			Geopoint g = new Geopoint(lat, lon);
-			g.object = obj.getString("uri");
+			g.object = obj;
 			g.label = obj.getString("name");
 			g.type = 1;
 			if ("bus".equals(obj.getString("type")))
@@ -57,7 +60,21 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
 	}
 
 	public boolean OnPointTap(Geopoint p) {
-		return false;
+		if (!(p.object instanceof JSONObject))
+			return false;
+		JSONObject vehicle = (JSONObject) p.object;
+		JSONObject thread = MahoMapsApp.api.VehicleThread(vehicle.getString("threadId"), vehicle.getString("lineId"), vehicle.getString("id"));
+		Form f = new Form(thread.getString("name") + " (" + thread.getString("from") + " - " + thread.getString("to") + ")");
+		JSONArray stops = thread.getArray("stops");
+		for (int i = 0; i < stops.size(); i++) {
+			JSONObject stop = stops.getObject(i);
+			String time = stop.getString("ae", null);
+			f.append(new StringItem(stop.getString("n"), time == null ? "Проехал" : time));
+		}
+		f.addCommand(MahoMapsApp.back);
+		f.setCommandListener(new MenuScreen(null));
+		MahoMapsApp.BringSubScreen(f);
+		return true;
 	}
 
 	public void OnButtonTap(UIElement sender, int uid) {

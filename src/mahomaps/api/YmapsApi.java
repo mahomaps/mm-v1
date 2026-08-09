@@ -48,7 +48,7 @@ public final class YmapsApi extends YmapsApiBase {
 	}
 
 	private final String GetActiveThreadUrl(String tid, String lid, String vid) {
-		return "http://localhost:5249/ym/mt/vt?lang=ru&tid=" + tid + "&lid=" + lid + "&vid=" + vid;
+		return "http://localhost:5249/ym/mt/gcl?lang=ru&tid=" + tid + "&lid=" + lid + "&vid=" + vid;
 	}
 
 	private final String GetRouteUrl(Geopoint a, Geopoint b, int type) {
@@ -108,6 +108,16 @@ public final class YmapsApi extends YmapsApiBase {
 		} catch (Exception ex) {
 			MahoMapsApp.lastException = ex;
 			return new JSONArray();
+		}
+	}
+
+	public JSONObject VehicleThread(String tid, String lid, String vid) {
+		try {
+			String response = GetUtf(GetActiveThreadUrl(tid, lid, vid));
+			return JSON.getObject(response);
+		} catch (Exception ex) {
+			MahoMapsApp.lastException = ex;
+			return new JSONObject();
 		}
 	}
 
