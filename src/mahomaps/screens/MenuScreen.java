@@ -29,7 +29,7 @@ public class MenuScreen extends List implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (d == this) {
+		if (true) {
 			if (c == MahoMapsApp.back) {
 				MahoMapsApp.BringMap();
 			} else if (c == SELECT_COMMAND) {
