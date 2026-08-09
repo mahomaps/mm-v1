@@ -399,6 +399,24 @@ public class MahoMapsApp extends MIDlet implements Runnable, CommandListener {
 		return -1 * (x - Math.PI / 2);
 	}
 
+	public static double atan2(double y, double x) {
+		double coeff_1 = Math.PI / 4d;
+		double coeff_2 = 3d * coeff_1;
+		double abs_y = Math.abs(y) + 1e-10f; // Добавляем малое число, чтобы избежать деления на ноль
+		double r, angle;
+
+		if (x >= 0d) {
+			r = (x - abs_y) / (x + abs_y);
+			angle = coeff_1;
+		} else {
+			r = (x + abs_y) / (abs_y - x);
+			angle = coeff_2;
+		}
+
+		angle += (0.1963f * r * r - 0.9817f) * r;
+		return y < 0.0f ? -angle : angle;
+	}
+
 	public void commandAction(Command c, Displayable d) {
 		if (c == exit) {
 			Exit();
