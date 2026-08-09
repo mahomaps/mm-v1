@@ -5,6 +5,8 @@ import cc.nnproject.json.JSONObject;
 import mahomaps.MahoMapsApp;
 import mahomaps.api.YmapsApi;
 import mahomaps.map.Geopoint;
+import mahomaps.mvp.VehicleCalcs;
+import mahomaps.mvp.VisibleVehicle;
 import mahomaps.screens.MenuScreen;
 import mahomaps.ui.*;
 
@@ -12,9 +14,12 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.StringItem;
 import java.util.Vector;
 
-public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
+public class VehiclesOverlay extends MapOverlay implements IButtonHandler, Runnable {
 	public static final String ID = "vehicles";
 	private final Vector v = new Vector(64);
+	private Thread thread;
+	int currTime = 0;
+public static boolean isVisible = false;
 
 	public String GetId() {
 		return ID;
@@ -34,9 +39,12 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
 				new Button(MahoMapsApp.text[37], 1, this),
 				new Button(MahoMapsApp.text[38], 0, this)});
 		Update();
+		thread = new Thread(this);
+		thread.start();
+		isVisible = true;
 	}
 
-	public void Update() {
+	public synchronized void Update() {
 		Geopoint center = MahoMapsApp.GetCanvas().GetSearchAnchor(false);
 		JSONArray a = MahoMapsApp.api.Vehicles(center, 0.3d);
 		v.removeAllElements();
@@ -46,7 +54,9 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
 			double lat = coords.getDouble(1);
 			double lon = coords.getDouble(0);
 			Geopoint g = new Geopoint(lat, lon);
-			g.object = obj;
+			VisibleVehicle vv = VisibleVehicle.decode(obj);
+			VehicleCalcs.precalcVehicle(vv);
+			g.object = vv;
 			g.label = obj.getString("name");
 			g.type = 1;
 			if ("bus".equals(obj.getString("type")))
@@ -56,13 +66,25 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
 			else g.color = 0;
 			v.addElement(g);
 		}
+		currTime = 0;
 		((FillFlowContainer) content).children.setElementAt(new SimpleText("Транспорта на карте: " + v.size()), 0);
 	}
 
+	public synchronized void UpdatePoints() {
+		for (int i = 0; i < v.size(); i++) {
+			Geopoint g = (Geopoint) v.elementAt(i);
+			VisibleVehicle vv = (VisibleVehicle) g.object;
+			double[] next = VehicleCalcs.getVehiclePosition(vv, currTime);
+			g.lat = next[1];
+			g.lon = next[0];
+		}
+	}
+
 	public boolean OnPointTap(Geopoint p) {
-		if (!(p.object instanceof JSONObject))
+		if (!(p.object instanceof VisibleVehicle))
 			return false;
-		JSONObject vehicle = (JSONObject) p.object;
+		VisibleVehicle vv = (VisibleVehicle) p.object;
+		JSONObject vehicle = (JSONObject) vv.source;
 		JSONObject thread = MahoMapsApp.api.VehicleThread(vehicle.getString("threadId"), vehicle.getString("lineId"), vehicle.getString("id"));
 		Form f = new Form(thread.getString("name") + " (" + thread.getString("from") + " - " + thread.getString("to") + ")");
 		JSONArray stops = thread.getArray("stops");
@@ -80,11 +102,25 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler {
 	public void OnButtonTap(UIElement sender, int uid) {
 		switch (uid) {
 			case 0:
+				thread.interrupt();
+				isVisible = false;
 				Close();
 				break;
 			case 1:
 				Update();
 				break;
+		}
+	}
+
+	public void run() {
+		while (true) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				return;
+			}
+			UpdatePoints();
+			currTime++;
 		}
 	}
 }

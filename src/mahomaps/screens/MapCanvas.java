@@ -24,10 +24,7 @@ import mahomaps.map.MapState;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
-import mahomaps.overlays.OverlaysManager;
-import mahomaps.overlays.SelectOverlay;
-import mahomaps.overlays.TileCacheForbiddenOverlay;
-import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import mahomaps.overlays.*;
 import mahomaps.route.RouteTracker;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
@@ -357,7 +354,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					cachedGraphics = g = getGraphics();
 				repaint(g);
 				flushGraphics();
-				repaintGate.End(rt != null ? 33 : 2000);
+				repaintGate.End((rt != null || VehiclesOverlay.isVisible) ? 33 : 2000);
 				if (rt != null && System.currentTimeMillis() - lastResetTime > 15000L) {
 					DeviceControlInvoker.resetUserInactivityTime();
 					lastResetTime = System.currentTimeMillis();
