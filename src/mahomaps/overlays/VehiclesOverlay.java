@@ -19,7 +19,7 @@ public class VehiclesOverlay extends MapOverlay implements IButtonHandler, Runna
 	private final Vector v = new Vector(64);
 	private Thread thread;
 	int currTime = 0;
-public static boolean isVisible = false;
+	public static boolean isVisible = false;
 
 	public String GetId() {
 		return ID;
@@ -88,10 +88,22 @@ public static boolean isVisible = false;
 		JSONObject thread = MahoMapsApp.api.VehicleThread(vehicle.getString("threadId"), vehicle.getString("lineId"), vehicle.getString("id"));
 		Form f = new Form(thread.getString("name") + " (" + thread.getString("from") + " - " + thread.getString("to") + ")");
 		JSONArray stops = thread.getArray("stops");
+		boolean currentFound = false;
 		for (int i = 0; i < stops.size(); i++) {
 			JSONObject stop = stops.getObject(i);
 			String time = stop.getString("ae", null);
-			f.append(new StringItem(stop.getString("n"), time == null ? "Проехал" : time));
+			if (!currentFound) {
+				if (time != null) {
+					for (int j = 0; j < i; j++) {
+						StringItem prev = (StringItem) f.get(j);
+						prev.setText("Проехал");
+					}
+					currentFound = true;
+				}
+			}
+			String time2 = time == null ? "Неизвестно" : time;
+			StringItem n = new StringItem(stop.getString("n"), time2);
+			f.append(n);
 		}
 		f.addCommand(MahoMapsApp.back);
 		f.setCommandListener(new MenuScreen(null));
