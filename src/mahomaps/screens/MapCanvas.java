@@ -24,10 +24,7 @@ import mahomaps.map.MapState;
 import mahomaps.map.TileCache;
 import mahomaps.map.TileId;
 import mahomaps.map.TilesProvider;
-import mahomaps.overlays.OverlaysManager;
-import mahomaps.overlays.SelectOverlay;
-import mahomaps.overlays.TileCacheForbiddenOverlay;
-import mahomaps.overlays.TileDownloadForbiddenOverlay;
+import mahomaps.overlays.*;
 import mahomaps.route.RouteTracker;
 import mahomaps.ui.ControlButtonsContainer;
 import mahomaps.ui.UIElement;
@@ -119,7 +116,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 			overlays.PushOverlay(new TileDownloadForbiddenOverlay());
 	}
 
-	public Geopoint GetSearchAnchor() {
+	public Geopoint GetSearchAnchor(boolean preferGeo) {
 		if (geo != null && geo.DrawPoint()) {
 			return geolocation;
 		}
@@ -208,12 +205,17 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 
 	private void drawOverlay(Graphics g, int w, int h) {
 		Font f = Font.getFont(0, 0, 8);
-		g.setColor(0);
 		g.setFont(f);
+		g.setColor(-1);
+		String expText = "ЭКСПЕРИМЕНТАЛЬНО";
+		g.fillRect(0, f.getHeight() * 2, f.stringWidth(expText) + 10, f.getHeight());
+		g.setColor(255, 0, 0);
+		g.drawString(expText, 5, f.getHeight() * 2, 0);
+		g.setColor(0);
 		if (Settings.drawDebugInfo) {
 			g.drawString(state.toString(), 0, 0, 0);
 			if (MahoMapsApp.lastException != null)
-				g.drawString(MahoMapsApp.lastException.toString(), 0, 30, 0);
+				g.drawString(MahoMapsApp.lastException.toString(), 0, f.getHeight(), 0);
 		}
 		try {
 			controls.info = GetGeoInfo();
@@ -352,7 +354,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 					cachedGraphics = g = getGraphics();
 				repaint(g);
 				flushGraphics();
-				repaintGate.End(rt != null ? 33 : 2000);
+				repaintGate.End((rt != null || VehiclesOverlay.isVisible) ? 33 : 2000);
 				if (rt != null && System.currentTimeMillis() - lastResetTime > 15000L) {
 					DeviceControlInvoker.resetUserInactivityTime();
 					lastResetTime = System.currentTimeMillis();
@@ -643,7 +645,7 @@ public class MapCanvas extends MultitouchCanvas implements CommandListener {
 				MahoMapsApp.BringMap();
 			} else {
 				overlays.CloseOverlay(SelectOverlay.ID);
-				Geopoint sa = GetSearchAnchor();
+				Geopoint sa = GetSearchAnchor(true);
 				MahoMapsApp.BringSubScreen(new SearchLoader(searchBox.getString(), sa));
 			}
 		}

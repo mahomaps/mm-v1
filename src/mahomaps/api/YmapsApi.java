@@ -11,6 +11,7 @@ import javax.microedition.rms.RecordStore;
 
 import cc.nnproject.json.*;
 
+import mahomaps.MahoMapsApp;
 import mahomaps.Settings;
 import mahomaps.map.Geopoint;
 
@@ -39,6 +40,15 @@ public final class YmapsApi extends YmapsApiBase {
 				+ token + "&rspn=0&results=40&origin=jsapi2SearchControl"
 				+ "&snippets=businessrating%2F1.x%2Cmasstransit%2F1.x&ask_direct=1&experimental_maxadv=200&apikey="
 				+ key + "&text=" + EncodeUrl(text) + "&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
+	}
+
+	private final String GetVisibleVehiclesUrl(Geopoint around, double zone) {
+		String[] cs = around.GetRounded();
+		return "http://localhost:5249/ym/mt/vt?lang=ru&ll=" + cs[1] + "%2C" + cs[0] + "&spn=" + zone + "%2C" + zone;
+	}
+
+	private final String GetActiveThreadUrl(String tid, String lid, String vid) {
+		return "http://localhost:5249/ym/mt/gcl?lang=ru&tid=" + tid + "&lid=" + lid + "&vid=" + vid;
 	}
 
 	private final String GetRouteUrl(Geopoint a, Geopoint b, int type) {
@@ -91,6 +101,26 @@ public final class YmapsApi extends YmapsApiBase {
 		}
 	}
 
+	public final JSONArray Vehicles(Geopoint around, double zone) {
+		try {
+			String response = GetUtf(GetVisibleVehiclesUrl(around, zone));
+			return JSON.getArray(response);
+		} catch (Exception ex) {
+			MahoMapsApp.lastException = ex;
+			return new JSONArray();
+		}
+	}
+
+	public JSONObject VehicleThread(String tid, String lid, String vid) {
+		try {
+			String response = GetUtf(GetActiveThreadUrl(tid, lid, vid));
+			return JSON.getObject(response);
+		} catch (Exception ex) {
+			MahoMapsApp.lastException = ex;
+			return new JSONObject();
+		}
+	}
+
 	public static final int ROUTE_BYFOOT = 1;
 	public static final int ROUTE_AUTO = 2;
 	public static final int ROUTE_TRANSPORT = 3;
@@ -111,7 +141,8 @@ public final class YmapsApi extends YmapsApiBase {
 				try {
 					if (r.getNumRecords() != 0)
 						r.deleteRecord(r.getNextRecordID() - 1);
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 				r.addRecord(d, 0, d.length);
 			} finally {
 				r.closeRecordStore();

@@ -11,6 +11,7 @@ import javax.microedition.lcdui.List;
 
 import mahomaps.MahoMapsApp;
 import mahomaps.map.TilesProvider;
+import mahomaps.overlays.VehiclesOverlay;
 
 public class MenuScreen extends List implements CommandListener {
 
@@ -20,7 +21,7 @@ public class MenuScreen extends List implements CommandListener {
 		super("MahoMaps v1", Choice.IMPLICIT,
 				new String[]{MahoMapsApp.text[148], MahoMapsApp.text[153], MahoMapsApp.text[10],
 						MahoMapsApp.text[11], MahoMapsApp.text[69], MahoMapsApp.text[12],
-						MahoMapsApp.text[0]},
+						MahoMapsApp.text[0], MahoMapsApp.text[169]},
 				null);
 		this.tiles = tiles;
 		addCommand(MahoMapsApp.back);
@@ -28,7 +29,7 @@ public class MenuScreen extends List implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (d == this) {
+		if (true) {
 			if (c == MahoMapsApp.back) {
 				MahoMapsApp.BringMap();
 			} else if (c == SELECT_COMMAND) {
@@ -47,6 +48,9 @@ public class MenuScreen extends List implements CommandListener {
 					MahoMapsApp.BringSubScreen(new AboutScreen());
 				} else if (sel == 6) {
 					MahoMapsApp.Exit();
+				} else if (sel == 7) {
+					MahoMapsApp.Overlays().PushOverlay(new VehiclesOverlay());
+					MahoMapsApp.BringMap();
 				}
 			}
 		}
